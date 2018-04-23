@@ -1,11 +1,11 @@
 <template>
-  <!-- 后期若有时间，此页面改为博文汇总页面 -->
+  <!-- modify this page to summary page if there is time left at the end -->
   <div id="welcomePage">
     <img src="@/assets/logo.png">
     <h1>{{ msg }}</h1>
     <h2>
-      <!-- 跳转进入用户博客首页， -->
-      <router-link :to="{name:'homePage', params:{userId}}">Enter</router-link>
+      <!-- turn to home page of user's blog -->
+      <router-link :to="{name:'homePage', params:{userID}}">Enter</router-link>
     </h2>
   </div>
 </template>
@@ -16,7 +16,7 @@ export default {
   name: "welcomePage",
   data() {
     return {
-      userId: 1
+      userID: 1
     };
   },
   computed: {

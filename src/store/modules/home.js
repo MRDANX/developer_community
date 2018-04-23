@@ -6,18 +6,25 @@ const state = {
 };
 
 const mutations = {
-  initializeHomePage(state) {
-
+  //initialize home page data
+  initializeHomePage(state, data) {
+    state.userName = data.userName;
   }
 };
 
 const actions = {
-  initializeHomePage({state,commit,rootState}) {
+  //initialize home page data
+  initializeHomePage({
+    state,
+    commit,
+    rootState
+  }) {
     axios('/api/getUser').then(result => {
       if (result.status == 200) {
-        state.userName=result.data.userName;
+        let data = result.data;
+        commit('initializeHomePage', data);
       }
-      
+
 
     })
   }

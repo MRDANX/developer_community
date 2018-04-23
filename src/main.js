@@ -10,7 +10,7 @@ import "es6-promise/auto"
 
 Vue.config.productionTip = false;
 
-Vue.prototype.$http = axios;
+Vue.prototype.$axios = axios;
 
 /* eslint-disable no-new */
 new Vue({

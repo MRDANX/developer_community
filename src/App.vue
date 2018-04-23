@@ -13,6 +13,7 @@ html,
 body {
   padding: 0;
   margin: 0;
+  background-color: #f1f1f1;
 }
 ul {
   list-style-type: none;

@@ -1,22 +1,38 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import welcomePage from '@/pages/welcomePage'
 import homePage from '@/pages/homePage'
+import welcomePage from '@/pages/welcomePage'
+import notFoundPage from '@/pages/notFoundPage'
+import articleList from '@/components/articleList'
+import articleDetail from '@/components/articleDetail'
 
 Vue.use(Router)
 
 export default new Router({
   mode: 'history',
-  routes: [
-    {
+  routes: [{
       path: '/',
       name: 'welcomePage',
       component: welcomePage
     },
     {
-      path:'/:userId/home',
-      name:'homePage',
-      component:homePage
+      path: '/:userID(\\d+)',
+      component: homePage,
+      children: [{
+          path: '',
+          name: 'homePage',
+          component: articleList
+        },
+        {
+          path: 'article/:articleID',
+          component: articleDetail
+        }
+      ]
+    },
+    {
+      path: '*',
+      name: 'notFound',
+      component: notFoundPage
     }
   ]
 })
