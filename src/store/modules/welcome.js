@@ -1,5 +1,5 @@
 const state = {
-  msg: 'Welcome to My Personal Blog!!!'
+  msg: 'Welcome to My Personal Blog System!!!'
 };
 
 const mutations = {
