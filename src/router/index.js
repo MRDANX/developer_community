@@ -30,7 +30,7 @@ export default new Router({
       ]
     },
     {
-      path: '*',
+      path: '(.*|notFound)',
       name: 'notFound',
       component: notFoundPage
     }
