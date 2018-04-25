@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios from 'axios'
 
 
 const state = {
@@ -15,9 +15,9 @@ const mutations = {
 const actions = {
   //initialize home page data
   initializeHomePage({
-    state,
+    // state,
     commit,
-    rootState
+    // rootState
   }) {
     axios('/api/getUser').then(result => {
       if (result.status == 200) {

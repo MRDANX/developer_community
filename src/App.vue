@@ -10,9 +10,20 @@ export default {
 
 <style>
 html,
-body {
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+ul,
+li,
+p {
   padding: 0;
   margin: 0;
+}
+html,
+body {
   background-color: #f1f1f1;
 }
 ul {

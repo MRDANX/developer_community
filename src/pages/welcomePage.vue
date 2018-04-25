@@ -42,4 +42,7 @@ li {
 a {
   color: #42b983;
 }
+h1{
+  margin: 1em 0;
+}
 </style>

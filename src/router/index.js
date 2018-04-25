@@ -1,10 +1,10 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import homePage from '@/pages/homePage'
-import welcomePage from '@/pages/welcomePage'
-import notFoundPage from '@/pages/notFoundPage'
-import articleList from '@/components/articleList'
-import articleDetail from '@/components/articleDetail'
+import Vue from 'vue';
+import Router from 'vue-router';
+import homePage from '@/pages/homePage';
+import welcomePage from '@/pages/welcomePage';
+import notFoundPage from '@/pages/notFoundPage';
+import articleList from '@/components/articleList';
+import articleDetail from '@/components/articleDetail';
 
 Vue.use(Router)
 
@@ -25,7 +25,9 @@ export default new Router({
         },
         {
           path: 'article/:articleID',
-          component: articleDetail
+          name: 'articleDetail',
+          component: articleDetail,
+          props: true
         }
       ]
     },

@@ -44,8 +44,15 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         var sql = 'SELECT * FROM user';
         connection.query(sql, function (err, result) {
           if (err) throw err;
-          res.end(JSON.stringify(result[0]));
+          res.json(result[0]);
+        });
+      });
 
+      app.get('/api/getArticle', (req, res) => {
+        let getArticleSql = 'SELECT a.*,u.userName FROM article a,user u where a.userID=u.userID';
+        connection.query(getArticleSql, function (err, result) {
+          if (err) throw err;
+          res.json(result[0]);
         });
       })
 
