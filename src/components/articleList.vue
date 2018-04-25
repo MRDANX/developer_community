@@ -3,45 +3,98 @@
     <ul>
       <article-brief v-for="article in articleList" :article="article" :key="article.ID"></article-brief>
     </ul>
+    <div id="loading" class="loading">loading...</div>
   </div>
 </template>
 
 <script>
-import articleBrief from "@/components/articleBrief";
-export default {
-  data() {
-    return {
-      articleList: [
-        {
-          ID: 1,
-          title: "热门 nodejs中gbk转码为utf8，以exec('dir')为例",
-          content:
-            "<div id=\"zoom\" class=\"logtext animated2 bounceInUp\"> <p>最近从Linux换为Windows，因此开始需要考虑gbk转码的问题。</p><h3>nodejs中转码需要注意三个问题：</h3><ol class=\" list-paddingleft-2\" style=\"list-style-type: decimal;\"><li><p>读取时不能使用默认utf8转码，需使用二进制即 `binary`编码&nbsp;</p></li><li><p>采用iconv-lite模块实际转码</p></li><li><p><span style=\"color: rgb(255, 0, 0);\">转换为其他编码之前需要使用原编码解码成功方可！！！</span><br></p></li></ol><h3>安装iconv-lite:</h3><pre class=\"brush:js;toolbar:false\">npm&nbsp;i&nbsp;iconv-lite&nbsp;-S</pre><h3>以exec('dir')为例<br></h3><pre class=\"brush:js;toolbar:false\">//&nbsp;引入http,iconv-lite和exec模块const&nbsp;http&nbsp;=&nbsp;require('http');const&nbsp;iconv&nbsp;=&nbsp;require('iconv-lite');const&nbsp;{&nbsp;exec&nbsp;}&nbsp;=&nbsp;require('child_process');http.createServer(function(request,&nbsp;response)&nbsp;{&nbsp;&nbsp;&bsp;&nbsp;//执行dir命令病设置编码为二进制编码&nbsp;binary&nbsp;&nbsp;&nbsp;&nbsp;exec('dir',&nbsp;{&nbsp;encoding:&nbsp;'binary'&nbsp;},&nbsp;function(error,&nbsp;stdout,&nbsp;stderr)&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;处理结果，转码为utf8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;第一步：获取buffer，设为const避免误修改&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const&nbsp;bufferReaded&nbsp;=&nbsp;Buffer.from(stdout,&nbsp;'binary');&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;第二步：根据原来的编码gbk解码&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;let&nbsp;strGbk&nbsp;=&nbsp;iconv.decode(bufferReaded,&nbsp;'gbk');&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;第三步：转为utf8&nbsp;buffer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;const&nbsp;strUTF8Buffer&nbsp;=&nbsp;iconv.encode(strGbk,&nbsp;'utf8');&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;第四步：转为utf8&nbsp;字符串&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;多种方法：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;iconv.decode(strBuf,'utf8')或者toString('utf8')&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;let&nbsp;strUTF8&nbsp;=&nbsp;iconv.decode(strUTF8Buffer,&nbsp;'utf8');&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;toString()方法&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;let&nbsp;strUTF8&nbsp;=&nbsp;strUTF8Buffer.toString('utf8');&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response.writeHead(200,&nbsp;{&nbsp;'Content-Type':&nbsp;'text/plain;charset=utf8'&nbsp;});&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;输出转换完成信息&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response.end(strUTF8);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;实际上可以直接在这里输出utf8编码的buffer，http会自动转换利用toString转换，默认编码为utf8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;response.end(strUTF8Buffer);&nbsp;&nbsp;&nbsp;&nbsp;});}).listen(9527,&nbsp;()&nbsp;=&gt;&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;console.log('服务器地址为：http://127.0.0.1:9527');});</pre><h3>临时修改终端编码的方法</h3><p>配置成utf8编码：</p><pre class=\"brush:ps;toolbar:false\">chcp&nbsp;65001</pre><p>将终端换成UTF-8代码页，配置后cmd命令的输出就是utf8编码，无需再转码了。</p><p><br></p><p>&nbsp;恢复GBK编码:</p><pre class=\"brush:ps;toolbar:false\">chcp&nbsp;936</pre><p>有任何好方法欢迎交流~</p> <div class=\"blank\"></div> </div>",
-          date: new Date().toLocaleDateString(),
-          author: "danxiong",
-          category: "vue",
-          favors: 12
-        },
-        {
-          ID: 2,
-          title:
-            "宝塔搭建laravel所需要的lnmp环境linux-nginx-mysql-php-composer-git",
-          content:
-            '<div class="b-content-word col-lg-12 col-md-12 col-xs-12"><div class=js-content><p>关于我把 word 和 pdf 来回整的故事；<br>我有一段血泪史；<br>惊天地；泣鬼神；痛彻心扉；穿越前世今生；<br>今天我准备熬夜把它控诉一遍；<p>之前有一些愚蠢的人类给了伟大的程序猿一份 word 文档；<br>里面就一段文字；<br>需求是能动态的替换其中的部分内容；<br>然后转成 pdf 供用户下载；<p>这简单啊；<br>还要啥 word 文档啊；<br>直接手动把内容复制出来；<br>放好占位符用 php 的字符串替换函数动态替换下；<br>然后使用 <a href=https://github.com/tecnickcom/tcpdf target=_blank>tcpdf</a> ;<br>生成 pdf so easy ；<br>根本不用点读机；<br>我写过文章可以参考 <a href=https://baijunyao.com/article/73 target=_blank>thinkphp整合系列之tcpdf类生成pdf文件</a><p>然鹅需求如某某；<br>她总是善变的；<br>希望能有点样式加点图片；<br>说起样式图片我们都知道前端是擅长的；<br>我们可以先用 HTML+CSS 排好版了；<br>整个页面作为一个字符串替换其中的占位符即可；<br>然后用 <a href=https://github.com/dompdf/dompdf target=_blank>dompdf</a> 把 HTML 转成 PDF；<br>虽然曲折麻烦了点；<br>但是实现起来也不算难；<p>可万万没想到；<br>她不但善变还需求不满；<br>希望有页眉页脚页数<br>图片样式间隔；<br>而且一搞就来10几页的 word 文档；<br>而且还要经常换各种花样；<br>而且要生成的 pdf 要跟 word 源文档要保持一致到像素级别；<br>显然想像之前那样纯依赖 php 就完成是有点吃力了；<br>那么下面就有请 LibreOffice 上场了；<br>现在我们开始正文；<br>思路是这样的；<br>我们用 php 来编辑替换 word 文档内容；<br>然后调用 LibreOffice 把 word 替换成 pdf 文档；<p>用 php 编辑替换 word 就比较简单了；<br>扩展包在这 <a href=https://github.com/PHPOffice/PHPWord target=_blank>PHPWord</a>；<br>按 <a href=http://phpword.readthedocs.io/en/latest/templates-processing.html target=_blank>文档</a>很容易使用；<br>这里简单写两句；<br>在 word 源文件中占位符要包裹在 <code>${}</code> 中；<br>比如说在 source.docx 中是这样的;<pre class="language-bash code-toolbar line-numbers"><code class=language-bash>${name}博客666<span class=line-numbers-rows aria-hidden=true><span></span></span></code><div class=toolbar><div class=toolbar-item><span>Bash</span></div><div class=toolbar-item><a>Copy</a></div></div></pre><p>php 调用 setValue 方法第一个参数传 name 第二个参数传值就可以替换了；<pre class="code-toolbar line-numbers language-php"><code class=language-php><span class="token keyword">use</span> <span class="token package">PhpOffice<span class="token punctuation"></span>PhpWord<span class="token punctuation"></span>TemplateProcessor</span><span class="token punctuation">;</span>	<span class="token variable">$phpWord</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">TemplateProcessor</span><span class="token punctuation">(</span><span class="token string">\'source.docx\'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>	<span class="token variable">$phpWord</span><span class="token operator">-</span><span class="token operator">></span><span class="token function">setValue</span><span class="token punctuation">(</span><span class="token string">\'name\'</span><span class="token punctuation">,</span> <span class="token string">\'白俊遥\'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>	<span class="token variable">$phpWord</span><span class="token operator">-</span><span class="token operator">></span><span class="token function">saveAs</span><span class="token punctuation">(</span><span class="token string">\'new.docx\'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class=line-numbers-rows aria-hidden=true><span></span><span></span><span></span><span></span><span></span></span></code><div class=toolbar><div class=toolbar-item><span>PHP</span></div><div class=toolbar-item><a>Copy</a></div></div></pre><p>new.docx 文件中就被替换成 <code>白俊遥博客666</code>了；<p>重点要来了；<br>LibreOffice 折腾起来就稍微麻烦且有坑了；<br>先下载软件和语言包；<pre class="language-bash code-toolbar line-numbers"><code class=language-bash>cd /usr/local	wget http://download.documentfoundation.org/libreoffice/stable/5.2.7/rpm/x86_64/LibreOffice_5.2.7_Linux_x86-64_rpm.tar.gz	wget http://download.documentfoundation.org/libreoffice/stable/5.2.7/rpm/x86_64/LibreOffice_5.2.7_Linux_x86-64_rpm_langpack_zh-CN.tar.gz	wget http://download.documentfoundation.org/libreoffice/stable/5.2.7/rpm/x86_64/LibreOffice_5.2.7_Linux_x86-64_rpm_helppack_zh-CN.tar.gz<span class=line-numbers-rows aria-hidden=true><span></span><span></span><span></span><span></span></span></code><div class=toolbar><div class=toolbar-item><span>Bash</span></div><div class=toolbar-item><a>Copy</a></div></div></pre><p>如果用 wget 速度几k到几十k不等/s 的话；<br>那推荐用迅雷下载到本地；在传到服务器的 /usr/local 目录；<br>把下载的这几个文件批量解压了；<pre class="language-bash code-toolbar line-numbers"><code class=language-bash>ls LibreOffice_5.2.7_Linux_x86-64_rpm* | xargs -n1 tar -zxvf<span class=line-numbers-rows aria-hidden=true><span></span></span></code><div class=toolbar><div class=toolbar-item><span>Bash</span></div><div class=toolbar-item><a>Copy</a></div></div></pre><p>依次安装；<pre class="language-bash code-toolbar line-numbers"><code class=language-bash>sudo yum -y install ./LibreOffice_5.2.7.2_Linux_x86-64_rpm/RPMS/*.rpm	sudo yum -y install ./LibreOffice_5.2.7.2_Linux_x86-64_rpm_langpack_zh-CN/RPMS/*.rpm	sudo yum -y install ./LibreOffice_5.2.7.2_Linux_x86-64_rpm_helppack_zh-CN/RPMS/*.rpm<span class=line-numbers-rows aria-hidden=true><span></span><span></span><span></span></span></code><div class=toolbar><div class=toolbar-item><span>Bash</span></div><div class=toolbar-item><a>Copy</a></div></div></pre><p>安装成功后到 /opt/libreoffice5.2 目录下载 unoconv；<br>这是一个用来方便调用命令把 word 转成 pdf 的工具；<pre class="language-bash code-toolbar line-numbers"><code class=language-bash>cd /opt/libreoffice5.2	wget https://raw.githubusercontent.com/dagwieers/unoconv/master/unoconv<span class=line-numbers-rows aria-hidden=true><span></span><span></span></span></code><div class=toolbar><div class=toolbar-item><span>Bash</span></div><div class=toolbar-item><a>Copy</a></div></div></pre><p>给予权限并链接；<pre class="language-bash code-toolbar line-numbers"><code class=language-bash>chmod +x unoconv	sudo ln -s /opt/libreoffice5.2/unoconv /usr/bin/unoconv<span class=line-numbers-rows aria-hidden=true><span></span><span></span></span></code><div class=toolbar><div class=toolbar-item><span>Bash</span></div><div class=toolbar-item><a>Copy</a></div></div></pre><p>这个时候虽然说已经可以转换了；<br>但是中文是会乱码的；<br>创建字体文件目录；<pre class="language-bash code-toolbar line-numbers"><code class=language-bash>mkdir /usr/share/fonts/Windows<span class=line-numbers-rows aria-hidden=true><span></span></span></code><div class=toolbar><div class=toolbar-item><span>Bash</span></div><div class=toolbar-item><a>Copy</a></div></div></pre><p>然后把 C:WindowsFonts 中的所有字体上传到 /usr/share/fonts/Windows<br>给予权限并刷新;<pre class="language-bash code-toolbar line-numbers"><code class=language-bash>sudo chmod -R 755 Windows	sudo fc-cache -fv<span class=line-numbers-rows aria-hidden=true><span></span><span></span></span></code><div class=toolbar><div class=toolbar-item><span>Bash</span></div><div class=toolbar-item><a>Copy</a></div></div></pre><p>再来个转换的函数；<pre class="code-toolbar line-numbers language-php"><code class=language-php><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span> <span class="token function">function_exists</span><span class="token punctuation">(</span><span class="token string">\'word_to_pdf\'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>	<span class="token comment">/**	* 把word转pdf	*	* @param $wordPath	* @param $pdfPath	* @return string	*/</span>	<span class="token keyword">function</span> <span class="token function">word_to_pdf</span><span class="token punctuation">(</span><span class="token variable">$wordPath</span><span class="token punctuation">,</span> <span class="token variable">$pdfPath</span><span class="token punctuation">)</span>	<span class="token punctuation">{</span>	<span class="token function">set_time_limit</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>	<span class="token function">putenv</span><span class="token punctuation">(</span><span class="token string">\'HOME=/home/apache/\'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>	<span class="token comment">// 生成pdf文件</span>	<span class="token function">shell_exec</span><span class="token punctuation">(</span><span class="token string">\'/usr/bin/unoconv -f pdf -o \'</span> <span class="token punctuation">.</span> <span class="token variable">$pdfPath</span> <span class="token punctuation">.</span> <span class="token string">\' \'</span> <span class="token punctuation">.</span> <span class="token variable">$wordPath</span><span class="token punctuation">)</span><span class="token punctuation">;</span>	<span class="token punctuation">}</span>	<span class="token punctuation">}</span><span class=line-numbers-rows aria-hidden=true><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code><div class=toolbar><div class=toolbar-item><span>PHP</span></div><div class=toolbar-item><a>Copy</a></div></div></pre><p>最后需要注意的是如果是使用的是 nginx ；<br>php-fpm 的 user 不要是 nobody；<br>一般是 nginx 或者 www；<br>如果没有如期生成 pdf 文件；<br>使用 su nginx 或者 su www 后要手动执行 shell_exec 中的命令；<br>根据错误提示解决；<br><img alt=""src=/uploads/article/20180325/5ab7aaf894623.jpeg></div><eq name="article[\'current\'][\'is_original\']"value=1><p class=b-h-20><p class=b-copyright>本文为白俊遥原创文章,转载无需和我联系,但请注明来自 <a href=http://baijunyao.com>白俊遥博客</a>https://baijunyao.com 欢迎捐赠赞赏加入组织 <a href=https://baijunyao.com/article/124>创建QQ群及捐赠渠道</a></p></eq><ul class=b-prev-next><li class=b-prev>上一篇： <a href=https://baijunyao.com/article/146>linux查看nginx、apache、php、php-fpm、mysql及配置项所在目录</a><li class=b-next>下一篇： <a href=https://baijunyao.com/article/144>laravel使用腾讯企业邮箱发邮件报错501</a></ul></div>',
-          date: new Date().toLocaleDateString(),
-          author: "danxiong",
-          category: "vue",
-          favors: 12
+  import _ from "lodash";
+  import articleBrief from "@/components/articleBrief";
+  export default {
+    props: {
+      userID: {
+        type: Number,
+        default: 1
+      }
+    },
+    data() {
+      return {
+        articleList: [],
+        loadAmount: 5
+      };
+    },
+    components: {
+      articleBrief
+    },
+    created() {
+      //handler for lazily loading the list of article
+      let lazyLoadHandler = _.debounce(() => {
+        let root = document.documentElement;
+
+        let clientHeight = root.clientHeight, //get the height of visible window
+          offsetHeight = root.offsetHeight, //get the real height of the content
+          scrollTop = root.scrollTop; // get the position of scrollbar
+
+        let loadingElement = document.getElementById("loading");
+
+        //check out whether has scrolled to the bottom of the list of article
+        if (scrollTop / (offsetHeight - clientHeight) >= 0.95) {
+          loadingElement.style.display = "block";
+          //simulation for getting server's data with internet delay 1s
+          setTimeout(() => {
+            this.$axios("/api/getArticles", {
+                params: {
+                  userID: this.userID,
+                  startIndex: this.articleList.length,
+                  loadAmount: this.loadAmount
+                }
+              })
+              .then(res => {
+                //check out whether all data has been loaded,remove the listener and modify the innerHTML to remind user
+                if (res.data.length == 0) {
+                  loadingElement.innerHTML = "it's bottom.";
+                  loadingElement.style.display = "block";
+                  window.removeEventListener("scroll", lazyLoadHandler);
+                  return;
+                }
+                res.data.forEach(article => {
+                  this.articleList.push(article);
+                });
+                loadingElement.style.display = "none";
+              })
+              .catch(err => {
+                console.log(err);
+              });
+          }, 1000);
         }
-      ]
-    };
-  },
-  components: {
-    articleBrief
-  }
-};
+      }, 200);
+      // add scroll eventlistener for lazily loading list of article when scroll to the bottom
+      window.addEventListener("scroll", lazyLoadHandler);
+      //initialize the list of article according to the variable loadAmount
+      this.$axios("/api/getArticles", {
+          params: {
+            userID: this.userID,
+            startIndex: this.articleList.length,
+            loadAmount: this.loadAmount
+          }
+        })
+        .then(res => {
+          this.articleList = res.data;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  };
+
 </script>
 
 <style>
+  .loading {
+    background-color: #ccffff;
+    text-align: center;
+    font-size: 40px;
+    display: none;
+  }
 
 </style>

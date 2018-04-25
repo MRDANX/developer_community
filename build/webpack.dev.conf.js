@@ -48,11 +48,19 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         });
       });
 
-      app.get('/api/getArticle', (req, res) => {
-        let getArticleSql = 'SELECT a.*,u.userName FROM article a,user u where a.userID=u.userID';
-        connection.query(getArticleSql, function (err, result) {
+      //获取文章列表路由
+      app.get('/api/getArticles', (req, res) => {
+        let getArticlesSql = 'SELECT a.*,u.userName FROM article a,user u where a.userID=u.userID AND a.userID=? LIMIT ?,?';
+        // let inserts = [req.query.articleID];
+        // getArticleSql = mysql.format(getArticleSql, inserts);
+        let query = req.query,
+          userID = query.userID,
+          startIndex = parseInt(query.startIndex),
+          laodAmount = parseInt(query.loadAmount);
+        let inserts = [userID, startIndex, laodAmount];
+        connection.query(getArticlesSql, inserts, function (err, result) {
           if (err) throw err;
-          res.json(result[0]);
+          res.json(result); //返回JSON格式文章列表数据
         });
       })
 

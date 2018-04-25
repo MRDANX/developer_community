@@ -58,7 +58,6 @@ export default {
     }
     .article-container {
       width: 60%;
-      height: 800px;
       background-color: #7fecad;
       margin-left: 10px;
       border-radius: 30px;
