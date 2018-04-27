@@ -1,4 +1,4 @@
 # graduation-project
 
-#This is my graduation project -- Personal Blog System
+#This is my graduation project -- Developer community
 

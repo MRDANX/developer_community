@@ -36,7 +36,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         port: '3306',
         user: 'root',
         password: 'root',
-        database: 'blog_system'
+        database: 'developer_community'
       });
       connection.connect();
 
@@ -55,8 +55,8 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         // getArticleSql = mysql.format(getArticleSql, inserts);
         let query = req.query,
           userID = query.userID,
-          startIndex = parseInt(query.startIndex),
-          laodAmount = parseInt(query.loadAmount);
+          startIndex = +query.startIndex,
+          laodAmount = +query.loadAmount;
         let inserts = [userID, startIndex, laodAmount];
         connection.query(getArticlesSql, inserts, function (err, result) {
           if (err) throw err;

@@ -32,7 +32,7 @@ export default {
 };
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 body,
 code,
 dd,
@@ -63,7 +63,6 @@ ul {
 
 body {
   font: 14px/1.5 "Microsoft YaHei", "微软雅黑", Helvetica, Sans-serif;
-  min-width: 1200px;
   background: #f0f1f3;
 }
 
@@ -104,7 +103,7 @@ a:hover {
   position: relative;
   background: #f9f9f9;
   margin: 0 auto;
-  width: 617px;
+  width: 95vw;
   -ms-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;

@@ -1,75 +1,69 @@
 <template>
-<div id="homePage">
-  <nav>nav</nav>
-  <section class="home-content">
-    <side-bar class="side-bar"></side-bar>
+  <div id="homePage">
+    <!-- <span @click="togglePopup">showPopup</span>
+    <mt-popup v-model="popupVisible" position="right" class="popup">
+      <mt-button @click="togglePopup" type="primary" size="normal">close</mt-button>
+    </mt-popup> -->
+    <!-- <nav>nav</nav> -->
+    <!-- <section class="home-content"> -->
+    <!-- <transition-group name="flip" tag="section" class="home-content"> -->
+    <!-- <side-bar class="side-bar"></side-bar> -->
     <!-- auto set the router view according to the route -->
-    <router-view class="article-container"></router-view>
-  </section>
-  <footer>welcome to {{userName}} blog.</footer>
-</div>
+    <!-- <transition name="fade" mode="out-in"> -->
+    <!-- <keep-alive> -->
+    <!-- <router-view class="article-container"></router-view> -->
+    <!-- </keep-alive> -->
+    <!-- </transition> -->
+    <!-- </transition-group> -->
+    <!-- </section> -->
+    <!-- <footer>welcome to {{userName}} blog.</footer> -->
+    <transition>
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
+    </transition>
+    <nav class="fixed-nav"></nav>
+  </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
-import sideBar from "@/components/sideBar";
+  import {
+    mapState
+  } from "vuex";
 
-export default {
-  name: "homePage",
-  data() {
-    return {
-      //   //the alternative values are 'articleList' or 'articleDetail'
-      //   currentView: "articleList"
-    };
-  },
-  computed: {
-    ...mapState("home", ["userName"])
-  },
-  components: {
-    sideBar
-  },
-  created() {
-    this.$store.dispatch("home/initializeHomePage");
-  }
-};
+  export default {
+    name: "homePage",
+    data() {
+      return {};
+    },
+    computed: {
+      ...mapState("home", ["userName"])
+    },
+    created() {
+      this.$store.dispatch("home/initializeHomePage");
+    }
+  };
+
 </script>
 
 <style lang='less' scoped>
-#homePage {
-  display: flex;
-  flex-direction: column;
-  nav {
+  #homePage {
     width: 100%;
-    height: 80px;
-    background-color: #e0eee8;
-    text-align: center;
-    font-size: 30px;
-  }
-  section.home-content {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    margin: 30px 0;
-    .side-bar {
-      width: 18%;
-      height: 800px;
-      background-color: #3de1ad;
-      margin-right: 10px;
-    }
-    .article-container {
-      width: 60%;
-      background-color: #7fecad;
-      margin-left: 10px;
-      border-radius: 30px;
-      overflow: hidden;
+    height: 800px;
+    background-color: #f1f1f1;
+    position: absolute;
+    top: 0;
+    nav.fixed-nav {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      z-index: 99;
+      width: 100vw;
+      height: 8vh;
+      text-align: center;
+      font-size: 5vw;
+      background-color: #bacac6;
     }
   }
-  footer {
-    width: 100%;
-    height: 100px;
-    text-align: center;
-    font-size: 30px;
-    background-color: #bacac6;
-  }
-}
+
 </style>

@@ -1,7 +1,7 @@
-import Vue from "vue";
-import Vuex from "vuex";
-import welcome from "./modules/welcome";
-import home from "./modules/home";
+import Vue from 'vue'
+import Vuex from 'vuex'
+import welcome from './modules/welcome'
+import home from './modules/home'
 
 Vue.use(Vuex);
 

@@ -16,7 +16,7 @@ export default new Router({
       component: welcomePage
     },
     {
-      path: '/:userID(\\d+)',
+      path: '/home',
       component: homePage,
       children: [{
           path: '',

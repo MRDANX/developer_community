@@ -50,6 +50,8 @@
     cursor: pointer;
     overflow: hidden;
     box-shadow: inset 0 -3px 10px #44cef6;
+    transition: all 1s;
+    display: inline-block;
     h3 {
       text-indent: 2em;
       margin-top: 1.5em;
