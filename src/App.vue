@@ -1,5 +1,5 @@
 <template>
-  <transition name="slide" >
+  <transition name="fade">
     <keep-alive>
       <router-view/>
     </keep-alive>
@@ -15,53 +15,31 @@
 </script>
 
 <style>
-  .slide-enter-active{
-    transition: all .3s;
+  .fade-enter-active,
+  .fade-leave-active {
+    position: absolute;
+    top: 0;
+    left: 0;
   }
 
-  .slide-enter {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-
-  .slide-enter-to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-
-  .slide-leave-active{
-    transition: all .3s;
-  }
-
-  .slide-leave {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-  .slide-leave-to {
-    opacity: 0;
-    transform: translateX(-100%);
-  }
-  /* .slide-leave-active{
+  .fade-enter-active {
     transition: all .5s;
   }
 
-  .slide-leave {
-    transform: translateX(0);
+  .fade-leave-active {
+    transition: all .3s;
   }
 
-  .slide-leave-to {
-    transform: translateX(100%);
-  } */
-  /* .slide-leave-active{
-    transition: all 15s;
+  .fade-enter,
+  .fade-leave-to {
+    opacity: 0;
   }
-  .slide-leave{
-    transform: translateX(0);
+
+  .fade-enter-to,
+  .fade-leave {
+    opacity: 1;
   }
-  .slide-leave-to{
-    transform: translateX(100%);
-  } */
+
   html,
   body,
   h1,

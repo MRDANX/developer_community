@@ -35,8 +35,6 @@
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
-    position: absolute;
-    top: 0;
     background-color: #f1f1f1;
     padding: 10vh 0 0;
     width: 100vw;

@@ -1,10 +1,12 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import homePage from '@/pages/homePage';
+import layoutPage from '@/pages/layoutPage';
 import welcomePage from '@/pages/welcomePage';
 import notFoundPage from '@/pages/notFoundPage';
-import articleList from '@/components/articleList';
-import articleDetail from '@/components/articleDetail';
+import commentPage from '@/pages/commentPage';
+import searchPage from '@/pages/searchPage';
+import settingPage from '@/pages/settingPage';
+import homePage from '@/pages/homePage';
 
 Vue.use(Router)
 
@@ -17,17 +19,26 @@ export default new Router({
     },
     {
       path: '/home',
-      component: homePage,
+      component: layoutPage,
       children: [{
           path: '',
           name: 'homePage',
-          component: articleList
+          component: homePage
         },
         {
-          path: 'article/:articleID',
-          name: 'articleDetail',
-          component: articleDetail,
-          props: true
+          path: '/comment',
+          name: 'commentPage',
+          component: commentPage,
+        },
+        {
+          path: '/search',
+          name: 'searchPage',
+          component: searchPage
+        },
+        {
+          path: '/setting',
+          name: 'settingPage',
+          component: settingPage
         }
       ]
     },

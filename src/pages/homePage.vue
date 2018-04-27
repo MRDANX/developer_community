@@ -1,68 +1,169 @@
 <template>
-  <div id="homePage">
-    <!-- <span @click="togglePopup">showPopup</span>
-    <mt-popup v-model="popupVisible" position="right" class="popup">
-      <mt-button @click="togglePopup" type="primary" size="normal">close</mt-button>
-    </mt-popup> -->
-    <!-- <nav>nav</nav> -->
-    <!-- <section class="home-content"> -->
-    <!-- <transition-group name="flip" tag="section" class="home-content"> -->
-    <!-- <side-bar class="side-bar"></side-bar> -->
-    <!-- auto set the router view according to the route -->
-    <!-- <transition name="fade" mode="out-in"> -->
-    <!-- <keep-alive> -->
-    <!-- <router-view class="article-container"></router-view> -->
-    <!-- </keep-alive> -->
-    <!-- </transition> -->
-    <!-- </transition-group> -->
-    <!-- </section> -->
-    <!-- <footer>welcome to {{userName}} blog.</footer> -->
-    <transition>
-      <keep-alive>
-        <router-view></router-view>
-      </keep-alive>
-    </transition>
-    <nav class="fixed-nav"></nav>
+  <div class="home-page">
+    <!-- nav-bar for customized subjects -->
+    <div class="nav">
+      <subject-bar class="scroll-bar" :subjectList="customizedSubjectList"></subject-bar>
+      <i class="fa fa-caret-down" @click="toggleCustom"></i>
+    </div>
+    <!-- panel for customizing subject -->
+    <div class="customize-subject" :class="{active:showCustom}">
+      <!-- custom-panel header -->
+      <div class="custom-header">
+        <i class="fa fa-arrow-left" @click="toggleCustom"></i>首页特别展示
+      </div>
+      <!-- list for customizing subject exclude index 0(item home-page)-->
+      <ul class="custom-list">
+        <li v-for="(subject,index) in subjectList" :key="index" v-if="index!=0" class="custom-item">
+          <i class="fa fa-list-ul"></i>
+          <span>{{subject.text}}</span>
+          <input type="checkbox" :value="index" v-model="enabledSubjectsIndex">
+        </li>
+      </ul>
+    </div>
+    <span>homePage</span>
   </div>
 </template>
 
 <script>
-  import {
-    mapState
-  } from "vuex";
-
+  import subjectBar from "@/components/subjectBar";
   export default {
     name: "homePage",
     data() {
-      return {};
+      return {
+        subjectList: [{
+            text: "首页",
+            to: "home"
+          },
+          {
+            text: "前端",
+            to: "home"
+          },
+          {
+            text: "Android",
+            to: "home"
+          },
+          {
+            text: "人工智能",
+            to: "home"
+          },
+          {
+            text: "iOS",
+            to: "home"
+          },
+          {
+            text: "产品",
+            to: "home"
+          },
+          {
+            text: "设计",
+            to: "home"
+          },
+          {
+            text: "工具资源",
+            to: "home"
+          },
+          {
+            text: "阅读",
+            to: "home"
+          },
+          {
+            text: "后端",
+            to: "home"
+          }
+        ],
+        enabledSubjectsIndex: [0],
+        showCustom: false
+      };
     },
-    computed: {
-      ...mapState("home", ["userName"])
+    computed:{
+      customizedSubjectList(){
+        let subjectList=[];
+        this.enabledSubjectsIndex.sort().forEach(val=>{
+          subjectList.push(this.subjectList[val]);
+        });
+        return subjectList;
+      }
     },
-    created() {
-      this.$store.dispatch("home/initializeHomePage");
+    methods: {
+      //toggle custom panel and enable/disable scroll
+      toggleCustom() {
+        this.showCustom = !this.showCustom;
+        if (this.showCustom) {
+          document.documentElement.style.overflow = 'hidden';
+        } else {
+          document.documentElement.style.overflow = 'scroll';
+        }
+      }
+    },
+    components: {
+      subjectBar
     }
   };
 
 </script>
 
-<style lang='less' scoped>
-  #homePage {
-    width: 100%;
-    height: 800px;
-    background-color: #f1f1f1;
-    position: absolute;
-    top: 0;
-    nav.fixed-nav {
+<style lang="less" scoped>
+  .home-page {
+    width: 100vw;
+    position: relative;
+    div.nav {
+      width: 100%;
+      background-color: #3366cc;
       position: fixed;
+      top: 0;
+      height: 7vh;
+      .scroll-bar {
+        width: 90%;
+        display: inline-block;
+      }
+      i.fa-caret-down {
+        font-size: 7vw;
+        color: white;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        right: 3vw;
+      }
+    }
+    div.customize-subject {
+      position: fixed;
+      top: 0;
       left: 0;
-      bottom: 0;
-      z-index: 99;
+      transition: all 0.3s ease-out;
+      transform: translateX(100%);
       width: 100vw;
-      height: 8vh;
-      text-align: center;
-      font-size: 5vw;
-      background-color: #bacac6;
+      height: 100vh;
+      background-color: #f1f1f1;
+      z-index: 100;
+      &.active {
+        transform: translateX(0);
+      }
+      .custom-header {
+        width: 100vw;
+        height: 7vh;
+        background-color: #3366cc;
+        color: #ffffff;
+        font-size: 3.5vh;
+        line-height: 7vh;
+        i {
+          margin: 0 5vw 0 3vw;
+        }
+      }
+      ul.custom-list {
+        width: 100vw;
+        li.custom-item {
+          font-size: 4vh;
+          height: 8vh;
+          line-height: 8vh;
+          padding: 0 5vw;
+          background-color: #ffffff;
+          border-bottom: 1px solid #CCCCCC;
+          i {
+            color: #CCCCCC;
+            margin-right: 5vw;
+          }
+        }
+      }
     }
   }
 

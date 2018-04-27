@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "better-scroll": "^1.10.2",
     "es6-promise": "^4.2.4",
+    "font-awesome": "^4.7.0",
     "lodash": "^4.17.10",
     "mint-ui": "^2.2.13",
     "vue": "^2.5.2",
