@@ -22,7 +22,7 @@
 <style lang='less' scoped>
   #homePage {
     width: 100%;
-    height: 800px;
+    // height: 800px;
     background-color: #f1f1f1;
     ul.fixed-nav {
       display: flex;

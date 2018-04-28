@@ -50,8 +50,14 @@
   }
 
   h1 {
-    margin: 1em 0;
+    margin: 5vh 0;
     font-size: 9vw;
+  }
+  h2{
+    font-size: 8vw;
+  }
+  h2 a{
+    font-size: 8vw;
   }
 
 </style>

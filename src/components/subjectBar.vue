@@ -70,7 +70,7 @@
         &::after {
           content: '';
           width: 100%;
-          height: 3px;
+          height: 0.5vh;
           background-color: #ffffff;
           position: absolute;
           bottom: 0;
