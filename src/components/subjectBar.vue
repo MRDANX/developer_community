@@ -53,10 +53,10 @@
   .subject-bar {
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    // overflow-x: hidden;
     line-height: 7vh;
     font-weight: bold;
-    background-color: #3366cc;
+    // background-color: #3366cc;
     color: rgba(255, 255, 255, 0.7);
     ul {
       display: flex;
@@ -84,6 +84,7 @@
         &::after {
           transform: scale(1);
           transition: all .3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+          box-shadow: 0 0 1vw #666666;
         }
       }
 

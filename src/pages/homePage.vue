@@ -24,11 +24,9 @@
       </ul>
     </div>
     <!-- scrollable content -->
-    <scroll :refresh="refresh" :loadMore="loadMore" :data="testData">
-      <ul class="content articleList">
-        <li v-for="(item,index) in testData" :key="index">
-          {{item}}
-        </li>
+    <scroll :refresh="refresh" :loadMore="loadMore" :enableScrollToTopButton="true">
+      <ul class="articleList">
+        <article-brief v-for="(item,index) in data" :key="index" :id="item"></article-brief>
       </ul>
     </scroll>
   </div>
@@ -39,11 +37,12 @@
   import subjectBar from "@/components/subjectBar";
   import checkbox from "@/components/checkbox";
   import scroll from "@/components/scroll";
+  import articleBrief from "@/components/articleBrief"
   export default {
     name: "homePage",
     data() {
       return {
-        testData: [],
+        data: [],
         subjectList: [{
             text: "首页",
             to: "home"
@@ -90,8 +89,8 @@
       };
     },
     created() {
-      for (let i = 1; i <= 30; i++) {
-        this.testData.push(_.random(1, 100));
+      for (let i = 1; i <= 20; i++) {
+        this.data.push(_.random(1, 100));
       }
     },
     computed: {
@@ -129,7 +128,7 @@
       refresh() {
         return new Promise((resolve, reject) => {
           setTimeout(() => {
-            this.testData.unshift("pullDown: " + _.random(1, 100));
+            this.data.unshift(_.random(1, 100));
             resolve();
           }, 1000);
         })
@@ -139,7 +138,7 @@
         return new Promise((resolve, reject) => {
           setTimeout(() => {
             for (let i = 0; i < 5; i++) {
-              this.testData.push("pullUp: " + _.random(1, 100));
+              this.data.push(_.random(1, 100));
             }
             resolve();
             // reject({errno:0,text:'no more data!'})
@@ -150,7 +149,8 @@
     components: {
       subjectBar,
       checkbox,
-      scroll
+      scroll,
+      articleBrief
     }
   };
 
@@ -163,7 +163,7 @@
     padding-top: 7vh;
     div.nav {
       width: 100%;
-      background-color: #3366CC;
+      background-color: #0080FF;
       position: fixed;
       top: 0;
       z-index: 99;
@@ -200,7 +200,7 @@
       .custom-header {
         width: 100vw;
         height: 7vh;
-        background-color: #3366cc;
+        background-color: #0080FF;
         color: #ffffff;
         font-size: 3.5vh;
         line-height: 7vh;
@@ -241,14 +241,16 @@
       display: flex;
       flex-direction: column;
       justify-content: space-around;
+      margin-top: 1vw;
       li {
-        width: 100%;
-        height: 5vh;
-        line-height: 5vh;
-        text-align: center;
+        // width: 100%;
+        // height: 5vh;
+        // line-height: 5vh;
+        // text-align: center;
         color: white;
-        background-color: #0099CC;
+        background-color: #FFFFFF;
         margin: 1vw 0;
+        color: black;
       }
     }
   }

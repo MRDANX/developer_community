@@ -23,7 +23,7 @@
   #homePage {
     width: 100%;
     // height: 800px;
-    background-color: #f1f1f1;
+    background-color: #F5F6FA;
     ul.fixed-nav {
       display: flex;
       justify-content: space-around;

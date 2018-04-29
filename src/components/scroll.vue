@@ -1,25 +1,23 @@
 <template>
   <div class="wrapper" ref="wrapper">
     <transition-group name="smooth-slide" tag="div" appear>
-      <!-- <transition name="test"> -->
-      <!-- :class="{positionChange:!isPullingDownRelease}" -->
       <div class="top-refresh" v-if="isPullingDown" :class="{positionChange:!isPullingDownRelease}" :key="1">
         <i class="fa fa-spinner fa-pulse" v-if="isPullingDownRelease"></i>
         <span v-else class="loading-tips" ref="refreshTips">释放刷新</span>
       </div>
-      <!-- </transition> -->
-      <!-- <ul class="content">
-        <li v-for="item in testData" :key="item">
-          {{item}}
-        </li>
-      </ul> -->
       <div :key="2" class="slot">
         <slot></slot>
+        <!-- <ul class="content">
+          <li v-for="item in testData" :key="item">
+            {{item}}
+          </li>
+        </ul> -->
       </div>
       <div class="bottom-load" ref="bottomLoad" v-if="isPullingUp" :key="3">
         <span class="fa fa-spinner fa-spin" ref="loadMoreTips"></span>
       </div>
     </transition-group>
+    <span class="fa fa-arrow-circle-up scrollToTop" :class="{active:showScrollToTopButton}" @click="_scrollToTop" ref="scrollToTopButton"></span>
   </div>
 </template>
 
@@ -39,6 +37,10 @@
       refresh: {
         type: Function,
         default: () => {}
+      },
+      enableScrollToTopButton: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -46,6 +48,7 @@
         isPullingDown: false,
         isPullingDownRelease: false,
         isPullingUp: false,
+        showScrollToTopButton: false
       }
     },
     mounted() {
@@ -53,12 +56,14 @@
       this.$nextTick(() => {
         this._initScroll();
       });
-    },
-    watch: {
-      data() {
-        // this._refresh();
-        // this.scroll.enable();
-      }
+      //add listener for scroll to top button to show the shrink/grow animation
+      let scrollToTopButton=this.$refs.scrollToTopButton;
+      scrollToTopButton.addEventListener('touchstart',()=>{
+        scrollToTopButton.classList.add('shrink');
+      });
+      scrollToTopButton.addEventListener('touchend',()=>{
+        scrollToTopButton.classList.remove('shrink');
+      });
     },
     methods: {
       _initScroll() {
@@ -70,8 +75,20 @@
         //create and initialize scroll if it's not existed
         if (!this.scroll) {
           this.scroll = new BScroll(this.$refs.wrapper, {
-            probeType: 2 //dispatch scroll event in real time
+            probeType: 2, //dispatch scroll event in real time
+            click: true
           });
+          //check out whether to show the button to scroll to top
+          if (this.enableScrollToTopButton) {
+            this.scroll.on('scrollEnd', pos => {
+              if (pos.y < -100) {
+                this.showScrollToTopButton = true;
+              } else {
+                this.showScrollToTopButton = false;
+              }
+            });
+          }
+
           //excute the handler when scrolling
           this.scroll.on('scroll', (pos) => {
             let refreshTips = this.$refs.refreshTips;
@@ -159,6 +176,9 @@
       },
       _enable() {
         this.scroll && this.scroll.enable();
+      },
+      _scrollToTop() {
+        this.scroll && this.scroll.scrollTo(0, 0, 800);
       }
     }
   }
@@ -209,6 +229,24 @@
       font-size: 8vw;
       color: #999999;
     }
+    .scrollToTop {
+      position: fixed;
+      right: 3vw;
+      bottom: 0vw;
+      font-size: 10vw;
+      color: #666666;
+      background-color: #FFFFFF;
+      box-shadow: 0 0 5vw #FFFFFF;
+      border-radius: 50%;
+      transition: all .5s; 
+      &.active {
+        bottom: 20vw;
+      }
+      &.shrink{
+        transform: scale(0.8);
+    }
+    }
+    
   }
 
 </style>
