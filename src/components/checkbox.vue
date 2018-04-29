@@ -50,7 +50,7 @@
         position: absolute;
         left: 0;
         top: 50%;
-        transition: all .5s ease-in-out;
+        transition: all .5s ;
         transform: translateY(-50%);
         background-color: #CCCCCC;
         box-shadow: 0 0 1vw #CCCCCC;

@@ -10,7 +10,7 @@
       <!-- custom-panel header -->
       <div class="custom-header">
         <i class="fa fa-arrow-left" @click="toggleCustom"></i>
-        首页特别展示
+        <span>首页特别展示</span>
       </div>
       <!-- list for customizing subject exclude index 0(item home-page)-->
       <ul class="custom-list">
@@ -23,10 +23,9 @@
         </li>
       </ul>
     </div>
-    <!-- <span>homePage</span> -->
-    <scroll @refresh="refresh" @loadMore="loadMore" @resetStatus="resetStatus" @checkPullingDown="checkPullingDown" :isPullingDown="isPullingDown"
-      :isPullingDownRelease="isPullingDownRelease" :isPullingUp="isPullingUp" :requireRefresh="requireRefresh" :data="testData">
-      <ul class="content articleList" >
+    <!-- scrollable content -->
+    <scroll :refresh="refresh" :loadMore="loadMore" :data="testData">
+      <ul class="content articleList">
         <li v-for="(item,index) in testData" :key="index">
           {{item}}
         </li>
@@ -87,14 +86,7 @@
           }
         ],
         enabledSubjectsIndex: [0, 1, 2],
-        showCustom: false,
-        isPullingDown: false,
-        isPullingDownRelease: false,
-        isPullingUp: false,
-        requireRefresh: {
-          pullingUp: false,
-          pullingDown: false
-        }
+        showCustom: false
       };
     },
     created() {
@@ -133,44 +125,26 @@
           }
         }
       },
+      //return a promise which excute asychronized action to refresh data
       refresh() {
-        this.isPullingDownRelease = true;
-        setTimeout(() => {
-          this.testData.unshift("pullDown: " + _.random(1, 100));
-          this.requireRefresh = {
-            pullingUp: false,
-            pullingDown: true
-          };
-          this.isPullingDown = false;
-        // this.isPullingDownRelease = false;
-        }, 1500);
-        
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            this.testData.unshift("pullDown: " + _.random(1, 100));
+            resolve();
+          }, 1000);
+        })
       },
+      //return a promise which excute asychronized action to load more data
       loadMore() {
-        this.isPullingUp = true;
-        this.requireRefresh = {
-          pullingUp: true,
-          pullingDown: false
-        };
-        setTimeout(() => {
-          for (let i = 0; i < 5; i++) {
-            this.testData.push("pullUp: " + _.random(1, 100));
-          }
-          this.requireRefresh = {
-            pullingUp: false,
-            pullingDown: false
-          };
-          this.isPullingUp = false;
-        }, 2500);
-      },
-      resetStatus() {
-        this.isPullingUp = false;
-        this.isPullingDown = false;
-        this.isPullingDownRelease = false;
-      },
-      checkPullingDown() {
-        this.isPullingDown = true;
-        this.isPullingDownRelease = false;
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            for (let i = 0; i < 5; i++) {
+              this.testData.push("pullUp: " + _.random(1, 100));
+            }
+            resolve();
+            // reject({errno:0,text:'no more data!'})
+          }, 1000);
+        });
       }
     },
     components: {
@@ -189,7 +163,7 @@
     padding-top: 7vh;
     div.nav {
       width: 100%;
-      background-color: #3366cc;
+      background-color: #3366CC;
       position: fixed;
       top: 0;
       z-index: 99;
@@ -200,13 +174,13 @@
       }
       i.fa-caret-down {
         font-size: 7vw;
-        color: white;
+        color: #FFFFFF;
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
         right: 3vw;
         &:active {
-          background-color: #3366aa;
+          background-color: #3366AA;
         }
       }
     }
@@ -218,7 +192,7 @@
       transform: translateX(100%);
       width: 100vw;
       height: 100vh;
-      background-color: #f1f1f1;
+      background-color: #F1F1F1;
       z-index: 100;
       &.active {
         transform: translateX(0);
@@ -263,10 +237,19 @@
         }
       }
     }
-    ul.articleList{
-      // position: relative;
-      // top: 0;
-      // transition: all .5s;
+    ul.articleList {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      li {
+        width: 100%;
+        height: 5vh;
+        line-height: 5vh;
+        text-align: center;
+        color: white;
+        background-color: #0099CC;
+        margin: 1vw 0;
+      }
     }
   }
 
