@@ -1,20 +1,25 @@
 <template>
   <div class="wrapper" ref="wrapper">
-    <div>
-      <div class="top-refresh" v-if="isPullingDownRelease" :class="{positionChange:isPullingDown}">
-        <span v-if="isPullingDown" class="loading-tips" ref="loadingTips">释放加载更多</span>
-        <i class="fa fa-spinner fa-pulse" v-else></i>
+    <transition-group name="smooth-slide" tag="div" appear>
+      <!-- <transition name="test"> -->
+      <!-- :class="{positionChange:!isPullingDownRelease}" -->
+      <div class="top-refresh" v-if="isPullingDown" :class="{positionChange:!isPullingDownRelease}" :key="1">
+        <i class="fa fa-spinner fa-pulse" v-if="isPullingDownRelease"></i>
+        <span v-else class="loading-tips" ref="loadingTips">释放刷新</span>
       </div>
-      <ul class="content">
+      <!-- </transition> -->
+      <!-- <ul class="content">
         <li v-for="item in testData" :key="item">
           {{item}}
         </li>
-      </ul>
-      <div class="bottom-load" ref="bottomLoad" v-if="isPullingUp">
+      </ul> -->
+      <div :key="2" class="slot">
+        <slot></slot>
+      </div>
+      <div class="bottom-load" ref="bottomLoad" v-if="isPullingUp" :key="3">
         <i class="fa fa-spinner fa-spin"></i>
       </div>
-    </div>
-    <!-- <i class="fa fa-spinner fa-pulse"></i> -->
+    </transition-group>
   </div>
 </template>
 
@@ -22,33 +27,60 @@
   import BScroll from 'better-scroll'
   export default {
     name: 'scroll',
-    data() {
-      return {
-        testData: [],
-        isPullingDown: false,
-        isPullingDownRelease: false,
-        isPullingUp: false
-      }
-    },
-    created() {
-      for (let i = 1; i <= 30; i++) {
-        this.testData.push(i);
+    props: {
+      isPullingDown: {
+        type: Boolean,
+        default: false
+      },
+      isPullingDownRelease: {
+        type: Boolean,
+        default: false
+      },
+      isPullingUp: {
+        type: Boolean,
+        default: false
+      },
+      requireRefresh: {
+        type: Object,
+        default: () => {}
+      },
+      data: {
+        type: Array,
+        default: () => []
       }
     },
     mounted() {
       this.$nextTick(() => {
-        this.loadData();
-      })
+        this._initScroll();
+      });
     },
     watch: {
-      testData() {
-        this.$nextTick(() => {
-          this.scroll.refresh();
-        })
+      data() {
+        this._refresh();
+      },
+      requireRefresh({
+        pullingUp,
+        pullingDown
+      }) {
+        let promise = new Promise((resolve, reject) => {
+          resolve(this._refresh());
+        });
+        if (pullingUp) {
+          promise.then(() => {
+            console.log('scroll to bottom');
+            this.scroll.scrollTo(0, this.scroll.maxScrollY, 500);
+            // this.scroll&&this.scroll.enable();
+          })
+        } else if (pullingDown) {
+          promise.then(() => {
+            this.scroll.scrollTo(0, 0, 500);
+            // this.scroll&&this.scroll.enable();
+          })
+        }
       }
     },
     methods: {
-      loadData() {
+      _initScroll() {
         //return directively if the wrapper element isn't existed
         if (!this.$refs.wrapper) {
           console.error('wrapper is not existed.');
@@ -57,45 +89,70 @@
         //create and initialize scroll if it's not existed
         if (!this.scroll) {
           this.scroll = new BScroll(this.$refs.wrapper, {
-            probeType: 2
+            probeType: 2 //dispatch scroll event in real time
           });
           //excute the handler when scrolling
           this.scroll.on('scroll', (pos) => {
+            let loadingTips = this.$refs.loadingTips;
             if (pos.y > 10) {
-              //show up the top refreshing 
-              this.isPullingDown = true;
-              this.isPullingDownRelease = true;
+              //show up the top refreshing when pulling down
+              this.$emit('checkPullingDown');
+              // this.isPullingDown = true;
+              // this.isPullingDownRelease = true;
               //dynamically calculate the fontSize of the refreshing tips
-              this.$refs.loadingTips.style.fontSize = ((pos.y / 25) + 3) + 'vw';
+              if (loadingTips) {
+                loadingTips.style.fontSize = ((pos.y / 30) + 3) + 'vw';
+                if (pos.y < 50) {
+                  loadingTips.style.color = '#999999';
+                  loadingTips.innerHTML = '释放刷新(◕ᴗ◕✿)';
+                } else if (pos.y > 50 && pos.y < 100) {
+                  loadingTips.style.color = '#00FF00';
+                  loadingTips.innerHTML = '过分啦( • ̀ω•́ )✧';
+                } else {
+                  loadingTips.style.color = '#FF0000';
+                  loadingTips.innerHTML = '快放手(▼へ▼メ)';
+                }
+              }
             }
           });
           //excute the handler when release touch
           this.scroll.on('touchEnd', (pos) => {
             if (pos.y > 50) {
               //execute pull down refresh data procedure if the position y greater than 50
-              this.isPullingDown = false;
+              // this.isPullingDown = false;
               //asynchronized code here
-              setTimeout(() => {
-                this.testData.unshift('pullDown: ' + (this.testData.length + 1));
-                this.isPullingDownRelease = false;
-              }, 1500);
+              this.$emit('refresh');
+              // setTimeout(() => {
+              //   this.testData.unshift('pullDown: ' + (this.testData.length + 1));
+              //   this.isPullingDownRelease = false;
+              // }, 1500);
             } else if (pos.y <= (this.scroll.maxScrollY - 30)) {
               //execute pull up load more data procedure if the position y less than maxScrollY -30
-              this.isPullingUp = true;
+              this.$emit('loadMore');
+              // this.isPullingUp = true;
               //asynchronized code here
-              setTimeout(() => {
-                this.testData = this.testData.concat([55, 56, 57, 58, 59, 60]);
-                this.isPullingUp = false;
-              }, 1500);
+              // setTimeout(() => {
+              //   this.testData = this.testData.concat([55, 56, 57, 58, 59, 60]);
+              //   this.isPullingUp = false;
+              // }, 1500);
             } else {
-              this.isPullingUp = false;
-              this.isPullingDown = false;
-              this.isPullingDownRelease = false;
+              //reset the status of pulling
+              this.$emit('resetStatus');
+              // this.isPullingUp = false;
+              // this.isPullingDown = false;
+              // this.isPullingDownRelease = false;
             }
           });
         } else {
           this.scroll.refresh();
         }
+      },
+      _refresh() {
+        this.$nextTick(() => {
+          // this.scroll&&this.scroll.disable();
+          this.scroll && this.scroll.refresh();
+          // console.log(this.scroll.maxScrollY);
+        });
       }
     }
   }
@@ -103,46 +160,48 @@
 </script>
 
 <style lang="less" scoped>
+  .smooth-slide-leave-active {
+    position: absolute !important;
+    left: 0;
+    right: 0;
+    margin: auto;
+  }
+
+  .smooth-slide-leave-to {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+
   div.wrapper {
     width: 100vw;
     height: 84vh;
     position: relative;
+    div.top-refresh,
+    div.slot,
+    div.bottom-load {
+      position: relative;
+      transition: all .5s;
+    }
     .top-refresh {
       text-align: center;
       font-size: 10vw;
-      color: #CCCCCC;
+      color: #999999;
       &.positionChange {
         position: absolute;
         top: -12vw;
         left: 0;
         right: 0;
-        margin: auto; //   .loading-tips{
-        // 	transform: scale(1);
-        //   }
+        margin: auto;
       }
       .loading-tips {
-        font-size: 3vw; // transform: scale(0);
-        // transition: all .5s;
+        font-size: 3vw;
+        transition: color 1s;
       }
     }
     .bottom-load {
       text-align: center;
       font-size: 8vw;
-      color: #CCCC99;
-    }
-    ul.content {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-      li {
-        width: 100%;
-        height: 5vh;
-        line-height: 5vh;
-        background-color: #6699CC;
-        margin: 1vh 0;
-        color: white;
-        text-align: center;
-      }
+      color: #999999;
     }
   }
 

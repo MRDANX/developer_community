@@ -24,18 +24,27 @@
       </ul>
     </div>
     <!-- <span>homePage</span> -->
-    <scroll></scroll>
+    <scroll @refresh="refresh" @loadMore="loadMore" @resetStatus="resetStatus" @checkPullingDown="checkPullingDown" :isPullingDown="isPullingDown"
+      :isPullingDownRelease="isPullingDownRelease" :isPullingUp="isPullingUp" :requireRefresh="requireRefresh" :data="testData">
+      <ul class="content articleList" >
+        <li v-for="(item,index) in testData" :key="index">
+          {{item}}
+        </li>
+      </ul>
+    </scroll>
   </div>
 </template>
 
 <script>
+  import _ from 'lodash';
   import subjectBar from "@/components/subjectBar";
-  import checkbox from '@/components/checkbox';
-  import scroll from '@/components/scroll';
+  import checkbox from "@/components/checkbox";
+  import scroll from "@/components/scroll";
   export default {
     name: "homePage",
     data() {
       return {
+        testData: [],
         subjectList: [{
             text: "首页",
             to: "home"
@@ -78,8 +87,20 @@
           }
         ],
         enabledSubjectsIndex: [0, 1, 2],
-        showCustom: false
+        showCustom: false,
+        isPullingDown: false,
+        isPullingDownRelease: false,
+        isPullingUp: false,
+        requireRefresh: {
+          pullingUp: false,
+          pullingDown: false
+        }
       };
+    },
+    created() {
+      for (let i = 1; i <= 30; i++) {
+        this.testData.push(_.random(1, 100));
+      }
     },
     computed: {
       customizedSubjectList() {
@@ -95,9 +116,9 @@
       toggleCustom() {
         this.showCustom = !this.showCustom;
         if (this.showCustom) {
-          document.documentElement.style.overflow = 'hidden';
+          document.documentElement.style.overflow = "hidden";
         } else {
-          document.documentElement.style.overflow = 'scroll';
+          document.documentElement.style.overflow = "scroll";
         }
       },
       //customed event handler for customized checkbox
@@ -111,6 +132,45 @@
             this.enabledSubjectsIndex.splice(indexOfCheckbox, 1);
           }
         }
+      },
+      refresh() {
+        this.isPullingDownRelease = true;
+        setTimeout(() => {
+          this.testData.unshift("pullDown: " + _.random(1, 100));
+          this.requireRefresh = {
+            pullingUp: false,
+            pullingDown: true
+          };
+          this.isPullingDown = false;
+        // this.isPullingDownRelease = false;
+        }, 1500);
+        
+      },
+      loadMore() {
+        this.isPullingUp = true;
+        this.requireRefresh = {
+          pullingUp: true,
+          pullingDown: false
+        };
+        setTimeout(() => {
+          for (let i = 0; i < 5; i++) {
+            this.testData.push("pullUp: " + _.random(1, 100));
+          }
+          this.requireRefresh = {
+            pullingUp: false,
+            pullingDown: false
+          };
+          this.isPullingUp = false;
+        }, 2500);
+      },
+      resetStatus() {
+        this.isPullingUp = false;
+        this.isPullingDown = false;
+        this.isPullingDownRelease = false;
+      },
+      checkPullingDown() {
+        this.isPullingDown = true;
+        this.isPullingDownRelease = false;
       }
     },
     components: {
@@ -145,7 +205,7 @@
         top: 50%;
         transform: translateY(-50%);
         right: 3vw;
-        &:active{
+        &:active {
           background-color: #3366aa;
         }
       }
@@ -158,7 +218,7 @@
       transform: translateX(100%);
       width: 100vw;
       height: 100vh;
-      background-color: #F1F1F1;
+      background-color: #f1f1f1;
       z-index: 100;
       &.active {
         transform: translateX(0);
@@ -167,7 +227,7 @@
         width: 100vw;
         height: 7vh;
         background-color: #3366cc;
-        color: #FFFFFF;
+        color: #ffffff;
         font-size: 3.5vh;
         line-height: 7vh;
         i {
@@ -183,13 +243,13 @@
           height: 8vh;
           line-height: 8vh;
           padding: 1vw 10vw;
-          background-color: #FFFFFF;
-          border-bottom: 1px solid #CCCCCC;
+          background-color: #ffffff;
+          border-bottom: 1px solid #cccccc;
           display: flex;
           align-items: center;
           justify-content: space-between;
           i {
-            color: #CCCCCC;
+            color: #cccccc;
             margin-right: 5vw;
           }
           span {
@@ -202,6 +262,11 @@
           }
         }
       }
+    }
+    ul.articleList{
+      // position: relative;
+      // top: 0;
+      // transition: all .5s;
     }
   }
 
