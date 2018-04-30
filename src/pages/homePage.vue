@@ -2,42 +2,42 @@
   <div class="home-page">
     <!-- nav-bar for customized subjects -->
     <div class="nav">
-      <subject-bar class="scroll-bar" :subjectList="customizedSubjectList"></subject-bar>
-      <i class="fa fa-caret-down" @click="toggleCustom"></i>
-    </div>
-    <!-- panel for customizing subject -->
-    <div class="customize-subject" :class="{active:showCustom}">
-      <!-- custom-panel header -->
-      <div class="custom-header">
-        <i class="fa fa-arrow-left" @click="toggleCustom"></i>
-        <span>首页特别展示</span>
+      <subject-bar class="scroll-bar" :subjectList="customizedSubjectList" @changeCurrentArticleList="changeCurrentArticleList"></subject-bar>
+      <div class="custom-button" ref="customButton">
+        <i class="fa fa-caret-down" @click="showCustom=true"></i>
       </div>
-      <!-- list for customizing subject exclude index 0(item home-page)-->
+    </div>
+    <!-- scrollable content with slot injected -->
+    <scroll :refresh="refresh" :loadMore="loadMore" :enableScrollToTopButton="true" :scrollToTop="scrollToTop">
+      <transition :name="changeArticleListAnimation" appear>
+        <ul class="articleList" :key="currentArticleListIndex">
+          <article-brief v-for="(item,index) in data" :key="index" :id="currentArticleListIndex+'-'+item" />
+        </ul>
+      </transition>
+    </scroll>
+    <!-- hidden panel for customizing subject -->
+    <slide-out class="customize-subject" slideToDirection="toDown" :showOut="showCustom" title="首页特别展示" @hide="showCustom=false">
+      <!-- list for customizing subjects exclude index 0(item home-page)-->
       <ul class="custom-list">
         <li v-for="(subject,index) in subjectList" :key="index" v-if="index!=0" class="custom-item">
           <i class="fa fa-list-ul"></i>
           <span>{{subject.text}}</span>
-          <!-- custom checkbox component -->
-          <checkbox class="sbuject-chekbox" :isChecked="enabledSubjectsIndex.indexOf(index)!=-1" :index="index" v-on:checkout="checkout"
+          <!-- custom switch box component -->
+          <switch-box class="sbuject-chekbox" :isChecked="enabledSubjectsIndex.indexOf(index)!=-1" :index="index" v-on:checkout="checkout"
           />
         </li>
       </ul>
-    </div>
-    <!-- scrollable content -->
-    <scroll :refresh="refresh" :loadMore="loadMore" :enableScrollToTopButton="true">
-      <ul class="articleList">
-        <article-brief v-for="(item,index) in data" :key="index" :id="item"></article-brief>
-      </ul>
-    </scroll>
+    </slide-out>
   </div>
 </template>
 
 <script>
   import _ from 'lodash';
   import subjectBar from "@/components/subjectBar";
-  import checkbox from "@/components/checkbox";
+  import switchBox from "@/components/switchBox";
   import scroll from "@/components/scroll";
-  import articleBrief from "@/components/articleBrief"
+  import articleBrief from "@/components/articleBrief";
+  import slideOut from "@/components/slideOut";
   export default {
     name: "homePage",
     data() {
@@ -84,13 +84,28 @@
             to: "home"
           }
         ],
-        enabledSubjectsIndex: [0, 1, 2],
-        showCustom: false
+        enabledSubjectsIndex: [0, 1, 2, 6, 8],
+        showCustom: false,
+        currentArticleListIndex: 0,
+        changeArticleListAnimation: 'slide-top',
+        scrollToTop: false
       };
     },
     created() {
       for (let i = 1; i <= 20; i++) {
         this.data.push(_.random(1, 100));
+      }
+    },
+    mounted() {
+      //add active class for custom button
+      let customButton = this.$refs.customButton;
+      if (customButton) {
+        customButton.addEventListener('touchstart', () => {
+          customButton.classList.add('active');
+        });
+        customButton.addEventListener('touchend', () => {
+          customButton.classList.remove('active');
+        });
       }
     },
     computed: {
@@ -103,15 +118,6 @@
       }
     },
     methods: {
-      //toggle custom panel and enable/disable scroll
-      toggleCustom() {
-        this.showCustom = !this.showCustom;
-        if (this.showCustom) {
-          document.documentElement.style.overflow = "hidden";
-        } else {
-          document.documentElement.style.overflow = "scroll";
-        }
-      },
       //customed event handler for customized checkbox
       checkout(checkbox) {
         //push the selected subject's index into enabledSubjectsIndex Array if it's checked
@@ -141,22 +147,87 @@
               this.data.push(_.random(1, 100));
             }
             resolve();
+            //reject sample
             // reject({errno:0,text:'no more data!'})
           }, 1000);
         });
+      },
+      //change the list of article and play the corresponding animation according to the passed index 
+      changeCurrentArticleList(articleListIndex) {
+        if (this.currentArticleListIndex == articleListIndex) {
+          this.scrollToTop = true;
+          this.$nextTick(() => {
+            this.scrollToTop = false;
+          })
+          return;
+        }
+        if (this.currentArticleListIndex < articleListIndex) {
+          this.changeArticleListAnimation = 'slide-left';
+        } else {
+          this.changeArticleListAnimation = 'slide-right';
+        }
+        this.currentArticleListIndex = articleListIndex;
       }
     },
     components: {
       subjectBar,
-      checkbox,
+      switchBox,
       scroll,
-      articleBrief
+      articleBrief,
+      slideOut
     }
   };
 
 </script>
 
 <style lang="less" scoped>
+  .slide-top-enter-active {
+    transition: all .6s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  }
+
+  .slide-left-enter-active,
+  .slide-left-leave-active {
+    transition: all .5s;
+    position: absolute;
+  }
+
+  .slide-top-enter {
+    opacity: 0;
+    transform: translateY(100vh);
+  }
+
+  .slide-left-enter {
+    transform: translateX(100%);
+  }
+
+  .slide-left-leave-to {
+    transform: translateX(-100%);
+  }
+
+  .slide-right-enter-to,
+  .slide-right-leave {
+    transform: translateX(0);
+  }
+
+  .slide-right-enter-active,
+  .slide-right-leave-active {
+    transition: all .5s;
+    position: absolute;
+  }
+
+  .slide-right-enter {
+    transform: translateX(-100%);
+  }
+
+  .slide-right-leave-to {
+    transform: translateX(100%);
+  }
+
+  .slide-right-enter-to,
+  .slide-right-leave {
+    transform: translateX(0);
+  }
+
   .home-page {
     width: 100vw;
     position: relative;
@@ -166,49 +237,30 @@
       background-color: #0080FF;
       position: fixed;
       top: 0;
+      display: flex;
       z-index: 99;
       height: 7vh;
       .scroll-bar {
         width: 90%;
         display: inline-block;
       }
-      i.fa-caret-down {
+      div.custom-button {
+        width: 10%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99;
+        background: #0080FF;
         font-size: 7vw;
         color: #FFFFFF;
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        right: 3vw;
-        &:active {
-          background-color: #3366AA;
+        &.active i {
+          transition: all .1s;
+          transform: rotate(-90deg);
         }
       }
     }
     div.customize-subject {
-      position: fixed;
-      top: 0;
-      left: 0;
-      transition: all 0.3s ease-out;
-      transform: translateX(100%);
-      width: 100vw;
-      height: 100vh;
-      background-color: #F1F1F1;
-      z-index: 100;
-      &.active {
-        transform: translateX(0);
-      }
-      .custom-header {
-        width: 100vw;
-        height: 7vh;
-        background-color: #0080FF;
-        color: #ffffff;
-        font-size: 3.5vh;
-        line-height: 7vh;
-        i {
-          margin: 0 5vw 0 3vw;
-          transform: scaleX(1.3);
-        }
-      }
       ul.custom-list {
         width: 100vw;
         li.custom-item {
@@ -241,16 +293,13 @@
       display: flex;
       flex-direction: column;
       justify-content: space-around;
-      margin-top: 1vw;
+      padding-top: 1vw;
       li {
-        // width: 100%;
-        // height: 5vh;
-        // line-height: 5vh;
-        // text-align: center;
         color: white;
         background-color: #FFFFFF;
-        margin: 1vw 0;
+        margin: 1.5vw 0;
         color: black;
+        box-shadow: 0 1px 5px #CCCCCC;
       }
     }
   }

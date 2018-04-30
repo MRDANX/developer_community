@@ -1,8 +1,10 @@
 <template>
   <div id="homePage">
-    <keep-alive>
-      <router-view />
-    </keep-alive>
+    <transition name="fade">
+      <keep-alive>
+        <router-view />
+      </keep-alive>
+    </transition>
     <ul class="fixed-nav">
       <router-link tag="li" to="/home" class="fa fa-home" />
       <router-link tag="li" to="/comment" class="fa fa-comments" />
@@ -19,10 +21,19 @@
 
 </script>
 
-<style lang='less' scoped>
+<style lang='less'>
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: all .5s;
+  }
+
+  .fade-enter,
+  .fade-leave-to {
+    opacity: 0;
+  }
+
   #homePage {
-    width: 100%;
-    // height: 800px;
+    width: 100%; // height: 800px;
     background-color: #F5F6FA;
     ul.fixed-nav {
       display: flex;

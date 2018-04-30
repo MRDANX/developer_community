@@ -7,7 +7,7 @@
 
 <script>
   export default {
-    name: 'checkbox',
+    name: 'switchBox',
     props: {
       isChecked: {
         type: Boolean,

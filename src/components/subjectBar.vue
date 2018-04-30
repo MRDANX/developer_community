@@ -1,11 +1,12 @@
 <template>
   <div class="subject-bar wrapper" ref="wrapper">
     <ul class="content" ref="content">
-      <li ref="subjects" v-for="(subject,index) in subjectList" :key="index" @click="currentIndex=index" :class="{active:currentIndex==index}">{{subject.text}}</li>
+      <li ref="subjects" v-for="(subject,index) in subjectList" :key="index" @click="changeCurrentArticleList(index)" :class="{active:currentIndex==index}">
+        {{subject.text}}
+      </li>
     </ul>
   </div>
 </template>
-
 <script>
   import BScroll from "better-scroll";
   export default {
@@ -21,14 +22,24 @@
     methods: {
       _initScroll() {
         //initialize the inner box's width according to each width of inner box's item
-        let width = this.$refs.subjects[0].getBoundingClientRect().width * this.subjectList.length;
-        this.$refs.content.style.width = width + "px";
+        let itemWidth = this.$refs.subjects[0].getBoundingClientRect().width;
+        let totalWidth = itemWidth * this.subjectList.length;
+        this.$refs.content.style.width = totalWidth + "px";
         //initialize scroll
         this.scroll = new BScroll(this.$refs.wrapper, {
           scrollX: true,
           scrollY: false,
-          click: true
+          click: true,
+          bounceTime: 300
         });
+      },
+      //change the currently display article list
+      changeCurrentArticleList(index) {
+        //scroll to the center of the scrollbar
+        this.scroll.scrollToElement(this.$refs.subjects[index], 300, true);
+        this.currentIndex = index;
+        //emit the event of parent component with a parameter currentIndex
+        this.$emit('changeCurrentArticleList', this.currentIndex);
       }
     },
     mounted() {
@@ -40,23 +51,23 @@
     updated() {
       this.$nextTick(() => {
         //recalculate the inner box's width and refresh scroll component at nextTick
-        let width = this.$refs.subjects[0].getBoundingClientRect().width * this.subjectList.length;
-        this.$refs.content.style.width = width + "px";
+        let itemWidth = this.$refs.subjects[0].getBoundingClientRect().width;
+        let totalWidth = itemWidth * this.subjectList.length;
+        this.$refs.content.style.width = totalWidth + "px";
         this.scroll.refresh();
       })
     }
-  };
+  }
+
+  ;
 
 </script>
-
 <style lang="less" scoped>
   .subject-bar {
     width: 100%;
-    height: 100%;
-    // overflow-x: hidden;
+    height: 100%; 
     line-height: 7vh;
-    font-weight: bold;
-    // background-color: #3366cc;
+    font-weight: bold; 
     color: rgba(255, 255, 255, 0.7);
     ul {
       display: flex;
@@ -87,7 +98,6 @@
           box-shadow: 0 0 1vw #666666;
         }
       }
-
     }
   }
 

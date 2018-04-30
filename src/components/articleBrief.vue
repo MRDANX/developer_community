@@ -34,7 +34,7 @@
   export default {
     name: 'articleBrief',
     props: {
-      id: Number
+      id: String
     }
   };
 

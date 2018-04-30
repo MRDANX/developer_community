@@ -41,6 +41,10 @@
       enableScrollToTopButton: {
         type: Boolean,
         default: false
+      },
+      scrollToTop: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -57,11 +61,11 @@
         this._initScroll();
       });
       //add listener for scroll to top button to show the shrink/grow animation
-      let scrollToTopButton=this.$refs.scrollToTopButton;
-      scrollToTopButton.addEventListener('touchstart',()=>{
+      let scrollToTopButton = this.$refs.scrollToTopButton;
+      scrollToTopButton.addEventListener('touchstart', () => {
         scrollToTopButton.classList.add('shrink');
       });
-      scrollToTopButton.addEventListener('touchend',()=>{
+      scrollToTopButton.addEventListener('touchend', () => {
         scrollToTopButton.classList.remove('shrink');
       });
     },
@@ -76,7 +80,8 @@
         if (!this.scroll) {
           this.scroll = new BScroll(this.$refs.wrapper, {
             probeType: 2, //dispatch scroll event in real time
-            click: true
+            click: true,
+            mouseWheel: true
           });
           //check out whether to show the button to scroll to top
           if (this.enableScrollToTopButton) {
@@ -180,6 +185,14 @@
       _scrollToTop() {
         this.scroll && this.scroll.scrollTo(0, 0, 800);
       }
+    },
+    watch: {
+      scrollToTop(toTop) {
+        if (toTop) {
+          this._scrollToTop();
+
+        }
+      }
     }
   }
 
@@ -202,11 +215,13 @@
     width: 100vw;
     height: 84vh;
     position: relative;
+    overflow: hidden;
     div.top-refresh,
     div.slot,
     div.bottom-load {
       position: relative;
       transition: all .5s;
+      padding-bottom: 1.5vw;
     }
     .top-refresh {
       text-align: center;
@@ -238,15 +253,16 @@
       background-color: #FFFFFF;
       box-shadow: 0 0 5vw #FFFFFF;
       border-radius: 50%;
-      transition: all .5s; 
+      transition: all .3s;
       &.active {
         bottom: 20vw;
       }
-      &.shrink{
+      &.shrink {
+        transition: all .1s;
         transform: scale(0.8);
+      }
     }
-    }
-    
+
   }
 
 </style>
