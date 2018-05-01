@@ -87,14 +87,14 @@
           bottom: 0;
           left: 0;
           transform: scale(0);
-          transition: all .2s;
+          transition: all .3s;
         }
       }
       li.active {
         color: #ffffff;
         &::after {
           transform: scale(1);
-          transition: all .3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+          transition: all .5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
           box-shadow: 0 0 1vw #666666;
         }
       }

@@ -33,7 +33,7 @@
   }
 
   #homePage {
-    width: 100%; // height: 800px;
+    width: 100%; 
     background-color: #F5F6FA;
     ul.fixed-nav {
       display: flex;
@@ -48,11 +48,15 @@
       background-color: white;
       box-shadow: 0 -2px 10px #CCCC99;
       li {
-        color: #8d8d77;
+        color: #C8CBD4;
         position: relative;
         line-height: 9vh;
+        transition: all .2s;
         &:nth-child(3) {
           font-size: 4.5vh;
+        }
+        &.router-link-active{
+          color:#0080FF;
         }
       }
     }

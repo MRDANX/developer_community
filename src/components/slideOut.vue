@@ -26,6 +26,7 @@
       }
     },
     computed: {
+      //display the corresponding Icon according to the prop slideToDirection
       directionIcon() {
         let toDirection = '';
         switch (this.slideToDirection) {
@@ -98,7 +99,7 @@
       align-items: center;
       i {
         margin: 0 5vw;
-        transition: all .1s; 
+        transition: all .1s;
       }
       &.toRight {
         flex-direction: row-reverse;
@@ -112,10 +113,11 @@
         &.active {
           transform: translateX(50%) rotateY(180deg) scaleX(1.3);
         }
-	  }
-	  &.toUp,&.toDown{
-		  flex-direction: row-reverse;
-	  }
+      }
+      &.toUp,
+      &.toDown {
+        flex-direction: row-reverse;
+      }
       &.toUp>i,
       &.toDown>i {
         transform: rotateX(0) scaleY(1.3);

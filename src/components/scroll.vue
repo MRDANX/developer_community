@@ -96,12 +96,12 @@
 
           //excute the handler when scrolling
           this.scroll.on('scroll', (pos) => {
-            let refreshTips = this.$refs.refreshTips;
             if (pos.y > 10) {
               //show up the top refreshing when pulling down
               this.isPullingDown = true;
               this.isPullingDownRelease = false;
               //dynamically calculate the fontSize of the refreshing tips
+              let refreshTips = this.$refs.refreshTips;
               if (refreshTips) {
                 refreshTips.style.fontSize = ((pos.y / 30) + 3) + 'vw';
                 if (pos.y < 80) {
@@ -126,6 +126,7 @@
               //excute the passed refresh method with asychronized action and then reset and refresh scroll
               this.refresh().then(() => {
                 this.isPullingDown = false;
+                // this.isPullingDownRelease = false;
                 this._refresh();
                 this._enable();
               }).catch(err => {
@@ -139,7 +140,7 @@
               new Promise((resolve, reject) => {
                 resolve(this._refresh());
               }).then(() => {
-                this.scroll.scrollTo(0, this.scroll.maxScrollY, 500);
+                this._scrollToBottom();
               }).catch(err => {
                 console.log(err);
               });
@@ -157,14 +158,10 @@
                   loadMoreTips.innerHTML = '没有更多了！';
                   this._refresh();
                   this._enable();
+                } else {
+                  console.log(err);
                 }
-
               });
-            } else {
-              //reset the status of pulling
-              // this.isPullingUp = false;
-              this.isPullingDown = false;
-              this.isPullingDownRelease = false;
             }
           });
         } else {
@@ -184,6 +181,10 @@
       },
       _scrollToTop() {
         this.scroll && this.scroll.scrollTo(0, 0, 800);
+      },
+      _scrollToBottom() {
+        this.scroll && this.scroll.scrollTo(0, this.scroll.maxScrollY, 500);
+
       }
     },
     watch: {
@@ -210,7 +211,6 @@
     opacity: 0;
     transform: translateY(-100%);
   }
-
   div.wrapper {
     width: 100vw;
     height: 84vh;

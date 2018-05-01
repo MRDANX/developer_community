@@ -16,7 +16,7 @@
       </transition>
     </scroll>
     <!-- hidden panel for customizing subject -->
-    <slide-out class="customize-subject" slideToDirection="toDown" :showOut="showCustom" title="首页特别展示" @hide="showCustom=false">
+    <slide-out slideToDirection="toRight" :showOut="showCustom" title="首页特别展示" @hide="showCustom=false">
       <!-- list for customizing subjects exclude index 0(item home-page)-->
       <ul class="custom-list">
         <li v-for="(subject,index) in subjectList" :key="index" v-if="index!=0" class="custom-item">
@@ -92,7 +92,7 @@
       };
     },
     created() {
-      for (let i = 1; i <= 20; i++) {
+      for (let i = 1; i <= 10; i++) {
         this.data.push(_.random(1, 100));
       }
     },
@@ -109,6 +109,7 @@
       }
     },
     computed: {
+      //return the selected subject
       customizedSubjectList() {
         let subjectList = [];
         this.enabledSubjectsIndex.sort().forEach(val => {
@@ -136,7 +137,7 @@
           setTimeout(() => {
             this.data.unshift(_.random(1, 100));
             resolve();
-          }, 1000);
+          }, 1500);
         })
       },
       //return a promise which excute asychronized action to load more data
@@ -260,32 +261,30 @@
         }
       }
     }
-    div.customize-subject {
-      ul.custom-list {
-        width: 100vw;
-        li.custom-item {
-          font-size: 4vh;
-          color: #333333;
-          height: 8vh;
-          line-height: 8vh;
-          padding: 1vw 10vw;
-          background-color: #ffffff;
-          border-bottom: 1px solid #cccccc;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          i {
-            color: #cccccc;
-            margin-right: 5vw;
-          }
-          span {
-            flex-grow: 0.8;
-            flex-basis: 8vw;
-          }
-          .sbuject-chekbox {
-            width: 12vw;
-            height: 6vw;
-          }
+    ul.custom-list {
+      width: 100vw;
+      li.custom-item {
+        font-size: 4vh;
+        color: #333333;
+        height: 8vh;
+        line-height: 8vh;
+        padding: 1vw 10vw;
+        background-color: #ffffff;
+        border-bottom: 1px solid #cccccc;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        i {
+          color: #cccccc;
+          margin-right: 5vw;
+        }
+        span {
+          flex-grow: 0.8;
+          flex-basis: 8vw;
+        }
+        .sbuject-chekbox {
+          width: 12vw;
+          height: 6vw;
         }
       }
     }
