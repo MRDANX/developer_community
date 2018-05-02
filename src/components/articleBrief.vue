@@ -1,30 +1,32 @@
 <template>
   <router-link to="" tag="li" class="article">
     <div class="article-meta">
-      <div>
+      <router-link to="" tag="div">
         <i class="fa fa-user-circle-o"></i>
-        <router-link to="" class="user-name" tag="span">user-name-{{id}}</router-link>
-      </div>
+        <span class="article-author">
+          {{articleInfo.author}}
+        </span>
+      </router-link>
       <div>
-        <router-link to="" class="article-subject" tag="span">article-subject</router-link>
+        <router-link to="" class="article-subject" tag="span">{{articleInfo.subject}}</router-link>
       </div>
     </div>
     <router-link to="" class="article-content" tag="div">
       <div class="article-title">
-        <h3>浏览器的滚动条</h3>
+        <h4>{{articleInfo.title}}</h4>
       </div>
       <div class="article-abstrict">
-      浏览器的滚动条大家都会遇到，当页面内容的高度超过视口高度的时候，会出现纵向滚动条；当页面内容的宽度超过视口宽度的时候，会出现横向滚动条。也就是当我们的视口展示不下内容的时候，会通过滚动条的方式让用户滚动屏幕看到剩余的内容。
-        </div>
+        {{articleInfo.content | abstractContent}}
+      </div>
     </router-link>
     <div class="article-action">
       <router-link to="" tag="p">
         <i class="fa fa-heart"></i>
-        <span>12</span>
+        <span>{{articleInfo.favors}}</span>
       </router-link>
       <router-link to="" tag="p">
         <i class="fa fa-comment"></i>
-        <span>评论</span>
+        <span>{{articleInfo.comment||'评论'}}</span>
       </router-link>
     </div>
   </router-link>
@@ -34,7 +36,15 @@
   export default {
     name: 'articleBrief',
     props: {
-      id: String
+      articleInfo: {
+        type: Object,
+        default: () => {}
+      }
+    },
+    filters: {
+      abstractContent(content) {
+        return content.replace(/<\/?[^>]+>/g, '').slice(0, 100);;
+      }
     }
   };
 
@@ -62,9 +72,18 @@
     .article-content {
       .article-title {
         margin: 3vw 0 1vw;
+        h4 {
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
       }
       .article-abstrict {
         margin-bottom: 2vw;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow: hidden;
       }
     }
     .article-action {

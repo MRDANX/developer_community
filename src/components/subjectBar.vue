@@ -1,6 +1,6 @@
 <template>
   <div class="subject-bar wrapper" ref="wrapper">
-    <ul class="content" ref="content">
+    <ul class="content">
       <li ref="subjects" v-for="(subject,index) in subjectList" :key="index" @click="changeCurrentArticleList(index)" :class="{active:currentIndex==index}">
         {{subject.text}}
       </li>
@@ -19,12 +19,17 @@
         currentIndex: 0
       };
     },
+    created(){
+      //initialize currentIndex according to route's params
+      let subjectName=this.$route.params.subject;
+      this.currentIndex=this.subjectList.findIndex(subject=>{
+        return subject.to===subjectName;
+      });
+      //simulate to do the click event on subject's block
+      this.changeCurrentArticleList(this.currentIndex);
+    },
     methods: {
       _initScroll() {
-        //initialize the inner box's width according to each width of inner box's item
-        let itemWidth = this.$refs.subjects[0].getBoundingClientRect().width;
-        let totalWidth = itemWidth * this.subjectList.length;
-        this.$refs.content.style.width = totalWidth + "px";
         //initialize scroll
         this.scroll = new BScroll(this.$refs.wrapper, {
           scrollX: true,
@@ -36,10 +41,10 @@
       //change the currently display article list
       changeCurrentArticleList(index) {
         //scroll to the center of the scrollbar
-        this.scroll.scrollToElement(this.$refs.subjects[index], 300, true);
+        this.scroll&&this.scroll.scrollToElement(this.$refs.subjects[index], 300, true);
         this.currentIndex = index;
         //emit the event of parent component with a parameter currentIndex
-        this.$emit('changeCurrentArticleList', this.currentIndex);
+        this.$emit('changeCurrentArticleList', {articleListIndex:this.currentIndex,currentSubject:this.subjectList[this.currentIndex]});
       }
     },
     mounted() {
@@ -49,11 +54,8 @@
       });
     },
     updated() {
+      //refresh scroll when data was updated and DOM was rendered
       this.$nextTick(() => {
-        //recalculate the inner box's width and refresh scroll component at nextTick
-        let itemWidth = this.$refs.subjects[0].getBoundingClientRect().width;
-        let totalWidth = itemWidth * this.subjectList.length;
-        this.$refs.content.style.width = totalWidth + "px";
         this.scroll.refresh();
       })
     }
@@ -70,14 +72,25 @@
     font-weight: bold; 
     color: rgba(255, 255, 255, 0.7);
     ul {
-      display: flex;
+      // display: flex;
+      width: fit-content;
       height: 100%;
-      justify-content: space-around;
+      // justify-content: space-around;
+      // overflow: scroll;
+      white-space: nowrap;
       li {
-        flex: 0 0 20vw;
+        display: inline-block;
+        padding: 0 4vw;
         font-size: 4vw;
-        text-align: center;
+        line-height: 300%;
+        height: 100%;
         position: relative;
+        // display: inline-block;
+        // padding: 0 4vw;
+        // // flex: 0 0 20vw;
+        // font-size: 4vw;
+        // // text-align: center;
+        // position: relative;
         &::after {
           content: '';
           width: 100%;

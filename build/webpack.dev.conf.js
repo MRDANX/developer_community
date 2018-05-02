@@ -49,21 +49,69 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       });
 
       //获取文章列表路由
-      app.get('/api/getArticles', (req, res) => {
-        let getArticlesSql = 'SELECT a.*,u.userName FROM article a,user u where a.userID=u.userID AND a.userID=? LIMIT ?,?';
+      app.get('/api/getArticleList', (req, res) => {
+        let getArticleListSql = 'SELECT a.*,u.userName as author FROM article a,user u where a.userID=u.userID AND subject=? LIMIT ?,?';
         // let inserts = [req.query.articleID];
         // getArticleSql = mysql.format(getArticleSql, inserts);
         let query = req.query,
-          userID = query.userID,
-          startIndex = +query.startIndex,
-          laodAmount = +query.loadAmount;
-        let inserts = [userID, startIndex, laodAmount];
-        connection.query(getArticlesSql, inserts, function (err, result) {
-          if (err) throw err;
-          res.json(result); //返回JSON格式文章列表数据
-        });
-      })
+          subject = query.subject,
+          startIndex = +query.startIndex || 0,
+          number = +query.number || 10;
+        let inserts = [subject, startIndex, number];
+        switch (subject) {
+          case 'index':
+            subject = '';
+            getArticleListSql = 'SELECT a.*,u.userName as author FROM article a,user u where a.userID=u.userID LIMIT ?,?';
+            inserts = [startIndex, number];
+            break;
+          case 'frontend':
+            subject = '前端';
+            inserts = [subject, startIndex, number];
+            break;
+          case 'backend':
+            subject = '后端';
+            inserts = [subject, startIndex, number];
+            break;
+          case 'android':
+            subject = 'Android';
+            inserts = [subject, startIndex, number];
+            break;
+          case 'iOS':
+            subject = 'iOS';
+            inserts = [subject, startIndex, number];
+            break;
+          case 'product':
+            subject = '产品';
+            inserts = [subject, startIndex, number];
+            break;
+          case 'design':
+            subject = '设计';
+            inserts = [subject, startIndex, number];
+            break;
+          case 'tool':
+            subject = '工具资源';
+            inserts = [subject, startIndex, number];
+            break;
+          case 'read':
+            subject = '阅读';
+            inserts = [subject, startIndex, number];
+            break;
+          case 'AI':
+            subject = '人工智能';
+            inserts = [subject, startIndex, number];
+            break;
+          default:
+            break;
+        }
+        setTimeout(() => {
+          connection.query(getArticleListSql, inserts, function (err, result) {
+            if (err) throw err;
+            //return data of article list as format JSON
+            res.json(result); //返回JSON格式文章列表数据
+          });
+        }, 1000);
 
+      });
     },
 
     clientLogLevel: 'warning',

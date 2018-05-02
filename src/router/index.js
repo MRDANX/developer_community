@@ -7,6 +7,7 @@ import commentPage from '@/pages/commentPage';
 import searchPage from '@/pages/searchPage';
 import settingPage from '@/pages/settingPage';
 import homePage from '@/pages/homePage';
+import articleList from '@/components/articleList';
 
 Vue.use(Router)
 
@@ -18,12 +19,24 @@ export default new Router({
       component: welcomePage
     },
     {
-      path: '/home',
+      path: '/subject',
       component: layoutPage,
       children: [{
           path: '',
-          name: 'homePage',
-          component: homePage
+          // name: 'homePage',
+          component: homePage,
+          children: [
+            // {
+            //   path: '',
+            //   component: articleList,
+            //   props: true
+            // },
+            {
+            path: ':subject(index|frontend|android|read|AI|iOS|product|design|tool|read|backend)',
+            name: 'subject',
+            component: articleList,
+            props: true
+          }]
         },
         {
           path: '/comment',

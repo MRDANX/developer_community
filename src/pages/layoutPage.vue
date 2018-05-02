@@ -1,12 +1,12 @@
 <template>
   <div id="homePage">
-    <transition name="fade">
-      <keep-alive>
-        <router-view />
-      </keep-alive>
-    </transition>
+    <!-- <transition name="fade" mode="out-in"> -->
+    <keep-alive>
+      <router-view />
+    </keep-alive>
+    <!-- </transition> -->
     <ul class="fixed-nav">
-      <router-link tag="li" to="/home" class="fa fa-home" />
+      <router-link tag="li" to="/subject" class="fa fa-home" />
       <router-link tag="li" to="/comment" class="fa fa-comments" />
       <router-link tag="li" to="/search" class="fa fa-search" />
       <router-link tag="li" to="/setting" class="fa fa-user" />
@@ -16,7 +16,7 @@
 
 <script>
   export default {
-    name: "homePage"
+    name: "layoutPage"
   };
 
 </script>
@@ -24,7 +24,8 @@
 <style lang='less'>
   .fade-enter-active,
   .fade-leave-active {
-    transition: all .5s;
+    transition: all .3s;
+    position: absolute;
   }
 
   .fade-enter,
@@ -33,7 +34,7 @@
   }
 
   #homePage {
-    width: 100%; 
+    width: 100%;
     background-color: #F5F6FA;
     ul.fixed-nav {
       display: flex;
@@ -55,8 +56,8 @@
         &:nth-child(3) {
           font-size: 4.5vh;
         }
-        &.router-link-active{
-          color:#0080FF;
+        &.router-link-active {
+          color: #0080FF;
         }
       }
     }

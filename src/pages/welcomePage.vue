@@ -5,7 +5,9 @@
     <h1>{{ msg }}</h1>
     <h2>
       <!-- turn to home page of user's blog -->
-      <router-link :to="{name:'homePage', params:{userID}}">Enter</router-link>
+      <keep-alive>
+        <router-link :to="{name:'subject', params:{subject:'index'}}">Enter</router-link>
+      </keep-alive>
     </h2>
   </div>
 </template>
@@ -53,10 +55,12 @@
     margin: 5vh 0;
     font-size: 9vw;
   }
-  h2{
+
+  h2 {
     font-size: 8vw;
   }
-  h2 a{
+
+  h2 a {
     font-size: 8vw;
   }
 

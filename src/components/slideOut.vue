@@ -96,35 +96,34 @@
       font-size: 3.5vh;
       line-height: 7vh;
       display: flex;
+      flex: row;
       align-items: center;
       i {
         margin: 0 5vw;
         transition: all .1s;
-      }
-      &.toRight {
-        flex-direction: row-reverse;
-      }
-      &.toLeft {
-        flex: row;
-      }
-      &.toRight>i,
-      &.toLeft>i {
-        transform: translateX(0) rotateY(0deg) scaleX(1.3);
-        &.active {
-          transform: translateX(50%) rotateY(180deg) scaleX(1.3);
+        position: relative;
+        font-size: 8vw;
+        transform: scaleX(1.15);
+        &.active::after {
+          content: '';
+          display: inline-block;
+          width: 120%;
+          height: 120%;
+          background-color: rgba(255, 255, 255, 0.2);
+          position: absolute;
+          top: -10%;
+          left: -10%;
+          border-radius: 50%;
         }
       }
+      &.toRight,
       &.toUp,
       &.toDown {
         flex-direction: row-reverse;
       }
-      &.toUp>i,
-      &.toDown>i {
-        transform: rotateX(0) scaleY(1.3);
-        &.active {
-          transform: rotateX(180deg) scaleY(1.3);
-        }
-      }
+      // &.toLeft {
+      //   flex: row;
+      // }
     }
   }
 

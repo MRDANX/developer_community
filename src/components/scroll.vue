@@ -3,7 +3,7 @@
     <transition-group name="smooth-slide" tag="div" appear>
       <div class="top-refresh" v-if="isPullingDown" :class="{positionChange:!isPullingDownRelease}" :key="1">
         <i class="fa fa-spinner fa-pulse" v-if="isPullingDownRelease"></i>
-        <span v-else class="loading-tips" ref="refreshTips">释放刷新</span>
+        <span v-else class="loading-tips" ref="refreshTips">松开刷新</span>
       </div>
       <div :key="2" class="slot">
         <slot></slot>
@@ -38,11 +38,19 @@
         type: Function,
         default: () => {}
       },
+      enableRefresh: {
+        type: Boolean,
+        default: false
+      },
+      enableLoadMore: {
+        type: Boolean,
+        default: false
+      },
       enableScrollToTopButton: {
         type: Boolean,
         default: false
       },
-      scrollToTop: {
+      nowScrollToTop: {
         type: Boolean,
         default: false
       }
@@ -52,13 +60,19 @@
         isPullingDown: false,
         isPullingDownRelease: false,
         isPullingUp: false,
-        showScrollToTopButton: false
+        showScrollToTopButton: false,
+        _enableLoadMore: false
       }
+    },
+    created() {
+      this._enableLoadMore = this.enableLoadMore;
     },
     mounted() {
       //initialize scroll after DOM mounted
       this.$nextTick(() => {
         this._initScroll();
+        this.isPullingDown=true;
+        this._pullingDownReleased();
       });
       //add listener for scroll to top button to show the shrink/grow animation
       let scrollToTopButton = this.$refs.scrollToTopButton;
@@ -94,74 +108,20 @@
             });
           }
 
-          //excute the handler when scrolling
-          this.scroll.on('scroll', (pos) => {
-            if (pos.y > 10) {
-              //show up the top refreshing when pulling down
-              this.isPullingDown = true;
-              this.isPullingDownRelease = false;
-              //dynamically calculate the fontSize of the refreshing tips
-              let refreshTips = this.$refs.refreshTips;
-              if (refreshTips) {
-                refreshTips.style.fontSize = ((pos.y / 30) + 3) + 'vw';
-                if (pos.y < 80) {
-                  refreshTips.style.color = '#0099CC';
-                  refreshTips.innerHTML = '释放刷新(◕ᴗ◕✿)';
-                } else if (pos.y > 80 && pos.y < 140) {
-                  refreshTips.style.color = '#0066CC';
-                  refreshTips.innerHTML = '( • ̀ω•́ )✧';
-                } else {
-                  refreshTips.style.color = '#003399';
-                  refreshTips.innerHTML = '(▼へ▼メ)';
-                }
+          //excute the handler when scrolling when enable refreshing
+          if (this.enableRefresh) {
+            this.scroll.on('scroll', (pos) => {
+              if (pos.y > 10) {
+                this._pullingDown(pos);
               }
-            }
-          });
+            });
+          }
           //excute the handler when release touch
           this.scroll.on('touchEnd', (pos) => {
             if (pos.y > 50) {
-              //execute pull down refresh data procedure if the position y greater than 50
-              this.scroll.disable();
-              this.isPullingDownRelease = true;
-              //excute the passed refresh method with asychronized action and then reset and refresh scroll
-              this.refresh().then(() => {
-                this.isPullingDown = false;
-                // this.isPullingDownRelease = false;
-                this._refresh();
-                this._enable();
-              }).catch(err => {
-                console.log(err);
-              });
+              this._pullingDownReleased(pos);
             } else if (pos.y <= (this.scroll.maxScrollY - 50)) {
-              //execute pull up load more data procedure if the position y less than maxScrollY -30
-              this.scroll.disable();
-              this.isPullingUp = true;
-              //scroll to bottom after refreshing the scroll to animate fluently
-              new Promise((resolve, reject) => {
-                resolve(this._refresh());
-              }).then(() => {
-                this._scrollToBottom();
-              }).catch(err => {
-                console.log(err);
-              });
-              //excute the passed loadMore method with asychronized action and then reset and refresh scroll
-              this.loadMore().then(() => {
-                this.isPullingUp = false;
-                this._refresh();
-                this._enable();
-              }).catch(err => {
-                if (err.errno == 0) {
-                  console.log(err.text);
-                  let loadMoreTips = this.$refs.loadMoreTips;
-                  loadMoreTips.setAttribute('class', '');
-                  loadMoreTips.style.fontSize = '6vw';
-                  loadMoreTips.innerHTML = '没有更多了！';
-                  this._refresh();
-                  this._enable();
-                } else {
-                  console.log(err);
-                }
-              });
+              this._loadMore(pos);
             }
           });
         } else {
@@ -184,17 +144,98 @@
       },
       _scrollToBottom() {
         this.scroll && this.scroll.scrollTo(0, this.scroll.maxScrollY, 500);
-
-      }
-    },
-    watch: {
-      scrollToTop(toTop) {
-        if (toTop) {
-          this._scrollToTop();
-
+      },
+      _pullingDown(pos) {
+        //show up the top refreshing when pulling down
+        this.isPullingDown = true;
+        this.isPullingDownRelease = false;
+        //dynamically calculate the fontSize of the refreshing tips
+        let refreshTips = this.$refs.refreshTips;
+        if (refreshTips) {
+          refreshTips.style.fontSize = ((pos.y / 30) + 3) + 'vw';
+          if (pos.y < 80) {
+            refreshTips.style.color = '#0099CC';
+            refreshTips.innerHTML = '松开刷新(◕ᴗ◕✿)';
+          } else if (pos.y > 80 && pos.y < 140) {
+            refreshTips.style.color = '#0066CC';
+            refreshTips.innerHTML = '( • ̀ω•́ )✧';
+          } else {
+            refreshTips.style.color = '#003399';
+            refreshTips.innerHTML = '(▼へ▼メ)';
+          }
+        }
+      },
+      _pullingDownReleased(pos) {
+        if (this.enableRefresh) {
+          //execute pull down refresh data procedure if the position y greater than 50
+          this.scroll.disable();
+          this.isPullingDownRelease = true;
+          //excute the passed refresh method with asychronized action and then reset and refresh scroll
+          this.refresh().then(() => {
+            this.isPullingDown = false;
+            // this.isPullingDownRelease = false;
+            this._refresh();
+            this._enable();
+          }).catch(err => {
+             if (err.errno == 0) {
+              this.isPullingDown = false;
+              this._enable();
+              console.log(err.text);
+            } else {
+              console.log(err);
+            }
+          });
+        }
+      },
+      _loadMore(pos) {
+        //enable scroll's load more data when _enableLoadMore is true             
+        if (this._enableLoadMore) {
+          //execute pull up load more data procedure if the position y less than maxScrollY -30
+          this.scroll.disable();
+          this.isPullingUp = true;
+          //scroll to bottom after refreshing the scroll to animate fluently
+          new Promise((resolve, reject) => {
+            resolve(this._refresh());
+          }).then(() => {
+            this._scrollToBottom();
+          }).catch(err => {
+            console.log(err);
+          });
+          //excute the passed loadMore method with asychronized action and then reset and refresh scroll
+          this.loadMore().then(() => {
+            this.isPullingUp = false;
+            this._refresh();
+            this._enable();
+          }).catch(err => {
+            if (err.errno == 0) {
+              console.log(err.text);
+              let loadMoreTips = this.$refs.loadMoreTips;
+              loadMoreTips.setAttribute('class', '');
+              loadMoreTips.style.fontSize = '6vw';
+              loadMoreTips.innerHTML = '没有更多了';
+              this._refresh();
+              this._enable();
+              //disable action of load more data
+              this._enableLoadMore = false;
+            } else {
+              console.log(err);
+            }
+          });
         }
       }
+    },
+    updated(){
+      if(this.nowScrollToTop){
+          this._scrollToTop();
+      }
     }
+    // watch: {
+    //   nowScrollToTop(toTop) {
+    //     if (toTop) {
+    //       this._scrollToTop();
+    //     }
+    //   }
+    // }
   }
 
 </script>
@@ -211,10 +252,11 @@
     opacity: 0;
     transform: translateY(-100%);
   }
+
   div.wrapper {
     width: 100vw;
     height: 84vh;
-    position: relative;
+    // position: relative;
     overflow: hidden;
     div.top-refresh,
     div.slot,
@@ -247,15 +289,17 @@
     .scrollToTop {
       position: fixed;
       right: 3vw;
-      bottom: 0vw;
+      bottom: -10vw;
       font-size: 10vw;
       color: #666666;
       background-color: #FFFFFF;
       box-shadow: 0 0 5vw #FFFFFF;
       border-radius: 50%;
-      transition: all .3s;
+      transition: all .5s;
+      z-index: -99;;
       &.active {
         bottom: 20vw;
+        z-index: 99;
       }
       &.shrink {
         transition: all .1s;

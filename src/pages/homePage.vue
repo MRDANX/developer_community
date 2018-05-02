@@ -2,19 +2,18 @@
   <div class="home-page">
     <!-- nav-bar for customized subjects -->
     <div class="nav">
-      <subject-bar class="scroll-bar" :subjectList="customizedSubjectList" @changeCurrentArticleList="changeCurrentArticleList"></subject-bar>
+      <subject-bar class="scroll-bar" :subjectList="customizedSubjectList" @changeCurrentArticleList="changeCurrentArticleList"
+      />
       <div class="custom-button" ref="customButton">
         <i class="fa fa-caret-down" @click="showCustom=true"></i>
       </div>
     </div>
     <!-- scrollable content with slot injected -->
-    <scroll :refresh="refresh" :loadMore="loadMore" :enableScrollToTopButton="true" :scrollToTop="scrollToTop">
-      <transition :name="changeArticleListAnimation" appear>
-        <ul class="articleList" :key="currentArticleListIndex">
-          <article-brief v-for="(item,index) in data" :key="index" :id="currentArticleListIndex+'-'+item" />
-        </ul>
-      </transition>
-    </scroll>
+    <transition :name="changeArticleListAnimation">
+      <keep-alive>
+        <router-view :key="currentArticleListIndex" :nowScrollToTop="nowScrollToTop" />
+      </keep-alive>
+    </transition>
     <!-- hidden panel for customizing subject -->
     <slide-out slideToDirection="toRight" :showOut="showCustom" title="首页特别展示" @hide="showCustom=false">
       <!-- list for customizing subjects exclude index 0(item home-page)-->
@@ -32,69 +31,71 @@
 </template>
 
 <script>
-  import _ from 'lodash';
   import subjectBar from "@/components/subjectBar";
   import switchBox from "@/components/switchBox";
   import scroll from "@/components/scroll";
   import articleBrief from "@/components/articleBrief";
+  import articleList from "@/components/articleList";
   import slideOut from "@/components/slideOut";
   export default {
     name: "homePage",
     data() {
       return {
-        data: [],
+        articleList: [],
         subjectList: [{
             text: "首页",
-            to: "home"
+            to: "index"
           },
           {
             text: "前端",
-            to: "home"
+            to: "frontend"
           },
           {
             text: "Android",
-            to: "home"
+            to: "android"
           },
           {
             text: "人工智能",
-            to: "home"
+            to: "AI"
           },
           {
             text: "iOS",
-            to: "home"
+            to: "iOS"
           },
           {
             text: "产品",
-            to: "home"
+            to: "product"
           },
           {
             text: "设计",
-            to: "home"
+            to: "design"
           },
           {
             text: "工具资源",
-            to: "home"
+            to: "tool"
           },
           {
             text: "阅读",
-            to: "home"
+            to: "read"
           },
           {
             text: "后端",
-            to: "home"
+            to: "backend"
           }
         ],
-        enabledSubjectsIndex: [0, 1, 2, 6, 8],
+        enabledSubjectsIndex: [0, 1, 2, 3, 4, 5, 6, 7, 8],
         showCustom: false,
         currentArticleListIndex: 0,
         changeArticleListAnimation: 'slide-top',
-        scrollToTop: false
+        nowScrollToTop: false
       };
     },
     created() {
-      for (let i = 1; i <= 10; i++) {
-        this.data.push(_.random(1, 100));
-      }
+      //initialize currentArticleListIndex according to route's params
+      let subjectName = this.$route.params.subject;
+      this.currentArticleListIndex = this.customizedSubjectList.findIndex(subject => {
+        return subject.to === subjectName;
+      });
     },
     mounted() {
       //add active class for custom button
@@ -131,35 +132,17 @@
           }
         }
       },
-      //return a promise which excute asychronized action to refresh data
-      refresh() {
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            this.data.unshift(_.random(1, 100));
-            resolve();
-          }, 1500);
-        })
-      },
-      //return a promise which excute asychronized action to load more data
-      loadMore() {
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            for (let i = 0; i < 5; i++) {
-              this.data.push(_.random(1, 100));
-            }
-            resolve();
-            //reject sample
-            // reject({errno:0,text:'no more data!'})
-          }, 1000);
-        });
-      },
       //change the list of article and play the corresponding animation according to the passed index 
-      changeCurrentArticleList(articleListIndex) {
+      changeCurrentArticleList({
+        articleListIndex,
+        currentSubject
+      }) {
+        //scroll to top when tap the current article header
         if (this.currentArticleListIndex == articleListIndex) {
-          this.scrollToTop = true;
+          this.nowScrollToTop = true;
           this.$nextTick(() => {
-            this.scrollToTop = false;
-          })
+            this.nowScrollToTop = false;
+          });
           return;
         }
         if (this.currentArticleListIndex < articleListIndex) {
@@ -167,6 +150,12 @@
         } else {
           this.changeArticleListAnimation = 'slide-right';
         }
+        this.$router.push({
+          name: 'subject',
+          params: {
+            subject: currentSubject.to
+          }
+        });
         this.currentArticleListIndex = articleListIndex;
       }
     },
@@ -175,7 +164,8 @@
       switchBox,
       scroll,
       articleBrief,
-      slideOut
+      slideOut,
+      articleList
     }
   };
 
@@ -255,9 +245,14 @@
         background: #0080FF;
         font-size: 7vw;
         color: #FFFFFF;
-        &.active i {
-          transition: all .1s;
-          transform: rotate(-90deg);
+        position: relative;
+        &.active::after {
+          content: '';
+          border: 5vw solid transparent;
+          border-top: 5vw solid rgba(255, 255, 255, 0.2);
+          position: absolute;
+          top: 50%;
+          transform: translateY(-20%);
         }
       }
     }
