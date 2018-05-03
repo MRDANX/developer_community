@@ -5,7 +5,7 @@
       <subject-bar class="scroll-bar" :subjectList="customizedSubjectList" @changeCurrentArticleList="changeCurrentArticleList"
       />
       <div class="custom-button" ref="customButton">
-        <i class="fa fa-caret-down" @click="showCustom=true"></i>
+        <i class="fa fa-caret-down" @click="showSlideOut=true"></i>
       </div>
     </div>
     <!-- scrollable content with slot injected -->
@@ -15,7 +15,7 @@
       </keep-alive>
     </transition>
     <!-- hidden panel for customizing subject -->
-    <slide-out slideToDirection="toRight" :showOut="showCustom" title="首页特别展示" @hide="showCustom=false">
+    <slide-out slideToDirection="toRight" :showOut="showSlideOut" title="首页特别展示" @hide="showSlideOut=false">
       <!-- list for customizing subjects exclude index 0(item home-page)-->
       <ul class="custom-list">
         <li v-for="(subject,index) in subjectList" :key="index" v-if="index!=0" class="custom-item">
@@ -33,8 +33,6 @@
 <script>
   import subjectBar from "@/components/subjectBar";
   import switchBox from "@/components/switchBox";
-  import scroll from "@/components/scroll";
-  import articleBrief from "@/components/articleBrief";
   import articleList from "@/components/articleList";
   import slideOut from "@/components/slideOut";
   export default {
@@ -84,8 +82,8 @@
           }
         ],
         enabledSubjectsIndex: [0, 1, 2, 3, 4, 5, 6, 7, 8],
-        showCustom: false,
-        currentArticleListIndex: 0,
+        showSlideOut: false,
+        currentArticleListIndex: 1,
         changeArticleListAnimation: 'slide-top',
         nowScrollToTop: false
       };
@@ -162,8 +160,6 @@
     components: {
       subjectBar,
       switchBox,
-      scroll,
-      articleBrief,
       slideOut,
       articleList
     }

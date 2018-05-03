@@ -60,9 +60,11 @@
       display: flex;
       justify-content: space-between;
       align-content: center;
+      font-size: 3.8vw;
       i.fa {
         font-size: 6vw;
         margin-right: 2vw;
+        color: #666666;
       }
       >div {
         display: flex;
@@ -76,6 +78,7 @@
           white-space: nowrap;
           text-overflow: ellipsis;
           overflow: hidden;
+          font-size: 4vw;
         }
       }
       .article-abstrict {
@@ -84,12 +87,14 @@
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 3;
         overflow: hidden;
+        font-size: 3.5vw;
       }
     }
     .article-action {
       display: flex;
       align-content: center;
       color: #777777;
+      font-size: 3.8vw;
       >p {
         display: flex;
         align-items: center;

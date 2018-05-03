@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper" ref="wrapper">
     <transition-group name="smooth-slide" tag="div" appear>
-      <div class="top-refresh" v-if="isPullingDown" :class="{positionChange:!isPullingDownRelease}" :key="1">
+      <div class="top-refresh" v-if="enableRefresh&&isPullingDown" :class="{positionChange:!isPullingDownRelease}" :key="1">
         <i class="fa fa-spinner fa-pulse" v-if="isPullingDownRelease"></i>
         <span v-else class="loading-tips" ref="refreshTips">松开刷新</span>
       </div>
@@ -13,11 +13,12 @@
           </li>
         </ul> -->
       </div>
-      <div class="bottom-load" ref="bottomLoad" v-if="isPullingUp" :key="3">
+      <div class="bottom-load" ref="bottomLoad" v-if="enableLoadMore&&isPullingUp" :key="3">
         <span class="fa fa-spinner fa-spin" ref="loadMoreTips"></span>
       </div>
     </transition-group>
-    <span class="fa fa-arrow-circle-up scrollToTop" :class="{active:showScrollToTopButton}" @click="_scrollToTop" ref="scrollToTopButton"></span>
+    <span v-if="enableScrollToTopButton" class="fa fa-arrow-circle-up scrollToTop" :class="{active:showScrollToTopButton}" @click="_scrollToTop"
+      ref="scrollToTopButton"></span>
   </div>
 </template>
 
@@ -71,17 +72,19 @@
       //initialize scroll after DOM mounted
       this.$nextTick(() => {
         this._initScroll();
-        this.isPullingDown=true;
+        this.isPullingDown = true;
         this._pullingDownReleased();
       });
       //add listener for scroll to top button to show the shrink/grow animation
       let scrollToTopButton = this.$refs.scrollToTopButton;
-      scrollToTopButton.addEventListener('touchstart', () => {
-        scrollToTopButton.classList.add('shrink');
-      });
-      scrollToTopButton.addEventListener('touchend', () => {
-        scrollToTopButton.classList.remove('shrink');
-      });
+      if (scrollToTopButton) {
+        scrollToTopButton.addEventListener('touchstart', () => {
+          scrollToTopButton.classList.add('shrink');
+        });
+        scrollToTopButton.addEventListener('touchend', () => {
+          scrollToTopButton.classList.remove('shrink');
+        });
+      }
     },
     methods: {
       _initScroll() {
@@ -168,21 +171,20 @@
       _pullingDownReleased(pos) {
         if (this.enableRefresh) {
           //execute pull down refresh data procedure if the position y greater than 50
-          this.scroll.disable();
+          this._disable();
           this.isPullingDownRelease = true;
           //excute the passed refresh method with asychronized action and then reset and refresh scroll
           this.refresh().then(() => {
             this.isPullingDown = false;
-            // this.isPullingDownRelease = false;
             this._refresh();
             this._enable();
           }).catch(err => {
-             if (err.errno == 0) {
+            if (err.errno == 0) {
               this.isPullingDown = false;
               this._enable();
               console.log(err.text);
             } else {
-              console.log(err);
+              console.dir(err);
             }
           });
         }
@@ -191,7 +193,7 @@
         //enable scroll's load more data when _enableLoadMore is true             
         if (this._enableLoadMore) {
           //execute pull up load more data procedure if the position y less than maxScrollY -30
-          this.scroll.disable();
+          this._disable();
           this.isPullingUp = true;
           //scroll to bottom after refreshing the scroll to animate fluently
           new Promise((resolve, reject) => {
@@ -224,9 +226,9 @@
         }
       }
     },
-    updated(){
-      if(this.nowScrollToTop){
-          this._scrollToTop();
+    updated() {
+      if (this.nowScrollToTop) {
+        this._scrollToTop();
       }
     }
     // watch: {
@@ -255,8 +257,7 @@
 
   div.wrapper {
     width: 100vw;
-    height: 84vh;
-    // position: relative;
+    height: 84vh; // position: relative;
     overflow: hidden;
     div.top-refresh,
     div.slot,
@@ -287,7 +288,7 @@
       color: #999999;
     }
     .scrollToTop {
-      position: fixed;
+      position: absolute;
       right: 3vw;
       bottom: -10vw;
       font-size: 10vw;
@@ -296,9 +297,10 @@
       box-shadow: 0 0 5vw #FFFFFF;
       border-radius: 50%;
       transition: all .5s;
-      z-index: -99;;
+      z-index: -99;
+      ;
       &.active {
-        bottom: 20vw;
+        bottom: 10vw;
         z-index: 99;
       }
       &.shrink {

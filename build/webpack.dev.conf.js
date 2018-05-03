@@ -107,10 +107,9 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           connection.query(getArticleListSql, inserts, function (err, result) {
             if (err) throw err;
             //return data of article list as format JSON
-            res.json(result); //返回JSON格式文章列表数据
+            res.json(result); 
           });
         }, 1000);
-
       });
     },
 

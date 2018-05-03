@@ -11,6 +11,7 @@ import articleList from '@/components/articleList';
 
 Vue.use(Router)
 
+let fromSubject = 'index';
 export default new Router({
   mode: 'history',
   routes: [{
@@ -23,35 +24,60 @@ export default new Router({
       component: layoutPage,
       children: [{
           path: '',
-          // name: 'homePage',
           component: homePage,
-          children: [
-            // {
-            //   path: '',
-            //   component: articleList,
-            //   props: true
-            // },
+          children: [{
+              path: '',
+              beforeEnter(to, from, next) {
+                if (to.path == '/subject') {
+                  next({
+                    name: 'subject',
+                    params: {
+                      subject: fromSubject
+                    }
+                  })
+                }
+              }
+            },
             {
-            path: ':subject(index|frontend|android|read|AI|iOS|product|design|tool|read|backend)',
-            name: 'subject',
-            component: articleList,
-            props: true
-          }]
+              path: ':subject(index|frontend|android|read|AI|iOS|product|design|tool|read|backend)',
+              name: 'subject',
+              component: articleList,
+              props: true
+            }
+          ]
         },
         {
           path: '/comment',
           name: 'commentPage',
           component: commentPage,
+          beforeEnter(to, from, next) {
+            if (from.name == 'subject') {
+              fromSubject = from.params.subject;
+            }
+            next();
+          },
         },
         {
           path: '/search',
           name: 'searchPage',
-          component: searchPage
+          component: searchPage,
+          beforeEnter(to, from, next) {
+            if (from.name == 'subject') {
+              fromSubject = from.params.subject;
+            }
+            next();
+          },
         },
         {
           path: '/setting',
           name: 'settingPage',
-          component: settingPage
+          component: settingPage,
+          beforeEnter(to, from, next) {
+            if (from.name == 'subject') {
+              fromSubject = from.params.subject;
+            }
+            next();
+          },
         }
       ]
     },
