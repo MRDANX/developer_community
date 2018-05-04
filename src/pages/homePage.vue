@@ -252,8 +252,9 @@
     }
     .custom-panel {
       background-color: #F1F1F1;
-      /deep/ .slide-out-header{
-        background:linear-gradient(to right,#138be0,#96cbf7 20%,#0080FF);
+      /deep/ .slide-out-header {
+        background: linear-gradient(to right, #138be0, #96cbf7 20%, #0080FF);
+        color: #FFFFFF;
       }
       ul.custom-list {
         width: 80vw;

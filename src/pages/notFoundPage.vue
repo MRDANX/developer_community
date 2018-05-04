@@ -114,7 +114,7 @@ a:hover {
 .error-page-main:before {
   content: "";
   display: block;
-  background: url("../assets/images/errorPageBorder.png");
+  background: url("/static/images/errorPageBorder.png");
   height: 7px;
   position: absolute;
   top: -7px;

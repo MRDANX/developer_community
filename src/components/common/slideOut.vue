@@ -3,7 +3,7 @@
     <div class="modal" key="modal" v-if="value&&showModal" @click="$emit('input',false)"></div>
     <transition :name="slideToDirection" class="wrapper">
       <div :class="['slide-out',slideToDirection]" v-if="value" key="content">
-        <div :class="['slide-out-header',slideToDirection]" v-if="title">
+        <div :class="['slide-out-header',slideToDirection]">
           <i :class="['fa',directionIcon]" @touchstart="touchstart" @touchend="touchend" ref="goBackButton"></i>
           <span v-if="title">{{title}}</span>
         </div>
@@ -91,7 +91,6 @@
   .toDown-leave-to {
     transform: translateY(-100%);
   }
-
   .modal {
     position: fixed;
     top: 0;
@@ -133,7 +132,7 @@
     .slide-out-header {
       width: 100%;
       height: 7vh;
-      color: #ffffff;
+      // color: #ffffff;
       font-size: 3.5vh;
       line-height: 7vh;
       display: flex;

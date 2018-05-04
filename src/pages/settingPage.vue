@@ -5,12 +5,11 @@
     </div>
     <scroll>
       <ul class="content">
-        <li class="user-info" ref="userInfo">
-          <div v-if="loggedIn"></div>
-          <div v-else>
+        <li class="user-info" ref="userInfo" @click="showLogin=true">
+          <div>
             <i class="fa fa-user-circle-o avatar"></i>
             <div>
-              <span>登录/注册</span>
+              <span>{{userInfo.userName||'登录/注册'}}</span>
               <span class="job-company">添加职位 @ 添加公司</span>
             </div>
             <i class="fa fa-angle-right arrow-right"></i>
@@ -39,20 +38,24 @@
         </li>
       </ul>
     </scroll>
-    <slide-out>
-
+    <slide-out slideToDirection="toLeft" v-model="showLogin" class="login-panel">
+      <login></login>
     </slide-out>
   </div>
 </template>
 
 <script>
+  import {
+    mapState
+  } from "vuex";
   import scroll from "@/components/common/scroll";
   import slideOut from "@/components/common/slideOut";
+  import login from "@/components/settingPage/login";
+
   export default {
     name: 'settingPage',
     data() {
       return {
-        loggedIn: false,
         actions: [{
             icon: 'fa-bell',
             text: '消息中心',
@@ -88,7 +91,11 @@
             number: '0 个',
             color: '#ffbd4c'
           }
-        ]
+        ],
+        showLogin: false,
+        userInfo: {
+          userName: ''
+        }
       }
     },
     mounted() {
@@ -111,7 +118,8 @@
     },
     components: {
       scroll,
-      slideOut
+      slideOut,
+      login
     }
   }
 
@@ -202,6 +210,18 @@
           i.fa-cog {
             color: #66CC99;
           }
+        }
+      }
+    }
+    .login-panel {
+      /deep/ .slide-out-header {
+        // color: #FFFFFF;
+        // background-image: url("/static/images/login_bg.png");
+        // background-size: cover;
+        // filter: blur(10px);
+         // background-color: #F1F1F1;
+        i.active::after {
+          background-color: rgba(255, 255, 255, 0.5);
         }
       }
     }

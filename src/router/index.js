@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import welcomePage from '@/pages/welcomePage';
+// import welcomePage from '@/pages/welcomePage';
 // import layoutPage from '@/pages/layoutPage';
 // import notFoundPage from '@/pages/notFoundPage';
 // import commentPage from '@/pages/commentPage';
@@ -8,7 +8,8 @@ import welcomePage from '@/pages/welcomePage';
 // import settingPage from '@/pages/settingPage';
 // import homePage from '@/pages/homePage';
 // import articleList from '@/components/articleList';
-
+const welcomePage = () =>
+  import ('@/pages/welcomePage');
 const notFoundPage = () =>
   import ('@/pages/notFoundPage');
 const layoutPage = () =>

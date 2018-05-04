@@ -1,7 +1,7 @@
 <template>
   <!-- modify this page to summary page if there is time left at the end -->
   <div id="welcomePage">
-    <img src="@/assets/logo.png">
+    <img src="/static/images/logo.png">
     <h1>{{ msg }}</h1>
     <h2>
       <!-- turn to home page of user's blog -->
