@@ -1,15 +1,30 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import layoutPage from '@/pages/layoutPage';
 import welcomePage from '@/pages/welcomePage';
-import notFoundPage from '@/pages/notFoundPage';
-import commentPage from '@/pages/commentPage';
-import searchPage from '@/pages/searchPage';
-import settingPage from '@/pages/settingPage';
-import homePage from '@/pages/homePage';
-import articleList from '@/components/articleList';
+// import layoutPage from '@/pages/layoutPage';
+// import notFoundPage from '@/pages/notFoundPage';
+// import commentPage from '@/pages/commentPage';
+// import searchPage from '@/pages/searchPage';
+// import settingPage from '@/pages/settingPage';
+// import homePage from '@/pages/homePage';
+// import articleList from '@/components/articleList';
 
-Vue.use(Router)
+const notFoundPage = () =>
+  import ('@/pages/notFoundPage');
+const layoutPage = () =>
+  import ('@/pages/layoutPage');
+const homePage = () =>
+  import ( /* webpackChunkName: "home" */ '@/pages/homePage');
+const articleList = () =>
+  import ( /* webpackChunkName: "home" */ '@/components/articleList');
+const commentPage = () =>
+  import ('@/pages/commentPage');
+const searchPage = () =>
+  import ('@/pages/searchPage');
+const settingPage = () =>
+  import ('@/pages/settingPage');
+
+Vue.use(Router);
 
 let fromSubject = 'index';
 export default new Router({

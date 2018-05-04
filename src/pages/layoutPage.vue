@@ -5,10 +5,6 @@
     </keep-alive>
     <ul class="fixed-nav">
       <router-link ref="links" v-for="(link,index) in links" :to="link.to" :key="index" class="fa" :class="link.class" tag="li"></router-link>
-      <!-- <router-link tag="li" to="/subject" class="fa fa-home" />
-      <router-link tag="li" to="/comment" class="fa fa-comments" />
-      <router-link tag="li" to="/search" class="fa fa-search" />
-      <router-link tag="li" to="/setting" class="fa fa-user" /> -->
     </ul>
   </div>
 </template>

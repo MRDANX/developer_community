@@ -59,7 +59,7 @@
     .article-meta {
       display: flex;
       justify-content: space-between;
-      align-content: center;
+      align-items: center;
       font-size: 3.8vw;
       i.fa {
         font-size: 6vw;
@@ -92,7 +92,7 @@
     }
     .article-action {
       display: flex;
-      align-content: center;
+      align-items: center;
       color: #777777;
       font-size: 3.8vw;
       >p {

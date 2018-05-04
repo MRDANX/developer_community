@@ -86,6 +86,9 @@
         });
       }
     },
+    activated() {
+      this._refresh();
+    },
     methods: {
       _initScroll() {
         //return directively if the wrapper element isn't existed

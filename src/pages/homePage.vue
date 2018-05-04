@@ -15,7 +15,7 @@
       </keep-alive>
     </transition>
     <!-- hidden panel for customizing subject -->
-    <slide-out slideToDirection="toRight" :showOut="showSlideOut" title="首页特别展示" @hide="showSlideOut=false">
+    <slide-out slideToDirection="toRight" :showOut="showSlideOut" title="分 类 自 定 义" @hide="showSlideOut=false" class="custom-panel" :showModal="true" :showTitle="true">
       <!-- list for customizing subjects exclude index 0(item home-page)-->
       <ul class="custom-list">
         <li v-for="(subject,index) in subjectList" :key="index" v-if="index!=0" class="custom-item">
@@ -252,33 +252,41 @@
         }
       }
     }
-    ul.custom-list {
-      width: 100vw;
-      li.custom-item {
-        font-size: 4vh;
-        color: #333333;
-        height: 8vh;
-        line-height: 8vh;
-        padding: 1vw 10vw;
-        background-color: #ffffff;
-        border-bottom: 1px solid #cccccc;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        i {
-          color: #cccccc;
-          margin-right: 5vw;
-        }
-        span {
-          flex-grow: 0.8;
-          flex-basis: 8vw;
-        }
-        .sbuject-chekbox {
-          width: 12vw;
-          height: 6vw;
+    .custom-panel {
+      background-color: #F1F1F1;
+      /deep/ .slide-out-header{
+        background:linear-gradient(to right,#138be0,#96cbf7 20%,#0080FF);
+      }
+      ul.custom-list {
+        width: 80vw;
+        height: 93vh;
+        li.custom-item {
+          font-size: 4vh;
+          color: #333333;
+          height: 8vh;
+          line-height: 8vh;
+          padding: 1vw 5vw;
+          background-color: #ffffff;
+          border-bottom: 1px solid #cccccc;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          i {
+            color: #cccccc;
+            margin-right: 5vw;
+          }
+          span {
+            flex-grow: 0.8;
+            flex-basis: 8vw;
+          }
+          .sbuject-chekbox {
+            width: 12vw;
+            height: 6vw;
+          }
         }
       }
     }
+
     ul.articleList {
       display: flex;
       flex-direction: column;

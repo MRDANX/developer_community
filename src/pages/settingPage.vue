@@ -10,8 +10,8 @@
           <div v-else>
             <i class="fa fa-user-circle-o avatar"></i>
             <div>
-              <p>登录/注册</p>
-              <p class="job-company">添加职位 @ 添加公司</p>
+              <span>登录/注册</span>
+              <span class="job-company">添加职位 @ 添加公司</span>
             </div>
             <i class="fa fa-angle-right arrow-right"></i>
           </div>
@@ -124,7 +124,7 @@
       text-align: center;
       color: #FFFFFF;
       line-height: 11vw;
-      font-size: 4.5vw;
+      font-size: 4vw;
     }
     ul.content {
       >li {
@@ -139,9 +139,10 @@
         i.avatar {
           font-size: 15vw;
           color: #777777;
+          margin-right: 5vw;
         }
         i.arrow-right {
-          font-size: 15vw;
+          font-size: 10vw;
           color: #CCCCCC;
         }
         >div {
@@ -149,13 +150,15 @@
           font-size: 6vw;
           display: flex;
           justify-content: space-between;
-          align-content: center;
+          align-items: center;
           div {
-            flex: 0.85;
-            p {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            span {
               margin-top: 0.5vw;
             }
-            p.job-company {
+            span.job-company {
               font-size: 4vw;
             }
           }
@@ -166,9 +169,9 @@
         li {
           padding: 2vh 3vw;
           box-sizing: border-box;
-          box-shadow: 0 0 1vw #EEEEEE;
+          box-shadow: 0 0 0.5vw #EEEEEE;
           display: flex;
-          align-content: center;
+          align-items: center;
           &.active {
             background-color: rgba(0, 0, 0, 0.1);
           }
@@ -179,7 +182,6 @@
           }
           span {
             font-size: 4.5vw;
-            line-height: 5.5vw;
           }
           span.text {
             flex-grow: 1;

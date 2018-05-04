@@ -1,10 +1,15 @@
 <template>
-  <div class="slide-out" :class="[slideToDirection,{active:showOut}]">
-    <div :class="['slide-out-header',slideToDirection]">
-      <i :class="['fa',directionIcon]" @click="$emit('hide')" ref="goBackButton"></i>
-      <span>{{title}}</span>
-    </div>
-    <slot></slot>
+  <div>
+    <div class="modal" key="modal" v-if="showOut&&showModal" @click="$emit('hide')"></div>
+    <transition :name="slideToDirection" class="wrapper">
+      <div :class="['slide-out',slideToDirection]" v-if="showOut" key="content">
+        <div :class="['slide-out-header',slideToDirection]" v-if="showTitle">
+          <i :class="['fa',directionIcon]" @touchstart="touchstart" @touchend="touchend" ref="goBackButton"></i>
+          <span v-if="title">{{title}}</span>
+        </div>
+        <slot></slot>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -14,7 +19,7 @@
     props: {
       title: {
         type: String,
-        default: 'header'
+        default: ''
       },
       showOut: {
         type: Boolean,
@@ -23,6 +28,23 @@
       slideToDirection: {
         type: String,
         default: 'toLeft'
+      },
+      showModal: {
+        type: Boolean,
+        default: false
+      },
+      showTitle: {
+        type: Boolean,
+        default: false
+      }
+    },
+    methods: {
+      touchstart() {
+        this.$refs.goBackButton.classList.add('active');
+      },
+      touchend() {
+        this.$refs.goBackButton.classList.remove('active');
+        this.$emit('hide');
       }
     },
     computed: {
@@ -31,32 +53,21 @@
         let toDirection = '';
         switch (this.slideToDirection) {
           case 'toLeft':
-            return 'fa-arrow-left';
+            return 'fa-angle-left';
             break;
           case 'toRight':
-            return 'fa-arrow-right';
+            return 'fa-angle-right';
             break;
           case 'toUp':
-            return 'fa-arrow-up';
+            return 'fa-angle-up';
             break;
           case 'toDown':
-            return 'fa-arrow-down';
+            return 'fa-angle-down';
             break;
           default:
-            return 'fa-arrow-left';
+            return 'fa-angle-left';
             break;
         }
-      }
-    },
-    mounted() {
-      let goBackButton = this.$refs.goBackButton;
-      if (goBackButton) {
-        goBackButton.addEventListener('touchstart', () => {
-          goBackButton.classList.add('active')
-        });
-        goBackButton.addEventListener('touchend', () => {
-          goBackButton.classList.remove('active')
-        });
       }
     }
   }
@@ -64,39 +75,68 @@
 </script>
 
 <style lang="less" scoped>
-  .slide-out {
+  .toRight-enter,
+  .toRight-leave-to {
+    transform: translateX(-100%);
+  }
+
+  .toLeft-enter,
+  .toLeft-leave-to {
+    transform: translateX(100%);
+  }
+
+  .toUp-enter,
+  .toUp-leave-to {
+    transform: translateY(100%);
+  }
+
+  .toDown-enter,
+  .toDown-leave-to {
+    transform: translateY(-100%);
+  }
+
+  .modal {
     position: fixed;
     top: 0;
     left: 0;
-    transition: all 0.3s ease-out;
     width: 100vw;
     height: 100vh;
-    background-color: #F1F1F1;
     z-index: 100;
-    &.toLeft {
-      transform: translateX(100%) translateY(0);
-    }
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .slide-out {
+    position: fixed;
+    margin: auto;
+    background-color: #F1F1F1;
+    width: fit-content;
+    height: fit-content;
+    z-index: 101;
+    transition: all .3s ease-out;
     &.toRight {
-      transform: translateX(-100%) translateY(0);
+      top: 0;
+      left: 0;
+    }
+    &.toLeft {
+      top: 0;
+      right: 0;
     }
     &.toUp {
-      transform: translateX(0) translateY(100%);
+      bottom: 0;
+      left: 0;
     }
     &.toDown {
-      transform: translateX(0) translateY(-100%);
-    }
-    &.active {
-      transform: translateX(0) translateY(0);
+      top: 0;
+      left: 0;
     }
     .slide-out-header {
-      width: 100vw;
+      width: 100%;
       height: 7vh;
-      background-color: #0080FF;
       color: #ffffff;
       font-size: 3.5vh;
       line-height: 7vh;
       display: flex;
-      flex: row;
+      flex-direction: row;
       align-items: center;
       i {
         margin: 0 5vw;
@@ -107,23 +147,27 @@
         &.active::after {
           content: '';
           display: inline-block;
-          width: 120%;
-          height: 120%;
+          width: 250%;
+          height: 100%;
           background-color: rgba(255, 255, 255, 0.2);
           position: absolute;
-          top: -10%;
-          left: -10%;
+          top: 3%;
+          left: -90%;
           border-radius: 50%;
         }
+      }
+      &.toUp i.active::after,
+      &.toDown i.active::after {
+        width: 160%;
+        height: 120%;
+        top: -10%;
+        left: -35%;
       }
       &.toRight,
       &.toUp,
       &.toDown {
         flex-direction: row-reverse;
       }
-      // &.toLeft {
-      //   flex: row;
-      // }
     }
   }
 
