@@ -1,9 +1,9 @@
 <template>
-  <div>
-    <div class="modal" key="modal" v-if="showOut&&showModal" @click="$emit('hide')"></div>
+  <div class="slide-out-wrapper">
+    <div class="modal" key="modal" v-if="value&&showModal" @click="$emit('input',false)"></div>
     <transition :name="slideToDirection" class="wrapper">
-      <div :class="['slide-out',slideToDirection]" v-if="showOut" key="content">
-        <div :class="['slide-out-header',slideToDirection]" v-if="showTitle">
+      <div :class="['slide-out',slideToDirection]" v-if="value" key="content">
+        <div :class="['slide-out-header',slideToDirection]" v-if="title">
           <i :class="['fa',directionIcon]" @touchstart="touchstart" @touchend="touchend" ref="goBackButton"></i>
           <span v-if="title">{{title}}</span>
         </div>
@@ -17,23 +17,20 @@
   export default {
     name: 'slideOut',
     props: {
+      //v-model shou out value
+      value: {
+        type: Boolean,
+        default: false
+      },
       title: {
         type: String,
         default: ''
-      },
-      showOut: {
-        type: Boolean,
-        default: false
       },
       slideToDirection: {
         type: String,
         default: 'toLeft'
       },
       showModal: {
-        type: Boolean,
-        default: false
-      },
-      showTitle: {
         type: Boolean,
         default: false
       }
@@ -44,7 +41,7 @@
       },
       touchend() {
         this.$refs.goBackButton.classList.remove('active');
-        this.$emit('hide');
+        this.$emit('input',false);
       }
     },
     computed: {
@@ -115,19 +112,23 @@
     transition: all .3s ease-out;
     &.toRight {
       top: 0;
+      bottom: 0;
       left: 0;
     }
     &.toLeft {
       top: 0;
+      bottom: 0;
       right: 0;
     }
     &.toUp {
       bottom: 0;
       left: 0;
+      right: 0;
     }
     &.toDown {
       top: 0;
       left: 0;
+      right: 0;
     }
     .slide-out-header {
       width: 100%;

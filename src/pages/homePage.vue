@@ -15,7 +15,7 @@
       </keep-alive>
     </transition>
     <!-- hidden panel for customizing subject -->
-    <slide-out slideToDirection="toRight" :showOut="showSlideOut" title="分 类 自 定 义" @hide="showSlideOut=false" class="custom-panel" :showModal="true" :showTitle="true">
+    <slide-out slideToDirection="toRight" v-model="showSlideOut" title="分 类 自 定 义" class="custom-panel" :showModal="true">
       <!-- list for customizing subjects exclude index 0(item home-page)-->
       <ul class="custom-list">
         <li v-for="(subject,index) in subjectList" :key="index" v-if="index!=0" class="custom-item">
@@ -31,10 +31,9 @@
 </template>
 
 <script>
-  import subjectBar from "@/components/subjectBar";
-  import switchBox from "@/components/switchBox";
-  import articleList from "@/components/articleList";
-  import slideOut from "@/components/slideOut";
+  import subjectBar from "@/components/homePage/subjectBar";
+  import switchBox from "@/components/common/switchBox";
+  import slideOut from "@/components/common/slideOut";
   export default {
     name: "homePage",
     data() {
@@ -160,8 +159,7 @@
     components: {
       subjectBar,
       switchBox,
-      slideOut,
-      articleList
+      slideOut
     }
   };
 

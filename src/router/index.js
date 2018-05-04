@@ -16,7 +16,7 @@ const layoutPage = () =>
 const homePage = () =>
   import ( /* webpackChunkName: "home" */ '@/pages/homePage');
 const articleList = () =>
-  import ( /* webpackChunkName: "home" */ '@/components/articleList');
+  import ( /* webpackChunkName: "home" */ '@/components/homePage/articleList');
 const commentPage = () =>
   import ('@/pages/commentPage');
 const searchPage = () =>

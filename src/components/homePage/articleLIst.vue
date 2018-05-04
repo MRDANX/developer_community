@@ -8,9 +8,9 @@
 </template>
 
 <script>
-  import scroll from "@/components/scroll";
-  import articleBrief from "@/components/articleBrief";
-  import hotRecommend from "@/components/hotRecommend";
+  import scroll from "@/components/common/scroll";
+  import articleBrief from "@/components/homePage/articleBrief";
+  import hotRecommend from "@/components/homePage/hotRecommend";
   export default {
     name: 'articleList',
     props: {

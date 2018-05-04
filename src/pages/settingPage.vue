@@ -39,11 +39,15 @@
         </li>
       </ul>
     </scroll>
+    <slide-out>
+
+    </slide-out>
   </div>
 </template>
 
 <script>
-  import scroll from "@/components/scroll";
+  import scroll from "@/components/common/scroll";
+  import slideOut from "@/components/common/slideOut";
   export default {
     name: 'settingPage',
     data() {
@@ -106,7 +110,8 @@
       }
     },
     components: {
-      scroll
+      scroll,
+      slideOut
     }
   }
 
