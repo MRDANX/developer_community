@@ -1,51 +1,58 @@
 <template>
   <div class="text-input">
     <span class="input-hint" :class="{active:isFocus||value}">{{hint}}</span>
-    <input class="input-content" :type="innerInputType" :value="value" @input="$emit('input',$event.target.value)" @focus="isFocus=true"
-      @blur="isFocus=false" ref="input"/>
+    <input class="input-content" 
+			    :type="innerInputType" 
+          :value="value" 
+          @input="$emit('input',$event.target.value)" 
+          @focus="isFocus=true"
+          @blur="isFocus=false" 
+          ref="input"/>
     <span class="fa-stack fa-lg" v-if="value&&inputType=='text'" @click="$emit('input','')">
-      <i class="fa fa-circle-o fa-stack-2x"></i>
-      <i class="fa fa-close fa-stack-1x"></i>
+      <i class="fa fa-circle fa-stack-2x"></i>
+      <i class="fa fa-close fa-inverse fa-stack-1x"></i>
     </span>
-    <span class="fa visibility" :class="innerInputType=='password'?'fa-eye':'fa-eye-slash'" v-if="value&&inputType=='password'" @click="toggleInputType"></span>
+    <span class="fa visibility" 
+          :class="innerInputType=='password'?'fa-eye':'fa-eye-slash'" 
+          v-if="value&&inputType=='password'" 
+          @click="toggleInputType"></span>
   </div>
 </template>
 
 <script>
   export default {
-    name: 'textInput',
+    name: "textInput",
     data() {
       return {
         isFocus: false,
-        innerInputType: ''
-      }
+        innerInputType: ""
+      };
     },
     props: {
       value: String,
       inputType: {
         type: String,
-        default: 'text'
+        default: "text"
       },
       hint: {
         type: String,
-        default: '用户'
+        default: "用户"
       }
     },
     methods: {
       toggleInputType() {
-        if (this.innerInputType == 'text') {
-          this.innerInputType = 'password';
-        } else if (this.innerInputType == 'password') {
-          this.innerInputType = 'text';
-		}
-		this.$refs.input.focus();
+        if (this.innerInputType == "text") {
+          this.innerInputType = "password";
+        } else if (this.innerInputType == "password") {
+          this.innerInputType = "text";
+        }
+        this.$refs.input.focus();
       }
-	},
-	created(){
-		this.innerInputType=this.inputType;
-	}
-  }
-
+    },
+    created() {
+      this.innerInputType = this.inputType;
+    }
+  };
 </script>
 
 <style lang="less" scoped>
@@ -55,7 +62,7 @@
     position: relative;
     margin: 6vw 0;
     &::after {
-      content: '';
+      content: "";
       width: 100%;
       height: 2px;
       background: #777777;
@@ -69,7 +76,7 @@
       left: 1vw;
       line-height: 10vw;
       font-size: 6vw;
-      transition: all .4s;
+      transition: all 0.4s;
       &.active {
         font-size: 4vw;
         transform: translateY(-65%);
@@ -102,5 +109,4 @@
       font-size: 5vw;
     }
   }
-
 </style>

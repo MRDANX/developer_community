@@ -22,7 +22,7 @@
           <i class="fa fa-list-ul"></i>
           <span>{{subject.text}}</span>
           <!-- custom switch box component -->
-          <switch-box class="sbuject-chekbox" :isChecked="enabledSubjectsIndex.indexOf(index)!=-1" :index="index" v-on:checkout="checkout"
+          <switch-box class="sbuject-chekbox" :isChecked="enabledSubjectsIndex.indexOf(index)!=-1" :index="index" @checkout="checkout"
           />
         </li>
       </ul>
@@ -266,7 +266,8 @@
           line-height: 8vh;
           padding: 1vw 5vw;
           background-color: #ffffff;
-          border-bottom: 1px solid #cccccc;
+          box-shadow: 0 0 5vw #CCCCCC;
+        //   border-bottom: 1px solid #cccccc;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -285,7 +286,6 @@
         }
       }
     }
-
     ul.articleList {
       display: flex;
       flex-direction: column;

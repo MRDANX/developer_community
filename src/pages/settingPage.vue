@@ -5,22 +5,49 @@
     </div>
     <scroll>
       <ul class="content">
-        <li class="user-info" ref="userInfo" @click="showLogin=true">
+        <li class="user-info" ref="userInfo" @click="showSlideOut=true">
           <div>
-            <i class="fa fa-user-circle-o avatar"></i>
-            <div>
+            <div class="avatar">
+              <img :src="userInfo.avatar" alt="" v-if="userInfo.avatar">
+              <i class="fa fa-user-circle-o" v-else></i>
+            </div>
+            <div class="user-name">
               <span>{{userInfo.userName||'登录/注册'}}</span>
-              <span class="job-company">添加职位 @ 添加公司</span>
+              <span class="job-company">{{userInfo.job||'添加职位'}} @ {{userInfo.company||'添加公司'}}</span>
             </div>
             <i class="fa fa-angle-right arrow-right"></i>
           </div>
         </li>
         <li class="user-action">
-          <ul>
-            <li v-for="(action,index) in actions" :key="index" ref="actions">
-              <i class="fa" :class="action.icon" :style="{color:action.color}"></i>
-              <span class="text">{{action.text}}</span>
-              <span v-if="action.number">{{action.number}}</span>
+          <ul ref="actions">
+            <li>
+              <i class="fa fa-bell" style="color:#0076FE"></i>
+              <span class="text">消息中心</span>
+            </li>
+            <li>
+              <i class="fa fa-heart" style="color:#6CBD45"></i>
+              <span class="text">我喜欢的</span>
+              <span>{{userInfo.favoriteArticle&&userInfo.favoriteArticle.length||'0'}} 篇</span>
+            </li>
+            <li>
+              <i class="fa fa-list" style="color:#FF9900"></i>
+              <span class="text">收藏集</span>
+              <span>{{userInfo.collection&&userInfo.collection.length||'0'}} 个</span>
+            </li>
+            <li>
+              <i class="fa fa-eye" style="color:#CC3333"></i>
+              <span class="text">阅读过的文章</span>
+              <span>0 篇</span>
+            </li>
+            <li>
+              <i class="fa fa-thumbs-up" style="color:#0099FF"></i>
+              <span class="text">赞过的动态</span>
+              <span>0 篇</span>
+            </li>
+            <li>
+              <i class="fa fa-tags" style="color:#ffbd4c"></i>
+              <span class="text">标签管理</span>
+              <span>0 个</span>
             </li>
           </ul>
         </li>
@@ -38,8 +65,8 @@
         </li>
       </ul>
     </scroll>
-    <slide-out slideToDirection="toLeft" v-model="showLogin" class="login-panel">
-      <login></login>
+    <slide-out slideToDirection="toLeft" v-model="showSlideOut" class="hide-logn-panel" :title="userInfo.userID?'个人主页':''">
+      <component :is="showComponent" v-model="showSlideOut"></component>
     </slide-out>
   </div>
 </template>
@@ -51,77 +78,50 @@
   import scroll from "@/components/common/scroll";
   import slideOut from "@/components/common/slideOut";
   import login from "@/components/settingPage/login";
-
+  import userInfo from "@/components/settingPage/userInfo";
+  import signup from "@/components/settingPage/signup";
   export default {
-    name: 'settingPage',
+    name: "settingPage",
     data() {
       return {
-        actions: [{
-            icon: 'fa-bell',
-            text: '消息中心',
-            color: '#0076FE'
-          },
-          {
-            icon: 'fa-heart',
-            text: '我喜欢的',
-            number: '0 篇',
-            color: '#6CBD45'
-          },
-          {
-            icon: 'fa-list',
-            text: '收藏集',
-            number: '0 个',
-            color: '#FF9900'
-          },
-          {
-            icon: 'fa-eye',
-            text: '阅读过的文章',
-            number: '0 篇',
-            color: '#CC3333'
-          },
-          {
-            icon: 'fa-thumbs-up',
-            text: '赞过的动态',
-            number: '0 个',
-            color: '#0099FF'
-          },
-          {
-            icon: 'fa-tags',
-            text: '标签管理',
-            number: '0 个',
-            color: '#ffbd4c'
-          }
-        ],
-        showLogin: false,
-        userInfo: {
-          userName: ''
-        }
+        showSlideOut: false
+      };
+    },
+    computed: {
+      ...mapState("user", ["userInfo"]),
+      showComponent() {
+        return this.userInfo.userID ? "userInfo" : "login";
       }
     },
     mounted() {
+      //add active effect for click
       this.activeFeedback(this.$refs.userInfo);
-      this.$refs.actions.forEach(action => {
-        this.activeFeedback(action);
-      });
+      let actions = this.$refs.actions.children;
+      for (let i = 0; i < actions.length; i++) {
+        this.activeFeedback(actions[i]);
+      }
       this.activeFeedback(this.$refs.feedback);
       this.activeFeedback(this.$refs.setting);
     },
     methods: {
+      //method that add listener for toggling active class to the passing element
       activeFeedback(el) {
-        el.addEventListener('touchstart', function () {
-          this.classList.add('active');
+        el.addEventListener("touchstart", function () {
+          this.classList.add("active");
         });
-        el.addEventListener('touchend', function () {
-          this.classList.remove('active');
+        el.addEventListener("touchend", function () {
+          this.classList.remove("active");
         });
       }
     },
     components: {
       scroll,
       slideOut,
-      login
+      login,
+      signup,
+      userInfo
     }
-  }
+  };
 
 </script>
 
@@ -132,16 +132,16 @@
     color: #333333;
     div.nav {
       width: 100%;
-      background-color: #0080FF;
+      background-color: #0080ff;
       height: 11vw;
       text-align: center;
-      color: #FFFFFF;
+      color: #ffffff;
       line-height: 11vw;
       font-size: 4vw;
     }
     ul.content {
       >li {
-        background-color: #FFFFFF;
+        background-color: #ffffff;
         margin: 3vw 0;
         &.active {
           background-color: rgba(0, 0, 0, 0.1);
@@ -149,14 +149,15 @@
       }
       .user-info {
         padding: 3vw;
-        i.avatar {
+        i.fa-user-circle-o {
           font-size: 15vw;
           color: #777777;
-          margin-right: 5vw;
+          text-align: center;
+          line-height: 20vw;
         }
         i.arrow-right {
           font-size: 10vw;
-          color: #CCCCCC;
+          color: #cccccc;
         }
         >div {
           width: 100%;
@@ -164,10 +165,17 @@
           display: flex;
           justify-content: space-between;
           align-items: center;
-          div {
+          div.avatar {
+            height: 20vw;
+            img {
+              height: 100%;
+            }
+          }
+          div.user-name {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            text-indent: 5vw;
             span {
               margin-top: 0.5vw;
             }
@@ -182,7 +190,7 @@
         li {
           padding: 2vh 3vw;
           box-sizing: border-box;
-          box-shadow: 0 0 0.5vw #EEEEEE;
+          box-shadow: 0 0 0.5vw #eeeeee;
           display: flex;
           align-items: center;
           &.active {
@@ -199,27 +207,32 @@
           span.text {
             flex-grow: 1;
           }
-
         }
       }
       .others {
         li {
           i.fa-telegram {
-            color: #99CC33;
+            color: #99cc33;
           }
           i.fa-cog {
-            color: #66CC99;
+            color: #66cc99;
           }
         }
       }
     }
-    .login-panel {
-      /deep/ .slide-out-header {
-        // color: #FFFFFF;
-        // background-image: url("/static/images/login_bg.png");
+    .hide-logn-panel {
+      /deep/ .slide-out {
+        background-color: #f6f6f6; // background-image: url("/static/images/login_bg.png");
         // background-size: cover;
-        // filter: blur(10px);
-         // background-color: #F1F1F1;
+        // background-color: #F1F1F1;
+      } // /deep/ .modal {
+      //   background-image: url("/static/images/login_bg.png");
+      //   background-size: cover;
+      //   background-color: #F1F1F1;
+      // }
+      /deep/ .slide-out-header {
+        background-color: #0080FF;
+        color: #FFFFFF;
         i.active::after {
           background-color: rgba(255, 255, 255, 0.5);
         }

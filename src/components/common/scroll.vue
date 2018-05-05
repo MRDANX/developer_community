@@ -19,13 +19,18 @@
     </transition-group>
     <span v-if="enableScrollToTopButton" class="fa fa-arrow-circle-up scrollToTop" :class="{active:showScrollToTopButton}" @click="_scrollToTop"
       ref="scrollToTopButton"></span>
+    <hint v-model="hintText">{{hintText}}</hint>
   </div>
 </template>
 
 <script>
   import BScroll from 'better-scroll'
+  import hint from "@/components/common/hint";
   export default {
     name: 'scroll',
+    components:{
+      hint
+    },
     props: {
       data: {
         type: Array,
@@ -62,7 +67,8 @@
         isPullingDownRelease: false,
         isPullingUp: false,
         showScrollToTopButton: false,
-        _enableLoadMore: false
+        _enableLoadMore: false,
+        hintText:''
       }
     },
     created() {
@@ -185,7 +191,8 @@
             if (err.errno == 0) {
               this.isPullingDown = false;
               this._enable();
-              console.log(err.text);
+              this.hintText=err.text;
+              // console.log(err.text);
             } else {
               console.dir(err);
             }

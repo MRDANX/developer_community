@@ -33,6 +33,9 @@
         ]
       }
     },
+    created(){
+      this.$store.dispatch('user/checkUserInfo');
+    },
     mounted() {
       this.$refs.links.forEach(link => {
         link.$el.addEventListener('touchstart', () => {

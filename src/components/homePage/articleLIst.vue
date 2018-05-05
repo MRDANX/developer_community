@@ -45,7 +45,7 @@
             if (result.data.length == 0) {
               reject({
                 errno: 0,
-                text: 'It\'s up to date!'
+                text: '已经是最新的了!'
               });
             }
             this.articleList = result.data.concat(this.articleList);
