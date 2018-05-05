@@ -39,7 +39,7 @@
     transform: translateX(-50%);
     bottom: 20vh;
     color: #F1F1F1;
-    font-size: 5vw;
+    font-size: 4vw;
     padding: 2vw 4vw;
     border-radius: 5px;
     background-color: rgba(0, 0, 0, 0.8);

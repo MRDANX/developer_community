@@ -4,8 +4,8 @@
       <img src="/static/images/avatar/default-avatar.png" alt="">
     </div>
     <div class="input-area">
-      <text-input v-model="userName" inputType="text" hint="用户名" />
-      <text-input v-model="password" inputType="password" hint="密　码" />
+      <text-input v-model="userToken" inputType="text" hint="手机/邮箱" />
+      <text-input v-model="password" inputType="password" hint="密  码" />
       <button class="login-button" @click="requestLogin">登录</button>
       <button class="signup-button">注册</button>
     </div>
@@ -20,21 +20,33 @@
     name: 'login',
     data() {
       return {
-        userName: '',
+        userToken: '',
         password: '',
         hintText: ''
       }
     },
     methods: {
       requestLogin() {
-        let userName = this.userName,
-          password = this.password;
+        let userToken = this.userToken,
+          password = this.password,
+          phoneReg = /\d{11}/,
+          emailReg = /[\dA-Za-z]+@\w+\.\w+/,
+          tokenType;
+        if (userToken.match(phoneReg)) {
+          tokenType = 'phone';
+        } else if (userToken.match(emailReg)) {
+          tokenType = 'email';
+        } else {
+          this.hintText = '手机或邮箱格式有误!';
+          return;
+        }
         let qs = require('qs');
         this.$axios({
           method: 'post',
           url: '/requestLogin',
           data: qs.stringify({
-            userName,
+            tokenType,
+            userToken,
             password
           })
         }).then(result => {

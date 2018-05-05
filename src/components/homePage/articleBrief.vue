@@ -2,7 +2,10 @@
   <router-link to="" tag="li" class="article">
     <div class="article-meta">
       <router-link to="" tag="div">
-        <i class="fa fa-user-circle-o"></i>
+        <div class="avatar">
+          <img :src="articleInfo.avatar" alt="" v-if="articleInfo.avatar">
+          <i class="fa fa-user-circle-o" v-else></i>
+        </div>
         <span class="article-author">
           {{articleInfo.author}}
         </span>
@@ -61,9 +64,19 @@
       justify-content: space-between;
       align-items: center;
       font-size: 3.8vw;
-      i.fa {
-        font-size: 6vw;
+      div.avatar {
+        width: 8vw;
+        height: 8vw;
+        border-radius: 50%;
+        overflow: hidden;
         margin-right: 2vw;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      i.fa {
+        font-size: 8vw;
         color: #666666;
       }
       >div {

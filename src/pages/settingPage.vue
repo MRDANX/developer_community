@@ -65,7 +65,7 @@
         </li>
       </ul>
     </scroll>
-    <slide-out slideToDirection="toLeft" v-model="showSlideOut" class="hide-logn-panel" :title="userInfo.userID?'个人主页':''">
+    <slide-out v-model="showSlideOut" class="hide-logn-panel" :title="userInfo.userID?'个人主页':''">
       <component :is="showComponent" v-model="showSlideOut"></component>
     </slide-out>
   </div>

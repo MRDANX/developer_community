@@ -1,21 +1,14 @@
 <template>
   <div class="text-input">
     <span class="input-hint" :class="{active:isFocus||value}">{{hint}}</span>
-    <input class="input-content" 
-			    :type="innerInputType" 
-          :value="value" 
-          @input="$emit('input',$event.target.value)" 
-          @focus="isFocus=true"
-          @blur="isFocus=false" 
-          ref="input"/>
+    <input class="input-content" :type="innerInputType" :value="value" @input="$emit('input',$event.target.value)" @focus="isFocus=true"
+      @blur="isFocus=false" ref="input" />
     <span class="fa-stack fa-lg" v-if="value&&inputType=='text'" @click="$emit('input','')">
       <i class="fa fa-circle fa-stack-2x"></i>
       <i class="fa fa-close fa-inverse fa-stack-1x"></i>
     </span>
-    <span class="fa visibility" 
-          :class="innerInputType=='password'?'fa-eye':'fa-eye-slash'" 
-          v-if="value&&inputType=='password'" 
-          @click="toggleInputType"></span>
+    <span class="fa visibility" :class="innerInputType=='password'?'fa-eye':'fa-eye-slash'" v-if="value&&inputType=='password'"
+      @click="toggleInputType"></span>
   </div>
 </template>
 
@@ -53,6 +46,7 @@
       this.innerInputType = this.inputType;
     }
   };
+
 </script>
 
 <style lang="less" scoped>
@@ -109,4 +103,5 @@
       font-size: 5vw;
     }
   }
+
 </style>

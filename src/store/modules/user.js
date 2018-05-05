@@ -42,12 +42,13 @@ const actions = {
         let userInfo = JSON.parse(localStorage.getItem('userInfo'));
         if (userInfo) {
           let qs = require('qs');
-          let userName = userInfo.userName,
+          let phone = userInfo.phone,
             password = userInfo.password;
           axios({
             method: 'post',
             url: '/requestLogin',
             data: qs.stringify({
+              tokenType: 'phone',
               userName,
               password
             })

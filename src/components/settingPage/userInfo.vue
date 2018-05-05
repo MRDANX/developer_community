@@ -1,5 +1,5 @@
 <template>
-  <ul class="user-info-wrapper"  ontouchstart>
+  <ul class="user-info-wrapper" ontouchstart>
     <li class="user-info margin-top" ref="userInfo" @click="showSlideOut=true">
       <div>
         <div class="avatar">
@@ -20,10 +20,12 @@
           <p>{{userInfo.follower&&userInfo.follower.length||0}}</p>
           <p>关注者</p>
         </div>
-        <div class="edit-button">编辑
-          <slide-out></slide-out>
+        <div class="edit-button" @click="showPersonalSetting=true">编辑
         </div>
       </div>
+      <slide-out title="个人设置" v-model="showPersonalSetting">
+        <personal-setting></personal-setting>
+      </slide-out>
     </li>
     <li class="margin-top">动态</li>
     <li class="margin-top">沸点
@@ -49,13 +51,20 @@
     mapState
   } from "vuex";
   import slideOut from "@/components/common/slideOut";
+  import personalSetting from "@/components/settingPage/personalSetting";
   export default {
     name: 'userInfo',
+    data() {
+      return {
+        showPersonalSetting: false
+      }
+    },
     computed: {
       ...mapState('user', ['userInfo'])
     },
-    components:{
-      slideOut
+    components: {
+      slideOut,
+      personalSetting
     }
   }
 
@@ -78,7 +87,7 @@
       padding: 0 5vw;
       line-height: 12vw;
       font-size: 5vw;
-      &:active{
+      &:active {
         background-color: #CCCCCC;
       }
       >span {

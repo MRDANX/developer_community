@@ -17,7 +17,7 @@
   export default {
     name: 'slideOut',
     props: {
-      //v-model shou out value
+      //v-model show out value
       value: {
         type: Boolean,
         default: false

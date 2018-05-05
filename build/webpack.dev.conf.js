@@ -108,10 +108,16 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
       //router for requesting login
       app.post('/requestLogin', (req, res) => {
-        let sql = 'SELECT * FROM user where userName=? AND password=?';
-        let userName = req.body.userName,
-          password = req.body.password;
-        let inserts = [userName, password];
+        let tokenType = req.body.tokenType,
+          userToken = req.body.userToken,
+          password = req.body.password,
+          sql;
+        if (tokenType == 'phone') {
+          sql = 'SELECT * FROM user where phone=? AND password=?'
+        } else {
+          sql = 'SELECT * FROM user where email=? AND password=?'
+        }
+        let inserts = [userToken, password];
         new Promise((resolve, reject) => {
           connection.query(sql, inserts, (err, result) => {
             if (err) throw err;
@@ -152,7 +158,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
       //router for getting articleList
       app.get('/api/getArticleList', (req, res) => {
-        let getArticleListSql = 'SELECT a.*,u.userName as author FROM article a,user u where a.userID=u.userID AND subject=? LIMIT ?,?';
+        let getArticleListSql = 'SELECT a.*,u.userName as author,u.avatar FROM article a,user u where a.userID=u.userID AND subject=? LIMIT ?,?';
         // let inserts = [req.query.articleID];
         // getArticleSql = mysql.format(getArticleSql, inserts);
         let query = req.query,
@@ -163,7 +169,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         switch (subject) {
           case 'index':
             subject = '';
-            getArticleListSql = 'SELECT a.*,u.userName as author FROM article a,user u where a.userID=u.userID LIMIT ?,?';
+            getArticleListSql = 'SELECT a.*,u.userName as author,u.avatar FROM article a,user u where a.userID=u.userID LIMIT ?,?';
             inserts = [startIndex, number];
             break;
           case 'frontend':
