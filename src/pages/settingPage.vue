@@ -5,7 +5,7 @@
     </div>
     <scroll>
       <ul class="content">
-        <li class="user-info" ref="userInfo" @click="showSlideOut=true">
+        <li class="user-info" ref="userInfo" @click="showUserOrLogin=true">
           <div>
             <div class="avatar">
               <img :src="userInfo.avatar" alt="" v-if="userInfo.avatar">
@@ -57,7 +57,7 @@
               <i class="fa fa-telegram"></i>
               <span>意见反馈</span>
             </li>
-            <li ref="setting">
+            <li ref="setting" @click="showOtherSetting=true">
               <i class="fa fa-cog"></i>
               <span>设置</span>
             </li>
@@ -65,8 +65,13 @@
         </li>
       </ul>
     </scroll>
-    <slide-out v-model="showSlideOut" class="hide-logn-panel" :title="userInfo.userID?'个人主页':''">
-      <component :is="showComponent" v-model="showSlideOut"></component>
+    <slide-out id="userInfo" v-model="showUserOrLogin" :class="userInfo.userID?'hide-login-panel':'login-background'" :title="userInfo.userID?'个人主页':'用户登录'">
+      <component :is="showComponent" v-model="showUserOrLogin"></component>
+    </slide-out>
+    <slide-out id="otherSetting" v-model="showOtherSetting" title="设置" >
+      <scroll>
+        <setting />
+      </scroll>
     </slide-out>
   </div>
 </template>
@@ -80,11 +85,13 @@
   import login from "@/components/settingPage/login";
   import userInfo from "@/components/settingPage/userInfo";
   import signup from "@/components/settingPage/signup";
+  import setting from "@/components/settingPage/setting";
   export default {
     name: "settingPage",
     data() {
       return {
-        showSlideOut: false
+        showUserOrLogin: false,
+        showOtherSetting: false
       };
     },
     computed: {
@@ -95,34 +102,23 @@
     },
     mounted() {
       //add active effect for click
-      this.activeFeedback(this.$refs.userInfo);
+      this.$activeFeedback(this.$refs.userInfo);
       let actions = this.$refs.actions.children;
       for (let i = 0; i < actions.length; i++) {
-        this.activeFeedback(actions[i]);
+        this.$activeFeedback(actions[i]);
       }
-      this.activeFeedback(this.$refs.feedback);
-      this.activeFeedback(this.$refs.setting);
-    },
-    methods: {
-      //method that add listener for toggling active class to the passing element
-      activeFeedback(el) {
-        el.addEventListener("touchstart", function () {
-          this.classList.add("active");
-        });
-        el.addEventListener("touchend", function () {
-          this.classList.remove("active");
-        });
-      }
+      this.$activeFeedback(this.$refs.feedback);
+      this.$activeFeedback(this.$refs.setting);
     },
     components: {
       scroll,
       slideOut,
       login,
       signup,
-      userInfo
+      userInfo,
+      setting
     }
   };
-
 </script>
 
 <style lang="less" scoped>
@@ -220,16 +216,23 @@
         }
       }
     }
-    .hide-logn-panel {
+    .login-background {
       /deep/ .slide-out {
-        background-color: #f6f6f6; // background-image: url("/static/images/login_bg.png");
-        // background-size: cover;
-        // background-color: #F1F1F1;
-      } // /deep/ .modal {
-      //   background-image: url("/static/images/login_bg.png");
-      //   background-size: cover;
-      //   background-color: #F1F1F1;
-      // }
+        background-image: url("/static/images/login_bg.jpg");
+        background-size: 110% 100%;
+      }
+      /deep/ .slide-out-header {
+        color: #FFFFFF;
+        i.active::after {
+          background-color: rgba(255, 255, 255, 0.5);
+        }
+      }
+    }
+    .hide-login-panel,
+    #otherSetting {
+      /deep/ .slide-out {
+        background-color: #f6f6f6;
+      }
       /deep/ .slide-out-header {
         background-color: #0080FF;
         color: #FFFFFF;
@@ -238,6 +241,10 @@
         }
       }
     }
+    #otherSetting {
+      /deep/ .wrapper {
+        height: 93vh;
+      }
+    }
   }
-
 </style>

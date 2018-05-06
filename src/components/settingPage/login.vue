@@ -1,13 +1,13 @@
 <template>
   <div class="login-panel">
     <div class="user-avatar">
-      <img src="/static/images/avatar/default-avatar.png" alt="">
+      <img :src="storedAvatar||'/static/images/avatar/default-avatar.png'" alt="">
     </div>
     <div class="input-area">
       <text-input v-model="userToken" inputType="text" hint="手机/邮箱" />
       <text-input v-model="password" inputType="password" hint="密  码" />
-      <button class="login-button" @click="requestLogin">登录</button>
-      <button class="signup-button">注册</button>
+      <button class="login-button" @click="requestLogin" ref="loginButton">登录</button>
+      <button class="register-button" ref="registerButton">注册</button>
     </div>
     <hint v-model="hintText">{{hintText}}</hint>
   </div>
@@ -25,6 +25,17 @@
         hintText: ''
       }
     },
+    computed: {
+      storedAvatar() {
+        if (localStorage.getItem('avatar')) {
+          return localStorage.getItem('avatar');
+        }
+      }
+    },
+    mounted() {
+      this.$activeFeedback(this.$refs.loginButton);
+      this.$activeFeedback(this.$refs.registerButton);
+    },
     methods: {
       requestLogin() {
         let userToken = this.userToken,
@@ -32,6 +43,7 @@
           phoneReg = /\d{11}/,
           emailReg = /[\dA-Za-z]+@\w+\.\w+/,
           tokenType;
+        //check user's input according to phone or email regular expression,or remind user that the format of input is wrong when no regExp is matched
         if (userToken.match(phoneReg)) {
           tokenType = 'phone';
         } else if (userToken.match(emailReg)) {
@@ -41,6 +53,7 @@
           return;
         }
         let qs = require('qs');
+        //request login
         this.$axios({
           method: 'post',
           url: '/requestLogin',
@@ -55,11 +68,12 @@
             this.hintText = data.text;
             return;
           }
+          //remind user that login successfully and register user's information into vuex by committing mutation to vuex
           this.hintText = '登录成功!';
           setTimeout(() => {
             this.$store.commit('user/registerUserInfo', data);
             this.$emit('input', false);
-          }, 1500);
+          }, 1000);
         })
       }
     },
@@ -68,19 +82,18 @@
       hint
     }
   }
-
 </script>
 
 <style lang="less" scoped>
   .login-panel {
     width: 100vw;
-    height: 93vh; // background-color: #F1F1F1;
-    // background-image: url("/static/images/login_bg.png");
-    // background-size: cover;
-    // background-position-y: -7vh;
+    height: 93vh;
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
+    justify-content: space-around;
+     background-image: url("/static/images/login_bg.jpg");
+        background-size: 110% 100%;
     .user-avatar {
       width: 40vw;
       height: 40vw;
@@ -92,22 +105,41 @@
       }
     }
     .input-area {
-      width: 60vw;
+      width: 70vw;
+      /deep/ .text-input {
+        &::after{
+          background-color: #FFFFFF;
+        }
+        input,
+        .input-hint {
+          color: #F1F1F1;
+        }
+        span.fa-stack {
+          color: #0080FF;
+        }
+        span.visibility {
+          color: #FAFAFA;
+        }
+      }
       .login-button,
-      .signup-button {
+      .register-button {
         display: block;
         width: 90%;
         height: 8vw;
         outline: none;
         border: none;
         border-radius: ~'8%/50%';
-        margin: 5vw auto;
+        margin: 8vw auto;
         font-size: 5vw;
         background-color: #4c96fd;
         box-shadow: 0 0 5px #5790c8;
         color: #FFFFFF;
+        transform: scale(1);
+        &.active {
+          transition: all .05s;
+          transform: scale(0.9);
+        }
       }
     }
   }
-
 </style>

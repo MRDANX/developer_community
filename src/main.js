@@ -13,6 +13,17 @@ import 'font-awesome/css/font-awesome.min.css';
 Vue.config.productionTip = false;
 
 Vue.prototype.$axios = axios;
+
+//method that add listener for toggling active class to the passing element
+function activeFeedback(el) {
+  el.addEventListener("touchstart", function () {
+    this.classList.add("active");
+  });
+  el.addEventListener("touchend", function () {
+    this.classList.remove("active");
+  });
+}
+Vue.prototype.$activeFeedback = activeFeedback;
 // Vue.use(MintUI);
 /* eslint-disable no-new */
 new Vue({

@@ -11,6 +11,10 @@
       value: {
         type: String,
         default: ''
+      },
+      delay:{
+        type: Number,
+        default: 2000
       }
     },
     watch: {
@@ -18,7 +22,7 @@
         if (n != '') {
           setTimeout(() => {
             this.$emit('input', '');
-          }, 2000);
+          }, this.delay);
         }
       }
     }
@@ -35,14 +39,15 @@
   .hint {
     transition: all .5s;
     position: absolute;
+    top:50%;
     left: 50%;
-    transform: translateX(-50%);
-    bottom: 20vh;
+    transform: translate(-50%,-50%);
     color: #F1F1F1;
     font-size: 4vw;
     padding: 2vw 4vw;
     border-radius: 5px;
     background-color: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
   }
 
 </style>

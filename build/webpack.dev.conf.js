@@ -111,15 +111,15 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         let tokenType = req.body.tokenType,
           userToken = req.body.userToken,
           password = req.body.password,
-          sql;
+          querySql;
         if (tokenType == 'phone') {
-          sql = 'SELECT * FROM user where phone=? AND password=?'
+          querySql = 'SELECT * FROM user where phone=? AND password=?'
         } else {
-          sql = 'SELECT * FROM user where email=? AND password=?'
+          querySql = 'SELECT * FROM user where email=? AND password=?'
         }
         let inserts = [userToken, password];
         new Promise((resolve, reject) => {
-          connection.query(sql, inserts, (err, result) => {
+          connection.query(querySql, inserts, (err, result) => {
             if (err) throw err;
             if (result.length != 0) {
               resolve(result[0]);
@@ -138,6 +138,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           let getFolloweePromise = getFollowee(userID);
           let getCollectionPromise = getCollection(userID);
           let allPromise = Promise.all([getOriginalArticlePromise, getFavoritelArticlePromise, getFollowerPromise, getFolloweePromise, getCollectionPromise]).then(result => {
+            //use es6 grammar to deconstruct result into corresponding variable
             let [originalArticle, favoriteArticle, follower, followee, collection] = result;
             Object.assign(userInfo, {
               originalArticle,
@@ -153,9 +154,54 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         }).catch(err => {
           res.json(err);
         });
-
       });
 
+      //router for modifying user's information
+      app.post('/modifyUserInfo', (req, res) => {
+        let userID = req.body.userID,
+          modifyType = req.body.modifyType,
+          modifiedText = req.body.modifiedText,
+          modifySql;
+        //dictionary of modify type
+        let modifyTypeDict = [{
+          text: '用户名',
+          value: 'userName'
+        }, {
+          text: '职位',
+          value: 'job'
+        }, {
+          text: '公司',
+          value: 'company'
+        }, {
+          text: '简介',
+          value: 'introduce'
+        }, {
+          text: '博客地址',
+          value: 'blogAddr'
+        }];
+        modifyTypeDict.forEach(type => {
+          if (modifyType == type.text) {
+            modifyType = type.value;
+          }
+        });
+        modifySql = `UPDATE user SET ${modifyType}=? WHERE userID=?`;
+        let inserts = [modifiedText, userID];
+        connection.query(modifySql, inserts, (err, result) => {
+          if (err) {
+            if (err.code == 'ER_DUP_ENTRY') {
+              res.json({ errno: 1062, text: '用户名已存在!' });
+              return
+            } else {
+              throw err;
+            }
+          }
+          if (result.affectedRows == 1) {
+            res.json({ errno: null, text: '修改成功!' });
+          } else {
+            console.log('failed to update user\'s information');
+          }
+        });
+      });
       //router for getting articleList
       app.get('/api/getArticleList', (req, res) => {
         let getArticleListSql = 'SELECT a.*,u.userName as author,u.avatar FROM article a,user u where a.userID=u.userID AND subject=? LIMIT ?,?';
@@ -212,7 +258,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
             break;
         }
         setTimeout(() => {
-          connection.query(getArticleListSql, inserts, function (err, result) {
+          connection.query(getArticleListSql, inserts, function(err, result) {
             if (err) throw err;
             //return data of article list as format JSON
             res.json(result);

@@ -23,7 +23,7 @@
         <div class="edit-button" @click="showPersonalSetting=true">编辑
         </div>
       </div>
-      <slide-out title="个人设置" v-model="showPersonalSetting">
+      <slide-out id="personalSetting" title="个人设置" v-model="showPersonalSetting">
         <personal-setting></personal-setting>
       </slide-out>
     </li>
@@ -67,7 +67,6 @@
       personalSetting
     }
   }
-
 </script>
 
 <style lang="less" scoped>
@@ -126,7 +125,6 @@
             font-size: 4vw;
           }
         }
-
       }
       div.follower-edit {
         margin-top: 3vw;
@@ -146,5 +144,4 @@
       }
     }
   }
-
 </style>
