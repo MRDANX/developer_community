@@ -8,7 +8,7 @@
         <li class="user-info" ref="userInfo" @click="showUserOrLogin=true">
           <div>
             <div class="avatar">
-              <img :src="userInfo.avatar" alt="" v-if="userInfo.avatar">
+              <img :src="userInfo.avatar" v-if="userInfo.avatar"/>
               <i class="fa fa-user-circle-o" v-else></i>
             </div>
             <div class="user-name">
@@ -84,7 +84,6 @@
   import slideOut from "@/components/common/slideOut";
   import login from "@/components/settingPage/login";
   import userInfo from "@/components/settingPage/userInfo";
-  import signup from "@/components/settingPage/signup";
   import setting from "@/components/settingPage/setting";
   export default {
     name: "settingPage",
@@ -114,7 +113,6 @@
       scroll,
       slideOut,
       login,
-      signup,
       userInfo,
       setting
     }
@@ -163,7 +161,11 @@
           align-items: center;
           div.avatar {
             height: 20vw;
+            width: 20vw;
+            overflow: hidden;
+            border-radius: 50%;
             img {
+              // width: 100%;
               height: 100%;
             }
           }

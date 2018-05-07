@@ -1,9 +1,9 @@
 <template>
   <div class="text-input">
-    <span class="input-hint" :class="{active:isFocus||value}">{{hint}}</span>
+    <span class="input-hint" :class="{active:isFocus||value}">{{hint}}<em>{{emphasizedHint}}</em></span>
     <input class="input-content" :type="innerInputType" :value="value" @input="$emit('input',$event.target.value)" @focus="isFocus=true"
-      @blur="isFocus=false" ref="input" />
-    <span class="fa-stack fa-lg" v-if="value&&inputType=='text'" @click="$emit('input','')">
+      @blur="inputBlur" ref="input" @keyup.enter="$emit('pressEnter')" />
+    <span class="fa-stack fa-lg" v-if="value&&inputType=='text'" @click="clearInputText">
       <i class="fa fa-circle fa-stack-2x"></i>
       <i class="fa fa-close fa-inverse fa-stack-1x"></i>
     </span>
@@ -30,6 +30,10 @@
       hint: {
         type: String,
         default: "用户"
+      },
+      emphasizedHint:{
+        type: String,
+        default: ''
       }
     },
     methods: {
@@ -40,13 +44,20 @@
           this.innerInputType = "text";
         }
         this.$refs.input.focus();
+      },
+      inputBlur() {
+        this.isFocus = false;
+        this.$emit('blur');
+      },
+      clearInputText(){
+        this.$emit('input','');
+        this.$emit('clearInputText');
       }
     },
     created() {
       this.innerInputType = this.inputType;
     }
   };
-
 </script>
 
 <style lang="less" scoped>
@@ -76,6 +87,11 @@
         transform: translateY(-65%);
         transform-style: preserve-3d;
       }
+      em {
+        font-style: normal;
+        color: #FFFF33;
+        margin-left: 6vw;
+      }
     }
     .input-content {
       position: absolute;
@@ -103,5 +119,4 @@
       font-size: 5vw;
     }
   }
-
 </style>

@@ -37,6 +37,8 @@
     </ul>
     <div class="logout" ref="logout" v-if="userInfo.userID" @click="logout">退出登录</div>
     <div class="product">开发者社区1.0 • 程丹雄</div>
+		<hint v-model="hintText"/>
+    <loading v-if="showLoading" :verticalMove="-20"/>
   </div>
 </template>
 
@@ -44,8 +46,16 @@
   import {
     mapState
   } from "vuex";
+  import hint from "@/components/common/hint";
+  import loading from "@/components/common/loading";
   export default {
     name: 'setting',
+    data() {
+      return {
+        hintText: '',
+        showLoading: false
+      }
+    },
     computed: {
       ...mapState('user', ['userInfo'])
     },
@@ -57,8 +67,17 @@
     },
     methods: {
       logout() {
-        this.$store.commit('user/unregisterUserInfo');
+        this.showLoading = true;
+        setTimeout(() => {
+          this.$store.commit('user/unregisterUserInfo');
+          this.hintText = '已成功退出登录!';
+          this.showLoading = false;
+        }, 1000);
       }
+    },
+    components: {
+      hint,
+      loading
     }
   }
 </script>
@@ -83,6 +102,9 @@
         font-size: 5vw;
         &.margin-top {
           margin-top: 5vw;
+        }
+        &:active {
+          background-color: #CCCCCC;
         }
       }
     }

@@ -103,6 +103,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
       //use body-parser for parsing parameters passed from client
       app.use(bodyParser.urlencoded({
+        limit: '50mb',
         extended: false
       }));
 
@@ -156,29 +157,86 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         });
       });
 
+      //router for check whether field is duplicated
+      app.get('/checkUserInfoDuplicate', (req, res) => {
+        let type = req.query.type,
+          field = req.query.field,
+          checkSql = `SELECT * FROM user WHERE ${type}=?`,
+          inserts = [field],
+          chineseType;
+        switch (type) {
+          case 'phone':
+            chineseType = '手机号';
+            break;
+          case 'email':
+            chineseType = '邮箱';
+            break;
+          case 'userName':
+            chineseType = '用户名';
+            break;
+          default:
+            console.log('something went wrong at server\'s chekcUserInfoDuplicate 1');
+            break;
+        }
+        connection.query(checkSql, inserts, (err, result) => {
+          if (err) throw err;
+          if (result.length >= 1) {
+            res.json({ err: 'duplicated', text: `该${chineseType}已被注册!` });
+          } else {
+            res.json({ err: null, text: `该${chineseType}可注册!` })
+          }
+        })
+
+      });
+
+      //router for registering user's information
+      app.post('/requestRegister', (req, res) => {
+        let registerSql = "INSERT INTO user(avatar,phone,email,userName,password) VALUE(?,?,?,?,?)",
+          data = req.body,
+          avatar = data.avatar,
+          phone = data.phone,
+          email = data.email,
+          userName = data.userName,
+          password = data.password,
+          inserts = [avatar, phone, email, userName, password];
+        connection.query(registerSql, inserts, (err, result) => {
+          if (err) throw err;
+          if (result.affectedRows == 1) {
+            res.json({ err: null, text: '注册成功!' });
+          } else {
+            res.json({ err: 'failed', text: '注册失败,请重新尝试一次!' });
+          }
+        });
+      });
+
       //router for modifying user's information
       app.post('/modifyUserInfo', (req, res) => {
-        let userID = req.body.userID,
+        let modifySql,
+          userID = req.body.userID,
           modifyType = req.body.modifyType,
-          modifiedText = req.body.modifiedText,
-          modifySql;
+          modifiedText = req.body.modifiedText;
         //dictionary of modify type
         let modifyTypeDict = [{
-          text: '用户名',
-          value: 'userName'
-        }, {
-          text: '职位',
-          value: 'job'
-        }, {
-          text: '公司',
-          value: 'company'
-        }, {
-          text: '简介',
-          value: 'introduce'
-        }, {
-          text: '博客地址',
-          value: 'blogAddr'
-        }];
+            text: '头像',
+            value: 'avatar'
+          },
+          {
+            text: '用户名',
+            value: 'userName'
+          }, {
+            text: '职位',
+            value: 'job'
+          }, {
+            text: '公司',
+            value: 'company'
+          }, {
+            text: '简介',
+            value: 'introduce'
+          }, {
+            text: '博客地址',
+            value: 'blogAddr'
+          }
+        ];
         modifyTypeDict.forEach(type => {
           if (modifyType == type.text) {
             modifyType = type.value;

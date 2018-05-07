@@ -1,6 +1,6 @@
 <template>
   <transition name="hint-fade">
-    <div class="hint" v-if="value">{{value}}</div>
+    <div class="hint" v-if="value" :style="{top:relativeTop,left:relativeLeft}">{{value}}</div>
   </transition>
 </template>
 
@@ -12,9 +12,25 @@
         type: String,
         default: ''
       },
-      delay:{
+      delay: {
         type: Number,
         default: 2000
+      },
+      verticalMove: {
+        type: Number,
+        default: 0
+      },
+      horizontalMove: {
+        type: Number,
+        default: 0
+      }
+    },
+    computed: {
+      relativeTop() {
+        return 'calc(50% + '+this.verticalMove+'vh)';
+      },
+      relativeLeft() {
+        return 'calc(50% + '+this.horizontalMove+'vw)';
       }
     },
     watch: {
@@ -27,7 +43,6 @@
       }
     }
   }
-
 </script>
 
 <style scoped>
@@ -39,9 +54,10 @@
   .hint {
     transition: all .5s;
     position: absolute;
-    top:50%;
+    width: fit-content;
+    top: 50%;
     left: 50%;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
     color: #F1F1F1;
     font-size: 4vw;
     padding: 2vw 4vw;
@@ -49,5 +65,4 @@
     background-color: rgba(0, 0, 0, 0.8);
     z-index: 9999;
   }
-
 </style>

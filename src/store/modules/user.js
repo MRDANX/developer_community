@@ -8,7 +8,7 @@ const state = {
 const mutations = {
   registerUserInfo(state, userInfo) {
     state.userInfo = userInfo;
-    localStorage.setItem('avatar', state.userInfo.avatar);
+    localStorage.setItem('avatar', state.userInfo.avatar || '');
     localStorage.setItem('userInfo', JSON.stringify(state.userInfo));
     localStorage.setItem('userInfoExpire', Date.now());
   },

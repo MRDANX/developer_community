@@ -4,8 +4,9 @@
       <li>
         <span>头像</span>
         <div class="avatar">
-          <img :src="userInfo.avatar" alt="" v-if="userInfo.avatar">
-          <i class="fa fa-user-circle-o" v-else></i>
+          <img :src="userInfo.avatar" />
+          <input type="file" accept="image/jpeg,image/jpg,image/png" @change="avatarUpload($event.target)">
+          <!-- <i class="fa fa-user-circle-o" v-else></i> -->
         </div>
       </li>
       <li>
@@ -41,7 +42,7 @@
       </div>
     </transition>
     <hint v-model="hintText" :delay="2500">{{hintText}}</hint>
-    <loading v-if="showLoading"/>
+    <loading v-if="showLoading" :verticalMove="-6"/>
   </div>
 </template>
 
@@ -68,12 +69,6 @@
       for (let i = 0; i < butttons.length; i++) {
         this.$activeFeedback(butttons[i]);
       }
-      // let settingList=this.$refs.settingList.children;
-      // for (let i = 0; i < settingList.length; i++) {
-      //   settingList[i].addEventListener('click')
-      // }
-      // console.dir(settingList);
-
     },
     methods: {
       confirmModify() {
@@ -98,6 +93,29 @@
           this.showLoading = false;
           this.showPopup = false;
         });
+      },
+      avatarUpload(target) {
+        //read image uploaded locally and display it as avatar in real time
+        let limitSize = 1 * 1024 * 1024, //max-size 1MB
+          tmpAvatar = target.files[0],
+          fr = new FileReader();
+        if (tmpAvatar) {
+          if (tmpAvatar.size >= limitSize) {
+            this.hintText = '图片大小不能超过1MB,请重新选择!';
+            return;
+          }
+          this.showLoading = true;
+          fr.readAsDataURL(tmpAvatar);
+          fr.onload = () => {
+            this.modifyType = '头像';
+            this.oldText = this.userInfo.avatar;
+            this.modifiedText = fr.result;
+            this.confirmModify();
+            console.log('modify avatar successfully');
+
+            // this.avatar = fr.result;
+          }
+        }
       },
       popup(target, modifyType) {
         let text = target.innerText,
@@ -168,19 +186,30 @@
           color: #999999;
         }
         div.avatar {
-          width: 16%;
-          height: 80%;
+          width: 8vh;
+          height: 8vh;
           position: relative;
+          overflow: hidden;
+          border-radius: 50%;
           img {
+            // width: 100%;
             height: 100%;
           }
-          i.fa {
-            font-size: 14vw;
-            color: #666666;
+          input[type='file'] {
             position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-          }
+            top: -50%;
+            left: 0;
+            width: 100%;
+            height: 150%;
+            outline: none;
+            background-color: transparent;
+          } // i.fa {
+          //   font-size: 14vw;
+          //   color: #666666;
+          //   position: absolute;
+          //   top: 50%;
+          //   transform: translateY(-50%);
+          // }
         }
       }
     }

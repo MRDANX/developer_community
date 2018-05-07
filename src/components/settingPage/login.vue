@@ -4,25 +4,34 @@
       <img :src="storedAvatar||'/static/images/avatar/default-avatar.png'" alt="">
     </div>
     <div class="input-area">
-      <text-input v-model="userToken" inputType="text" hint="手机/邮箱" />
-      <text-input v-model="password" inputType="password" hint="密  码" />
+      <text-input v-model="userToken" inputType="text" hint="手机/邮箱" @pressEnter="requestLogin"/>
+      <text-input v-model="password" inputType="password" hint="密  码" @pressEnter="requestLogin"/>
       <button class="login-button" @click="requestLogin" ref="loginButton">登录</button>
-      <button class="register-button" ref="registerButton">注册</button>
+      <button class="register-button" ref="registerButton" @click="showRegister=true">注册</button>
     </div>
-    <hint v-model="hintText">{{hintText}}</hint>
+    <hint v-model="hintText"/>
+    <slide-out id="register" v-model="showRegister" title="用户注册">
+      <scroll>
+        <register v-model="showRegister"/>
+      </scroll>
+    </slide-out>
   </div>
 </template>
 
 <script>
+  import register from "@/components/settingPage/register";
   import textInput from "@/components/common/textInput";
   import hint from "@/components/common/hint";
+  import slideOut from "@/components/common/slideOut";
+  import scroll from "@/components/common/scroll";
   export default {
     name: 'login',
     data() {
       return {
         userToken: '',
         password: '',
-        hintText: ''
+        hintText: '',
+        showRegister: false
       }
     },
     computed: {
@@ -78,8 +87,11 @@
       }
     },
     components: {
-      textInput,
-      hint
+      hint,
+      scroll,
+      slideOut,
+      register,
+      textInput
     }
   }
 </script>
@@ -91,23 +103,22 @@
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
-    justify-content: space-around;
-     background-image: url("/static/images/login_bg.jpg");
-        background-size: 110% 100%;
+    justify-content: space-around; // background-image: url("/static/images/login_bg.jpg");
+    // background-size: 110% 100%;
     .user-avatar {
       width: 40vw;
       height: 40vw;
       overflow: hidden;
       border-radius: 50%;
       img {
-        width: 100%;
+        // width: 100%;
         height: 100%;
       }
     }
     .input-area {
       width: 70vw;
       /deep/ .text-input {
-        &::after{
+        &::after {
           background-color: #FFFFFF;
         }
         input,
@@ -140,6 +151,11 @@
           transform: scale(0.9);
         }
       }
+    }
+  }
+  #register {
+    /deep/ .wrapper {
+      height: 93vh;
     }
   }
 </style>

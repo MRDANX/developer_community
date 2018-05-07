@@ -3,8 +3,8 @@
     <li class="user-info margin-top" ref="userInfo" @click="showSlideOut=true">
       <div>
         <div class="avatar">
-          <img :src="userInfo.avatar" alt="" v-if="userInfo.avatar">
-          <i class="fa fa-user-circle-o" v-else></i>
+          <img :src="userInfo.avatar"/>
+          <!-- <i class="fa fa-user-circle-o" v-else></i> -->
         </div>
         <div class="user-name">
           <span>{{userInfo.userName||'登录/注册'}}</span>
@@ -108,8 +108,12 @@
         justify-content: space-between;
         align-items: center;
         div.avatar {
+          width: 20vw;
           height: 20vw;
+          overflow: hidden;
+          border-radius: 50%;
           img {
+            // width: 100%;
             height: 100%;
           }
         }
