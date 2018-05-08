@@ -17,6 +17,7 @@
         <span class="fa fa-spinner fa-spin" ref="loadMoreTips"></span>
       </div>
     </transition-group>
+    <!-- scroll to top button -->
     <span v-if="enableScrollToTopButton" class="fa fa-arrow-circle-up scrollToTop" :class="{active:showScrollToTopButton}" @click="_scrollToTop"
       ref="scrollToTopButton"></span>
     <hint v-model="hintText">{{hintText}}</hint>
@@ -32,10 +33,6 @@
       hint
     },
     props: {
-      data: {
-        type: Array,
-        default: () => []
-      },
       loadMore: {
         type: Function,
         default: () => {}
@@ -78,6 +75,7 @@
       //initialize scroll after DOM mounted
       this.$nextTick(() => {
         this._initScroll();
+        //simulate to pull down at first time to initialize
         this.isPullingDown = true;
         this._pullingDownReleased();
       });
@@ -307,7 +305,7 @@
       box-shadow: 0 0 5vw #FFFFFF;
       border-radius: 50%;
       transition: all .5s;
-      z-index: -99;
+      z-index: -1;
       ;
       &.active {
         bottom: 10vw;

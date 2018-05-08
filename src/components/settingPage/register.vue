@@ -107,6 +107,7 @@
               password
             })
           }).then(result => {
+            //set a timer to simulate delay of server's response
             setTimeout(() => {
               this.showLoading = false;
               this.hintText = result.data.text;

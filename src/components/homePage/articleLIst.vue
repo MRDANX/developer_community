@@ -75,7 +75,6 @@
       //return a promise which excute asychronized action to load more data
       loadMore() {
         return new Promise((resolve, reject) => {
-          // setTimeout(() => {
           this.$axios.get('/api/getArticleList', {
             params: {
               subject: this.subject,

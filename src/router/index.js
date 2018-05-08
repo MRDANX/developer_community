@@ -3,7 +3,7 @@ import Router from 'vue-router';
 // import welcomePage from '@/pages/welcomePage';
 // import layoutPage from '@/pages/layoutPage';
 // import notFoundPage from '@/pages/notFoundPage';
-// import commentPage from '@/pages/commentPage';
+// import trendPage from '@/pages/trendPage';
 // import searchPage from '@/pages/searchPage';
 // import settingPage from '@/pages/settingPage';
 // import homePage from '@/pages/homePage';
@@ -18,8 +18,8 @@ const homePage = () =>
   import ( /* webpackChunkName: "home" */ '@/pages/homePage');
 const articleList = () =>
   import ( /* webpackChunkName: "home" */ '@/components/homePage/articleList');
-const commentPage = () =>
-  import ('@/pages/commentPage');
+const trendPage = () =>
+  import ('@/pages/trendPage');
 const searchPage = () =>
   import ('@/pages/searchPage');
 const settingPage = () =>
@@ -64,8 +64,8 @@ export default new Router({
         },
         {
           path: '/comment',
-          name: 'commentPage',
-          component: commentPage,
+          name: 'trendPage',
+          component: trendPage,
           beforeEnter(to, from, next) {
             if (from.name == 'subject') {
               fromSubject = from.params.subject;

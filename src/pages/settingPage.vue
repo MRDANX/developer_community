@@ -65,7 +65,9 @@
         </li>
       </ul>
     </scroll>
-    <slide-out id="userInfo" v-model="showUserOrLogin" :class="userInfo.userID?'hide-login-panel':'login-background'" :title="userInfo.userID?'个人主页':'用户登录'">
+    <slide-out id="userInfo" v-model="showUserOrLogin" 
+              :class="userInfo.userID?'hide-login-panel':'login-background'" 
+              :title="userInfo.userID?'个人主页':'用户登录'">
       <component :is="showComponent" v-model="showUserOrLogin"></component>
     </slide-out>
     <slide-out id="otherSetting" v-model="showOtherSetting" title="设置" >
@@ -100,7 +102,7 @@
       }
     },
     mounted() {
-      //add active effect for click
+      //add active effect for clicking
       this.$activeFeedback(this.$refs.userInfo);
       let actions = this.$refs.actions.children;
       for (let i = 0; i < actions.length; i++) {
@@ -144,10 +146,11 @@
       .user-info {
         padding: 3vw;
         i.fa-user-circle-o {
-          font-size: 15vw;
+          font-size: 16vw;
           color: #777777;
           text-align: center;
           line-height: 20vw;
+          height: 100%;
         }
         i.arrow-right {
           font-size: 10vw;
@@ -164,6 +167,7 @@
             width: 20vw;
             overflow: hidden;
             border-radius: 50%;
+            text-align: center;
             img {
               // width: 100%;
               height: 100%;
