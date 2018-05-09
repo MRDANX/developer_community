@@ -31,6 +31,7 @@
       }
     },
     deactivated() {
+      this.searchText='';
       this.isSearching = false;
     },
     mounted() {
@@ -135,6 +136,7 @@
           margin-left: 3vw;
           color: #333333;
           background-color: transparent;
+          color: #FFFFFF;
         }
         i.fa-search {
           width: 10vw;

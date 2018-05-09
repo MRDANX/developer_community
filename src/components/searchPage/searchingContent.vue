@@ -9,39 +9,43 @@
               <ul>
                 <li v-for="(user,index) in detailedSearchUsers" :key="index">
                   <img :src="user.avatar" />
-                  <span>{{user.author}}</span>
+                  <span>{{user.userName}}</span>
                 </li>
               </ul>
             </div>
             <ul class="related-article">
               <li class="related-article-header">
                 <div class="header-left">
-                  <span>按浏览数排序</span>
-                  <span>按点赞数排序</span>
+                  <span :class="{active:currentOrderBy=='pv'}" @click="currentOrderBy='pv'">按浏览数排序</span>
+                  <span :class="{active:currentOrderBy=='favors'}" @click="currentOrderBy='favors'">按点赞数排序</span>
                 </div>
                 <div class="header-right">
                   <span>所有时间</span>
                   <i class="fa fa-angle-down"></i>
                 </div>
               </li>
-              <li class="related-article-content">
-
+              <li class="related-article-content" v-for="(article,index) in detailedSearchArticles" :key="index">
+                <h4 class="title">{{article.title}}</h4>
+                <p class="content">{{article.content|abstractContent}}</p>
+                <p class="meta"><span>{{article.favors}} 人喜欢 • {{article.author}} • {{article.date|dateFormat}}</span></p>
               </li>
             </ul>
           </div>
           <ul v-else class="simple-result">
             <li v-for="(user,index) in simpleSearchUsers" :key="'user'+index" class="result-user">
               <div class="result-user-left">
-                <img :src="user.avatar"/>
+                <div class="avatar">
+                  <img :src="user.avatar"/>
+                </div>
                 <div>
-                  <p>{{user.author}}</p>
-                  <p class="follower">粉丝 {{user.follower}}</p>
+                  <p v-html="highlightMatch(user.userName)"></p>
+                  <p class="follower">粉丝 {{user.followers}}</p>
                 </div>
               </div>
               <span class="result-user-right">作者</span>
             </li>
             <li v-for="(article,index) in simpleSearchArticles" :key="'article'+index" class="result-article">
-              <span class="title">{{article.title}}</span>
+              <span class="title" v-html="highlightMatch(article.title)"></span>
               <span  class="pv">阅读 {{article.pv}}</span>
             </li>
           </ul>
@@ -76,12 +80,14 @@
             </transition-group>
 				</div>
 			</transition>
+      <loading v-if="showLoading"/>
 		</div>
 	</scroll>
 </template>
 
 <script>
   import scroll from '@/components/common/scroll';
+  import loading from '@/components/common/loading';
   export default {
     name: 'searchingContent',
     props: {
@@ -96,35 +102,15 @@
     },
     data() {
       return {
+        showLoading: false,
         hots: ['单页面应用', 'Android', '前端', 'iOS', '反向代理', 'vue.js', '跨域', '小程序', 'nginx', 'Google', '面向对象', 'node', 'webpack', '用户体验', 'localStorage', 'mysql', 'bootstrap'],
         currentHotsIndex: 0,
         hotsRefreshing: false,
         searchHistory: [],
         getResult: false,
-        simpleSearchUsers: [{
-          userID: 1,
-          avatar: '/static/images/logo.png',
-          author: 'danxiong',
-          follower: 5
-        }, {
-          userID: 2,
-          avatar: '/static/images/logo.png',
-          author: 'danxiong1995',
-          follower: 15
-        }],
-        simpleSearchArticles: [{
-          articleID: 1,
-          title: '这是一个很长很长很长的标题这是一个很长很长很长的标题这是一个很长很长很长的标题',
-          pv: 122
-        }, {
-          articleID: 2,
-          title: '这是一个很长很长很长的标题这是一个很长很长很长的标题这是一个很长很长很长的标题',
-          pv: 122
-        }, {
-          articleID: 3,
-          title: '这是一个很长很长很长的标题这是一个很长很长很长的标题这是一个很长很长很长的标题',
-          pv: 122
-        }],
+        currentOrderBy: 'pv',
+        simpleSearchUsers: [],
+        simpleSearchArticles: [],
         detailedSearchUsers: [{
           userID: 1,
           avatar: '/static/images/logo.png',
@@ -133,8 +119,53 @@
           userID: 2,
           avatar: '/static/images/logo.png',
           author: 'danxiong',
+        }, {
+          userID: 1,
+          avatar: '/static/images/logo.png',
+          author: 'danxiong',
+        }, {
+          userID: 2,
+          avatar: '/static/images/logo.png',
+          author: 'danxiong',
+        }, {
+          userID: 1,
+          avatar: '/static/images/logo.png',
+          author: 'danxiong',
+        }, {
+          userID: 2,
+          avatar: '/static/images/logo.png',
+          author: 'danxiong',
+        }, {
+          userID: 1,
+          avatar: '/static/images/logo.png',
+          author: 'danxiong',
+        }, {
+          userID: 2,
+          avatar: '/static/images/logo.png',
+          author: 'danxiong',
         }],
-        detailedSearchArticles: []
+        detailedSearchArticles: [{
+          articleID: 2,
+          author: 'danxiong',
+          title: '这是一个很长很长很长的标题这是一个很长很长很长的标题这是一个很长很长很长的标题',
+          content: '这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容',
+          favors: 10,
+          date: new Date()
+        }, {
+          articleID: 2,
+          author: 'danxiong',
+          title: '这是一个很长很长很长的标题这是一个很长很长很长的标题这是一个很长很长很长的标题',
+          content: '这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容',
+          favors: 10,
+          date: new Date()
+        }, {
+          articleID: 2,
+          author: 'danxiong',
+          title: '这是一个很长很长很长的标题这是一个很长很长很长的标题这是一个很长很长很长的标题',
+          content: '这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容',
+          favors: 10,
+          date: new Date()
+        }]
       }
     },
     created() {
@@ -214,7 +245,7 @@
         this.$nextTick(() => {
           this.setLocalHistory();
           this.getResult = true;
-        })
+        });
       },
       setLocalHistory() {
         let localSearchHistory = JSON.parse(localStorage.getItem('searchHistory'));
@@ -231,6 +262,25 @@
           this.searchHistory.unshift(this.searchText);
           localStorage.setItem('searchHistory', JSON.stringify(this.searchHistory))
         }
+      },
+      getSimpleResultFromServer() {
+        this.showLoading = true;
+        this.$axios({
+          method: 'get',
+          url: '/searchForSimple',
+          params: {
+            searchText: this.searchText
+          }
+        }).then(result => {
+          this.simpleSearchUsers = result.data.users;
+          this.simpleSearchArticles = result.data.articles;
+          this.showLoading = false;
+        });
+      },
+      highlightMatch(text) {
+        let regExp = new RegExp(this.searchText, 'ig');
+        text=text.replace(/<script>(.*?)<\/script>/ig,'<ｓｃｒｉｐｔ>$1<／ｓｃｒｉｐｔ>');
+        return text.replace(regExp, '<strong style="color:#0080FF">$&</strong>');
       }
     },
     watch: {
@@ -239,7 +289,7 @@
         if (n == '') {
           this.$emit('setSearchButton', false);
         } else {
-
+          this.getSimpleResultFromServer();
         }
       },
       searchButtonPressed(pressed) {
@@ -254,8 +304,40 @@
         localStorage.setItem('searchHistory', JSON.stringify(this.searchHistory));
       }
     },
+    filters: {
+      dateFormat(time) {
+        let dayMilli, days, hoursMilli, hours, minutesMilli, minutes, secondMill, seconds;
+        dayMilli = Date.now() - new Date(time).getTime();
+        days = Math.floor(dayMilli / (24 * 3600 * 1000));
+        hoursMilli = dayMilli % (24 * 3600 * 1000);
+        hours = Math.floor(hoursMilli / (3600 * 1000));
+        minutesMilli = hoursMilli % (3600 * 1000);
+        minutes = Math.floor(minutesMilli / (60 * 1000));
+        secondMill = minutesMilli % (60 * 1000);
+        seconds = Math.floor(secondMill / 1000);
+        if (days) {
+          return days + '天前';
+        } else if (hours) {
+          return hours + '小时前';
+        } else if (minutes) {
+          return minutes + '分前';
+        } else if (seconds) {
+          return seconds + '秒前';
+        } else {
+          return 'something went wrong!';
+        }
+      },
+      abstractContent(content) {
+        return content.replace(/<\/?[^>]+>/g, '').slice(0, 100);;
+      },
+      checkMatch(text, searchText) {
+        let regExp = new RegExp(searchText, 'g');
+        return text.replace(regExp, `<strong>${searchText}</strong>`);
+      }
+    },
     components: {
-      scroll
+      scroll,
+      loading
     }
   }
 </script>
@@ -279,10 +361,10 @@
     width: 100%;
     .searching-result {
       width: 100vw;
-      background-color: #FFFFFF;
       transition: all .5s;
       font-size: 4vw;
       .simple-result {
+        background-color: #FFFFFF;
         padding: 0 3vw;
         li {
           border-bottom: 1px solid #CCCCCC;
@@ -304,9 +386,15 @@
                 color: #666666;
               }
             }
-            img {
+            .avatar {
+              width: 18vw;
               height: 18vw;
               margin-right: 5vw;
+              border-radius: 50%;
+              overflow: hidden;
+              img {
+                height: 100%;
+              }
             }
           }
           .result-user-right {
@@ -326,9 +414,10 @@
       .detailed-result {
         .related-user {
           padding: 3vw;
+          background-color: #FFFFFF;
           border-bottom: 1px solid #CCCCCC;
-          p{
-            margin-bottom: 3vw;
+          p {
+            margin-bottom: 4vw;
           }
           ul {
             display: flex;
@@ -341,13 +430,54 @@
               align-items: center;
               font-size: 4vw;
               margin-right: 5vw;
+              margin-bottom: 3vw;
               img {
                 height: 70%;
               }
             }
           }
         }
-        .related-article {}
+        .related-article {
+          margin-top: 3vw;
+          padding: 0 3vw;
+          background-color: #FFFFFF;
+          box-shadow: 0 0 4px #CCCCCC;
+          .related-article-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 2vw 0;
+            .header-left {
+              span.active {
+                color: #0080FF;
+                transition: all .3s;
+              }
+              span:first-of-type {
+                border-right: 1px solid #CCCCCC;
+                padding-right: 3vw;
+              }
+              span:last-of-type {
+                padding-left: 3vw;
+              }
+            }
+          }
+          .related-article-content {
+            margin-top: 5vw;
+            padding-bottom: 3vw;
+            border-bottom: 1px solid #CCCCCC;
+            .title {
+              margin-bottom: 2vw;
+            }
+            .content {
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 3;
+              overflow: hidden;
+            }
+            .meta {
+              margin-top: 3vw;
+            }
+          }
+        }
       }
     }
     .searching-recommend {

@@ -2,7 +2,7 @@
 	<scroll :enableScrollToTopButton="true" :enableLoadMore="true" :loadMore="loadMore">
 		<div class="search-content">
 			<div class="carousel">
-				<carousel :loop="true" :autoPlay="true" :showDot="true">
+				<carousel :loop="true" :autoPlay="true" >
 					<img src="/static/images/activity/carousel1.jpg" class="item">
 					<img src="/static/images/activity/carousel2.jpg" class="item">
 					<img src="/static/images/activity/carousel3.jpg" class="item">
@@ -72,30 +72,30 @@
     },
     beforeMount() {
       // setTimeout(() => {
-        this.$axios.get('/api/getArticleList', {
-          params: {
-            subject: 'index',
-            startIndex: this.articleList.length,
-            number: 5
-          },
-          timeout: 4000
-        }).then(result => {
-          if (result.data.length == 0) {
-            reject({
-              errno: 0,
-              text: '已经是最新的了!'
-            });
-          }
-          this.articleList = result.data.concat(this.articleList);
-        }).catch(err => {
-          if (err.response) {
-            console.log('error.response: ', err.response);
-          } else if (err.request.readyState == 4 && err.request.status == 0) {
-            console.warn('Request timeout!');
-          } else {
-            console.error(err);
-          }
-        });
+      this.$axios.get('/api/getArticleList', {
+        params: {
+          subject: 'index',
+          startIndex: this.articleList.length,
+          number: 5
+        },
+        timeout: 4000
+      }).then(result => {
+        if (result.data.length == 0) {
+          reject({
+            errno: 0,
+            text: '已经是最新的了!'
+          });
+        }
+        this.articleList = result.data.concat(this.articleList);
+      }).catch(err => {
+        if (err.response) {
+          console.log('error.response: ', err.response);
+        } else if (err.request.readyState == 4 && err.request.status == 0) {
+          console.warn('Request timeout!');
+        } else {
+          console.error(err);
+        }
+      });
       // }, 500);
     },
     methods: {
@@ -209,7 +209,7 @@
       width: 100%;
       margin-top: 5vw;
       box-shadow: 0 0 1vw #CCCCCC;
-			background-color: #FFFFFF;
+      background-color: #FFFFFF;
       .title {
         display: flex;
         padding: 3vw;
@@ -239,6 +239,11 @@
           h4 {
             font-size: 4.5vw;
             font-weight: normal;
+            margin: 1vw 0;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
           }
           span {
             font-size: 4vw;
@@ -268,8 +273,8 @@
             font-size: 4.5vw;
             font-weight: normal;
             background-color: #CCCCCC;
-						border-radius: 10px;
-						margin-bottom: 3vw;
+            border-radius: 10px;
+            margin-bottom: 3vw;
           }
           p {
             line-height: 5vw;

@@ -113,6 +113,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           userToken = req.body.userToken,
           password = req.body.password,
           querySql;
+
         if (tokenType == 'phone') {
           querySql = 'SELECT * FROM user where phone=? AND password=?'
         } else {
@@ -150,7 +151,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
             });
             res.json(userInfo);
           }).catch(err => {
-            res.end('something went wrong when query database');
+            res.end('something went wrong when querying database');
           });
         }).catch(err => {
           res.json(err);
@@ -323,6 +324,30 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           });
         }, 1000);
       });
+
+      //router for searching for article or user
+      app.get('/searchForSimple', (req, res) => {
+        let searchText = req.query.searchText;
+        let getUsersSql = `SELECT u.userID,avatar,userName,COUNT(followerUserID) as followers FROM user u LEFT JOIN follower f ON u.userID=f.userID WHERE userName like '%${searchText}%' GROUP BY u.userID LIMIT 3`,
+          getArticlesSql = `SELECT articleID,title,pv FROM article WHERE title like '%${searchText}%' LIMIT 5`;
+        let getUsers = new Promise((resolve, reject) => {
+          connection.query(getUsersSql, (err, users) => {
+            if (err) throw err;
+            resolve(users);
+          });
+        });
+        let getArticles = new Promise((resolve, reject) => {
+          connection.query(getArticlesSql, (err, articles) => {
+            if (err) throw err;
+            resolve(articles);
+          });
+        });
+        Promise.all([getUsers, getArticles]).then(result => {
+          let [users, articles] = result;
+          res.json({ users, articles })
+        })
+
+      })
     },
 
     clientLogLevel: 'warning',
