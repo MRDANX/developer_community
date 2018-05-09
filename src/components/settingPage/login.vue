@@ -10,6 +10,7 @@
       <button class="register-button" ref="registerButton" @click="showRegister=true">注册</button>
     </div>
     <hint v-model="hintText"/>
+    <loading v-if="showLoading" :verticalMove="-5" color="#FFFFFF"/>
     <slide-out id="register" v-model="showRegister" title="用户注册">
       <scroll>
         <register v-model="showRegister"/>
@@ -22,6 +23,7 @@
   import register from "@/components/settingPage/register";
   import textInput from "@/components/common/textInput";
   import hint from "@/components/common/hint";
+  import loading from "@/components/common/loading";
   import slideOut from "@/components/common/slideOut";
   import scroll from "@/components/common/scroll";
   export default {
@@ -31,7 +33,8 @@
         userToken: '',
         password: '',
         hintText: '',
-        showRegister: false
+        showRegister: false,
+        showLoading: false
       }
     },
     computed: {
@@ -62,6 +65,7 @@
           return;
         }
         let qs = require('qs');
+        this.showLoading = true;
         //request login
         this.$axios({
           method: 'post',
@@ -78,9 +82,12 @@
             return;
           }
           //remind user that login successfully and register user's information into vuex by committing mutation to vuex
+          this.showLoading = false;
           this.hintText = '登录成功!';
           setTimeout(() => {
+            //register userInfo to vuex's user module
             this.$store.commit('user/registerUserInfo', data);
+            //close current login panel
             this.$emit('input', false);
           }, 1000);
         })
@@ -91,7 +98,8 @@
       scroll,
       slideOut,
       register,
-      textInput
+      textInput,
+      loading
     }
   }
 </script>
@@ -153,6 +161,7 @@
       }
     }
   }
+
   #register {
     /deep/ .wrapper {
       height: 93vh;

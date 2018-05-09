@@ -89,6 +89,10 @@
           scrollToTopButton.classList.remove('shrink');
         });
       }
+      //refresh scroll when resize the visible window
+      window.addEventListener('resize',()=>{
+        this._refresh();
+      })
     },
     activated() {
       this._refresh();

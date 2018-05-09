@@ -38,7 +38,6 @@
     name: "homePage",
     data() {
       return {
-        articleList: [],
         subjectList: [{
             text: "首页",
             to: "index"
@@ -80,7 +79,7 @@
             to: "backend"
           }
         ],
-        enabledSubjectsIndex: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+        enabledSubjectsIndex: [0, 1, 2, 4, 5, 8],
         showSlideOut: false,
         currentArticleListIndex: 1,
         changeArticleListAnimation: 'slide-top',
@@ -162,7 +161,6 @@
       slideOut
     }
   };
-
 </script>
 
 <style lang="less" scoped>
@@ -266,8 +264,7 @@
           line-height: 8vh;
           padding: 1vw 5vw;
           background-color: #ffffff;
-          box-shadow: 0 0 5vw #CCCCCC;
-        //   border-bottom: 1px solid #cccccc;
+          box-shadow: 0 0 5vw #CCCCCC; //   border-bottom: 1px solid #cccccc;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -300,5 +297,4 @@
       }
     }
   }
-
 </style>

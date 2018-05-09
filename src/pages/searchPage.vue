@@ -1,16 +1,16 @@
 <template>
   <div class="search-page">
     <div class="nav" :class="{searching:isSearching}">
-      <i class="fa fa-angle-left" ref="goBack" @click="isSearching = false"></i>
+      <i class="fa fa-angle-left" ref="goBack" @click="goBack"></i>
       <div class="search-box">
-        <input type="text" @focus="isSearching=true" @blur="searchText=''" v-model="searchText" />
-        <i class="fa fa-search" ref="searchButton"></i>
+        <input type="text" @focus="isSearching=true" v-model="searchText" @keyup.enter="searchButtonPressed=true"/>
+        <i class="fa fa-search" ref="searchButton" @click="searchButtonPressed=true"></i>
       </div>
     </div>
     <div class="content" :class="{searching:isSearching}">
       <transition :name="isSearching?'slide-down':'slide-up'" >
         <keep-alive>
-          <component :is="isSearching?'searchingContent':'searchContent'" v-model="searchText"></component>
+          <component :is="isSearching?'searchingContent':'searchContent'" v-model="searchText" :searchButtonPressed="searchButtonPressed" @setSearchButton="searchButtonPressed=$event" />
         </keep-alive>
       </transition>
     </div>
@@ -26,13 +26,22 @@
       return {
         searchText: '',
         isSearching: false,
+        searchButtonPressed:false,
         slideDirection: 'slide-down'
       }
     },
-    methods: {},
+    deactivated() {
+      this.isSearching = false;
+    },
     mounted() {
       this.$activeFeedback(this.$refs.goBack);
       this.$activeFeedback(this.$refs.searchButton);
+    },
+    methods:{
+      goBack(){
+        this.isSearching = false;
+        this.searchText='';
+      }
     },
     components: {
       searchContent,
