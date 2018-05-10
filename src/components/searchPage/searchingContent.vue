@@ -1,19 +1,21 @@
 <template>
-	<scroll>
+	<scroll :enableLoadMore="true" :loadMore="loadMoreDetailedArticles" ref="searchingScroll">
 		<div class="searching-content">
 			<transition name="fade">
 				<div class="searching-result" v-if="searchText" key="result">
           <div v-if="getResult" class="detailed-result">
-            <div class="related-user">
-              <p>相关用户</p>
+            <div class="related-user" v-if="detailedSearchUsers.length!=0">
+              <p>相关用户 <i class="fa fa-angle-right" v-if="detailedSearchUsers.length>8"></i> </p>
               <ul>
-                <li v-for="(user,index) in detailedSearchUsers" :key="index">
-                  <img :src="user.avatar" />
-                  <span>{{user.userName}}</span>
+                <li v-for="(user,index) in detailedSearchUsers.slice(0,7)" :key="index">
+                  <div class="avatar">
+                    <img :src="user.avatar" />
+                  </div>
+                  <span class="user-name">{{user.userName}}</span>
                 </li>
               </ul>
             </div>
-            <ul class="related-article">
+            <ul class="related-article" v-if="detailedSearchArticles.length!=0">
               <li class="related-article-header">
                 <div class="header-left">
                   <span :class="{active:currentOrderBy=='pv'}" @click="currentOrderBy='pv'">按浏览数排序</span>
@@ -25,8 +27,8 @@
                 </div>
               </li>
               <li class="related-article-content" v-for="(article,index) in detailedSearchArticles" :key="index">
-                <h4 class="title">{{article.title}}</h4>
-                <p class="content">{{article.content|abstractContent}}</p>
+                <h4 class="title" v-html="highlightMatch(article.title)"></h4>
+                <p class="content" v-html="highlightMatch(tagFilter(article.content))"></p>
                 <p class="meta"><span>{{article.favors}} 人喜欢 • {{article.author}} • {{article.date|dateFormat}}</span></p>
               </li>
             </ul>
@@ -111,61 +113,8 @@
         currentOrderBy: 'pv',
         simpleSearchUsers: [],
         simpleSearchArticles: [],
-        detailedSearchUsers: [{
-          userID: 1,
-          avatar: '/static/images/logo.png',
-          author: 'danxiong',
-        }, {
-          userID: 2,
-          avatar: '/static/images/logo.png',
-          author: 'danxiong',
-        }, {
-          userID: 1,
-          avatar: '/static/images/logo.png',
-          author: 'danxiong',
-        }, {
-          userID: 2,
-          avatar: '/static/images/logo.png',
-          author: 'danxiong',
-        }, {
-          userID: 1,
-          avatar: '/static/images/logo.png',
-          author: 'danxiong',
-        }, {
-          userID: 2,
-          avatar: '/static/images/logo.png',
-          author: 'danxiong',
-        }, {
-          userID: 1,
-          avatar: '/static/images/logo.png',
-          author: 'danxiong',
-        }, {
-          userID: 2,
-          avatar: '/static/images/logo.png',
-          author: 'danxiong',
-        }],
-        detailedSearchArticles: [{
-          articleID: 2,
-          author: 'danxiong',
-          title: '这是一个很长很长很长的标题这是一个很长很长很长的标题这是一个很长很长很长的标题',
-          content: '这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容',
-          favors: 10,
-          date: new Date()
-        }, {
-          articleID: 2,
-          author: 'danxiong',
-          title: '这是一个很长很长很长的标题这是一个很长很长很长的标题这是一个很长很长很长的标题',
-          content: '这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容',
-          favors: 10,
-          date: new Date()
-        }, {
-          articleID: 2,
-          author: 'danxiong',
-          title: '这是一个很长很长很长的标题这是一个很长很长很长的标题这是一个很长很长很长的标题',
-          content: '这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容这是一个很长很长很长很长的内容',
-          favors: 10,
-          date: new Date()
-        }]
+        detailedSearchUsers: [],
+        detailedSearchArticles: []
       }
     },
     created() {
@@ -245,6 +194,7 @@
         this.$nextTick(() => {
           this.setLocalHistory();
           this.getResult = true;
+          this.getDetailedRestulFromServer();
         });
       },
       setLocalHistory() {
@@ -277,10 +227,48 @@
           this.showLoading = false;
         });
       },
+      getDetailedRestulFromServer() {
+        this.showLoading = true;
+        this.$axios({
+          method: 'get',
+          url: '/searchForDetailed',
+          params: {
+            searchText: this.searchText,
+            articleOrderBy: this.currentOrderBy
+          }
+        }).then(result => {
+          this.detailedSearchUsers = result.data.users;
+          this.detailedSearchArticles = result.data.articles;
+          this.showLoading = false;
+        });
+      },
+      loadMoreDetailedArticles() {
+        return new Promise((resolve, reject) => {
+          this.$axios({
+            method: 'get',
+            url: '/searchForMoreDetailedArticle',
+            params: {
+              searchText: this.searchText,
+              articleOrderBy: this.currentOrderBy,
+              startIndex: this.detailedSearchArticles.length
+            }
+          }).then(result => {
+            if (result.data.length == 0) {
+              reject({ errno: 0, text: 'no more data.' })
+            }
+            this.detailedSearchArticles = this.detailedSearchArticles.concat(result.data);
+            resolve();
+          });
+        })
+
+      },
       highlightMatch(text) {
         let regExp = new RegExp(this.searchText, 'ig');
-        text=text.replace(/<script>(.*?)<\/script>/ig,'<ｓｃｒｉｐｔ>$1<／ｓｃｒｉｐｔ>');
+        text = text.replace(/<script>(.*?)<\/script>/ig, '<ｓｃｒｉｐｔ>$1<／ｓｃｒｉｐｔ>');
         return text.replace(regExp, '<strong style="color:#0080FF">$&</strong>');
+      },
+      tagFilter(text) {
+        return text.replace(/<\/?[^>]+>/g, '');
       }
     },
     watch: {
@@ -289,6 +277,7 @@
         if (n == '') {
           this.$emit('setSearchButton', false);
         } else {
+          this.$refs.searchingScroll.reenableLoadMore();
           this.getSimpleResultFromServer();
         }
       },
@@ -297,11 +286,16 @@
           this.getResult = true;
           if (this.searchText == '') return;
           this.setLocalHistory();
+          this.getDetailedRestulFromServer();
           this.$emit('setSearchButton', false);
         }
       },
       searchHistory() {
         localStorage.setItem('searchHistory', JSON.stringify(this.searchHistory));
+      },
+      currentOrderBy() {
+        this.$refs.searchingScroll.reenableLoadMore();
+        this.getDetailedRestulFromServer();
       }
     },
     filters: {
@@ -326,13 +320,6 @@
         } else {
           return 'something went wrong!';
         }
-      },
-      abstractContent(content) {
-        return content.replace(/<\/?[^>]+>/g, '').slice(0, 100);;
-      },
-      checkMatch(text, searchText) {
-        let regExp = new RegExp(searchText, 'g');
-        return text.replace(regExp, `<strong>${searchText}</strong>`);
       }
     },
     components: {
@@ -416,8 +403,15 @@
           padding: 3vw;
           background-color: #FFFFFF;
           border-bottom: 1px solid #CCCCCC;
+          margin-bottom: 3vw;
           p {
             margin-bottom: 4vw;
+            i.fa {
+              float: right;
+              font-size: 6vw;
+              font-weight: bold;
+              color: #666666;
+            }
           }
           ul {
             display: flex;
@@ -429,16 +423,27 @@
               flex-direction: column;
               align-items: center;
               font-size: 4vw;
-              margin-right: 5vw;
+              margin-right: 4vw;
               margin-bottom: 3vw;
-              img {
-                height: 70%;
+              .avatar {
+                width: 14vw;
+                height: 14vw;
+                border-radius: 50%;
+                overflow: hidden;
+                img {
+                  height: 100%;
+                }
               }
             }
           }
+          .user-name {
+            overflow: hidden;
+            max-width: 20vw;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
         }
         .related-article {
-          margin-top: 3vw;
           padding: 0 3vw;
           background-color: #FFFFFF;
           box-shadow: 0 0 4px #CCCCCC;

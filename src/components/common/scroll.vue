@@ -29,7 +29,7 @@
   import hint from "@/components/common/hint";
   export default {
     name: 'scroll',
-    components:{
+    components: {
       hint
     },
     props: {
@@ -65,7 +65,7 @@
         isPullingUp: false,
         showScrollToTopButton: false,
         _enableLoadMore: false,
-        hintText:''
+        hintText: ''
       }
     },
     created() {
@@ -90,7 +90,7 @@
         });
       }
       //refresh scroll when resize the visible window
-      window.addEventListener('resize',()=>{
+      window.addEventListener('resize', () => {
         this._refresh();
       })
     },
@@ -193,7 +193,7 @@
             if (err.errno == 0) {
               this.isPullingDown = false;
               this._enable();
-              this.hintText=err.text;
+              this.hintText = err.text;
               // console.log(err.text);
             } else {
               console.dir(err);
@@ -236,6 +236,18 @@
             }
           });
         }
+      },
+      reenableLoadMore() {
+        let loadMoreTips = this.$refs.loadMoreTips;
+        if (loadMoreTips) {
+          loadMoreTips.setAttribute('class', 'fa fa-spinner fa-spin');
+          loadMoreTips.style.fontSize = '';
+          loadMoreTips.innerHTML = '';
+        }
+        this._refresh();
+        //reenable action of load more data
+        this.isPullingUp = false;
+        this._enableLoadMore = true;
       }
     },
     updated() {
@@ -251,7 +263,6 @@
     //   }
     // }
   }
-
 </script>
 
 <style lang="less" scoped>
@@ -320,7 +331,5 @@
         transform: scale(0.8);
       }
     }
-
   }
-
 </style>

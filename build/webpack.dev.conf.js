@@ -139,7 +139,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           let getFollowerPromise = getFollower(userID);
           let getFolloweePromise = getFollowee(userID);
           let getCollectionPromise = getCollection(userID);
-          let allPromise = Promise.all([getOriginalArticlePromise, getFavoritelArticlePromise, getFollowerPromise, getFolloweePromise, getCollectionPromise]).then(result => {
+          Promise.all([getOriginalArticlePromise, getFavoritelArticlePromise, getFollowerPromise, getFolloweePromise, getCollectionPromise]).then(result => {
             //use es6 grammar to deconstruct result into corresponding variable
             let [originalArticle, favoriteArticle, follower, followee, collection] = result;
             Object.assign(userInfo, {
@@ -325,7 +325,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         }, 1000);
       });
 
-      //router for searching for article or user
+      //router for searching for simple article and user
       app.get('/searchForSimple', (req, res) => {
         let searchText = req.query.searchText;
         let getUsersSql = `SELECT u.userID,avatar,userName,COUNT(followerUserID) as followers FROM user u LEFT JOIN follower f ON u.userID=f.userID WHERE userName like '%${searchText}%' GROUP BY u.userID LIMIT 3`,
@@ -346,8 +346,47 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           let [users, articles] = result;
           res.json({ users, articles })
         })
+      });
 
-      })
+      //router for searching for detailed article and user
+      app.get('/searchForDetailed', (req, res) => {
+        let searchText = req.query.searchText,
+          articleOrderBy = req.query.articleOrderBy;
+        let getUsersSql = `SELECT userID,avatar,userName FROM user WHERE userName like '%${searchText}%' LIMIT 10`,
+          getArticlesSql = `SELECT articleID, userName AS author, title, content, favors, date FROM article a JOIN USER u ON a.userID=u.userID WHERE title LIKE '%${searchText}%' OR content LIKE '%${searchText}%' ORDER BY ${articleOrderBy} DESC LIMIT 5`
+        let getUsers = new Promise((resolve, reject) => {
+          connection.query(getUsersSql, (err, users) => {
+            if (err) throw err;
+            resolve(users);
+          });
+        });
+        let getArticles = new Promise((resolve, reject) => {
+          connection.query(getArticlesSql, (err, articles) => {
+            if (err) throw err;
+            resolve(articles);
+          });
+        });
+        Promise.all([getUsers, getArticles]).then(result => {
+          let [users, articles] = result;
+          res.json({ users, articles })
+        })
+      });
+
+      //router for searching for more detailed article 
+      app.get('/searchForMoreDetailedArticle', (req, res) => {
+        let searchText = req.query.searchText,
+          articleOrderBy = req.query.articleOrderBy,
+          startIndex = +req.query.startIndex,
+          getArticlesSql = `SELECT articleID, userName AS author, title, content, favors, date FROM article a JOIN USER u ON a.userID=u.userID WHERE title LIKE '%${searchText}%' OR content LIKE '%${searchText}%' ORDER BY ${articleOrderBy} DESC LIMIT ${startIndex},5`;
+        new Promise((resolve, reject) => {
+          connection.query(getArticlesSql, (err, articles) => {
+            if (err) throw err;
+            resolve(articles);
+          });
+        }).then(articles => {
+          res.json(articles);
+        });
+      });
     },
 
     clientLogLevel: 'warning',
