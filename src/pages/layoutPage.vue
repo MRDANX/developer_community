@@ -4,7 +4,23 @@
       <router-view />
     </keep-alive>
     <ul class="fixed-nav">
-      <router-link ref="links" v-for="(link,index) in links" :to="link.to" :key="index" class="fa" :class="link.class" tag="li"></router-link>
+      <router-link to="/subject" class="fa fa-home" tag="li" ref="subject"/>
+      <router-link to="/trend" class="fa fa-comments" tag="li"  ref="trend"/>
+      <li class="create-wrapper" @click="createToggle=!createToggle" >
+        <div class="create-mask"></div>
+        <span class="fa-stack fa-lg" ref="create">
+          <i class="fa fa-circle fa-stack-2x"></i>
+          <i class="fa fa-plus fa-stack-1x"></i>
+        </span>
+        <div class="create-article" :class="{active:createToggle}">
+          <router-link to="/createArticle" class="fa fa-gratipay" tag="i"></router-link>
+        </div>
+        <div class="create-trend" :class="{active:createToggle}">
+          <router-link to="/createTrend" class="fa fa-telegram" tag="i"></router-link>
+        </div>
+      </li>
+      <router-link to="/search" class="fa fa-search" tag="li"  ref="search"/>
+      <router-link to="/setting" class="fa fa-user" tag="li"  ref="setting"/>
     </ul>
   </div>
 </template>
@@ -14,40 +30,20 @@
     name: "layoutPage",
     data() {
       return {
-        links: [{
-            to: '/subject',
-            class: 'fa-home'
-          },
-          {
-            to: '/comment',
-            class: 'fa-comments'
-          },
-          {
-            to: '/search',
-            class: 'fa-search'
-          },
-          {
-            to: '/setting',
-            class: 'fa-user'
-          }
-        ]
+        createToggle: false
       }
     },
-    created(){
+    created() {
       this.$store.dispatch('user/checkUserInfo');
     },
     mounted() {
-      this.$refs.links.forEach(link => {
-        link.$el.addEventListener('touchstart', () => {
-          link.$el.classList.add('active');
-        });
-        link.$el.addEventListener('touchend', () => {
-          link.$el.classList.remove('active');
-        });
-      })
+      this.$activeFeedback(this.$refs.subject.$el);
+      this.$activeFeedback(this.$refs.trend.$el);
+      this.$activeFeedback(this.$refs.create);
+      this.$activeFeedback(this.$refs.search.$el);
+      this.$activeFeedback(this.$refs.setting.$el);
     }
   };
-
 </script>
 
 <style lang='less'>
@@ -74,17 +70,91 @@
         transition: color .3s;
         width: 25vw;
         text-align: center;
-        &:nth-child(3) {
+        z-index: 99;
+        &:nth-child(4) {
           font-size: 4.5vh;
         }
         &.router-link-active {
           color: #0080FF;
         }
-        &.active {
+        &.fa.active {
           background-color: rgba(0, 0, 0, .1);
+        }
+      }
+      li.create-wrapper {
+        position: relative;
+        color: #0080FF;
+        z-index: 97;
+        >span.fa-stack {
+          position: absolute;
+          top: -50%;
+          left: 50%;
+          font-size: 11vw;
+          transform: translateX(-50%) scale(1);
+          transition: all .2s;
+          z-index: 97;
+          i.fa-plus {
+            color: #FFFFFF;
+          }
+          &::before {
+            content: '';
+            position: absolute;
+            width: 10vw;
+            height: 10vw;
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            margin-top: -5vw;
+            margin-left: -5vw;
+            box-shadow: 0 -5px 20px 10px #0080FF;
+          }
+          &.active {
+            transform: translateX(-50%) scale(0.9);
+          }
+        }
+        .create-mask {
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          background-color: #FFFFFF;
+          z-index: 96;
+        }
+        .create-article,
+        .create-trend {
+          display: flex;
+          position: absolute;
+          top: -100%;
+          left: 50%; // transition: all .5s ease-in-out;
+          transform-origin: 50% 10.5vh;
+          z-index: 95;
+          .fa {
+            font-size: 8vw;
+            position: relative;
+            background-color: #FFFFFF;
+            border-radius: 50%;
+          }
+        }
+        .create-article {
+          transform: translateX(-50%) rotate(-150deg);
+          transition: transform .7s;
+          &.active {
+            z-index: 98;
+            transition: transform .9s, z-index .1s .9s; // transition: all .8s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            transform: translateX(-50%) rotate(-45deg);
+          }
+        }
+        .create-trend {
+          transform: translateX(-50%) rotate(-180deg);
+          transition: transform .9s;
+          &.active {
+            z-index: 98;
+            transition: transform .8s, z-index .1s .8s; // transition: all .8s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            transform: translateX(-50%) rotate(0deg);
+          }
         }
       }
     }
   }
-
 </style>

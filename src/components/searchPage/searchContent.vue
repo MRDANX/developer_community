@@ -208,7 +208,7 @@
     .hot-article {
       width: 100%;
       margin-top: 5vw;
-      box-shadow: 0 0 1vw #CCCCCC;
+      box-shadow: 0 0 1vw #FAFAFA;
       background-color: #FFFFFF;
       .title {
         display: flex;
@@ -234,6 +234,9 @@
         justify-content: space-between;
         align-items: center;
         box-shadow: 0 0 1px #CCCCCC;
+        &.article:last-of-type{
+          box-shadow: none;
+        }
         .article-info {
           flex: 0.96;
           h4 {

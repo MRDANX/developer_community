@@ -63,7 +63,7 @@ export default new Router({
           ]
         },
         {
-          path: '/comment',
+          path: '/trend',
           name: 'trendPage',
           component: trendPage,
           beforeEnter(to, from, next) {

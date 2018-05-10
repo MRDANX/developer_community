@@ -15,11 +15,16 @@
       </div>
     </div>
     <router-link to="" class="article-content" tag="div">
-      <div class="article-title">
-        <h4>{{articleInfo.title}}</h4>
+      <div class="article-info">
+        <div class="article-title">
+          <h4>{{articleInfo.title}}</h4>
+        </div>
+        <div class="article-abstrict">
+          {{articleInfo.content | abstractContent}}
+        </div>
       </div>
-      <div class="article-abstrict">
-        {{articleInfo.content | abstractContent}}
+      <div class="article-image" v-if="articleInfo.image">
+        <img :src="articleInfo.image" alt="">
       </div>
     </router-link>
     <div class="article-action">
@@ -50,7 +55,6 @@
       }
     }
   };
-
 </script>
 
 
@@ -85,11 +89,17 @@
       }
     }
     .article-content {
+      display: flex;
+      justify-content: space-between;
       .article-title {
         margin: 3vw 0 1vw;
         h4 {
-          white-space: nowrap;
-          text-overflow: ellipsis;
+          // white-space: nowrap;
+          // text-overflow: ellipsis;
+          // overflow: hidden;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
           overflow: hidden;
           font-size: 4vw;
         }
@@ -101,6 +111,21 @@
         -webkit-line-clamp: 3;
         overflow: hidden;
         font-size: 3.5vw;
+      }
+      .article-info {
+        flex-grow: 1;
+        word-break: break-all;
+      }
+      .article-image {
+        max-width: 30%;
+        min-width: 30%;
+        width: 30%;
+        img {
+          width: 100%;
+          position: relative;
+          top: 50%;
+          transform: translateY(-50%);
+        }
       }
     }
     .article-action {
@@ -118,5 +143,4 @@
       }
     }
   }
-
 </style>

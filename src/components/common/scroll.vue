@@ -248,6 +248,9 @@
         //reenable action of load more data
         this.isPullingUp = false;
         this._enableLoadMore = true;
+      },
+      disableLoadMore(){
+        this._enableLoadMore=false;
       }
     },
     updated() {

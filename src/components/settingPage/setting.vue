@@ -24,14 +24,13 @@
       </li>
       <li>
         <span>移动网络下首页不显示图片</span>
-        <span>移动</span>
+        <span>开关</span>
       </li>
       <li>
         <span>自动检查粘贴板快速分享</span>
-        <span>自动</span>
+        <span>开关</span>
       </li>
       <li class="margin-top">
-        <span>关于</span>
         <span>关于</span>
       </li>
     </ul>

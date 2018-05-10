@@ -1,19 +1,20 @@
 <template>
-  <div class="comment-page">
+  <div class="trend-page">
     <div class="nav">
-      <h2>comment-page</h2>
+      <h2>trend-page</h2>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-
+  name:'trendPage',
+  
 }
 </script>
 
 <style lang="less" scoped>
- div.comment-page {
+ div.trend-page {
     width: 100vw;
     position: relative;
     div.nav {
