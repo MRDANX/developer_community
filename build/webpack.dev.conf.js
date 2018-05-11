@@ -115,9 +115,9 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           querySql;
 
         if (tokenType == 'phone') {
-          querySql = 'SELECT * FROM user where phone=? AND password=?'
+          querySql = 'SELECT * FROM user where phone=? AND password=?';
         } else {
-          querySql = 'SELECT * FROM user where email=? AND password=?'
+          querySql = 'SELECT * FROM user where email=? AND password=?';
         }
         let inserts = [userToken, password];
         new Promise((resolve, reject) => {

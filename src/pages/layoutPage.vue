@@ -78,7 +78,7 @@
           color: #0080FF;
         }
         &.fa.active {
-          background-color: rgba(0, 0, 0, .1);
+          background-color: #F0F0F0;
         }
       }
       li.create-wrapper {
@@ -89,25 +89,25 @@
           position: absolute;
           top: -50%;
           left: 50%;
-          font-size: 11vw;
+          font-size: 10vw;
           transform: translateX(-50%) scale(1);
           transition: all .2s;
           z-index: 97;
           i.fa-plus {
             color: #FFFFFF;
           }
-          &::before {
-            content: '';
-            position: absolute;
-            width: 10vw;
-            height: 10vw;
-            border-radius: 50%;
-            left: 50%;
-            top: 50%;
-            margin-top: -5vw;
-            margin-left: -5vw;
-            box-shadow: 0 -5px 20px 10px #0080FF;
-          }
+          // &::before {
+          //   content: '';
+          //   position: absolute;
+          //   width: 10vw;
+          //   height: 10vw;
+          //   border-radius: 50%;
+          //   left: 50%;
+          //   top: 50%;
+          //   margin-top: -5vw;
+          //   margin-left: -5vw;
+          //   box-shadow: 0 -5px 10px 10px #0080FF;
+          // }
           &.active {
             transform: translateX(-50%) scale(0.9);
           }
@@ -126,7 +126,7 @@
           display: flex;
           position: absolute;
           top: -100%;
-          left: 50%; // transition: all .5s ease-in-out;
+          left: 50%;
           transform-origin: 50% 10.5vh;
           z-index: 95;
           .fa {
@@ -141,7 +141,7 @@
           transition: transform .7s;
           &.active {
             z-index: 98;
-            transition: transform .9s, z-index .1s .9s; // transition: all .8s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            transition: transform .9s, z-index .1s .9s; 
             transform: translateX(-50%) rotate(-45deg);
           }
         }
@@ -150,7 +150,7 @@
           transition: transform .9s;
           &.active {
             z-index: 98;
-            transition: transform .8s, z-index .1s .8s; // transition: all .8s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            transition: transform .8s, z-index .1s .8s;
             transform: translateX(-50%) rotate(0deg);
           }
         }

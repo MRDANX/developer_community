@@ -34,7 +34,7 @@
         <span>关于</span>
       </li>
     </ul>
-    <div class="logout" ref="logout" v-if="userInfo.userID" @click="logout">退出登录</div>
+    <div class="logout" ref="logout" v-if="userInfo.userID" @click="logout"><i class="fa fa-sign-out"></i>退出登录</div>
     <div class="product">开发者社区1.0 • 程丹雄</div>
 		<hint v-model="hintText"/>
     <loading v-if="showLoading" :verticalMove="-20"/>
@@ -118,6 +118,9 @@
       color: #0080FF;
       border: 1px solid #0080FF;
       background-color: transparent;
+      i.fa{
+        margin-right: 3vw;
+      }
       &.active {
         background-color: #0080FF;
         color: #FFFFFF;
