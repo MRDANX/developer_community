@@ -12,25 +12,29 @@
           <i class="fa fa-circle fa-stack-2x"></i>
           <i class="fa fa-plus fa-stack-1x" :class="{active:createToggle}"></i>
         </span>
-        <div class="create-article" :class="{active:createToggle}">
-          <router-link to="/createArticle" class="fa fa-gratipay" tag="i"></router-link>
+        <div class="create-trend" :class="{activeToggle:createToggle}" @click="goCreate('createTrend')">
+          <i class="fa fa-gratipay" ref="createTrend"></i>
         </div>
-        <div class="create-trend" :class="{active:createToggle}">
-          <router-link to="/createTrend" class="fa fa-telegram" tag="i"></router-link>
+        <div class="create-article" :class="{activeToggle:createToggle}" @click="goCreate('createArticle')">
+          <i class="fa fa-telegram" ref="createArticle"></i>
         </div>
       </li>
       <router-link to="/search" class="fa fa-search" tag="li"  ref="search"/>
       <router-link to="/setting" class="fa fa-user" tag="li"  ref="setting"/>
     </ul>
+    <hint v-model="hintText"/>
   </div>
 </template>
 
 <script>
+  import { mapState } from "vuex";
+  import hint from '@/components/common/hint';
   export default {
     name: "layoutPage",
     data() {
       return {
-        createToggle: false
+        createToggle: false,
+        hintText: ''
       }
     },
     created() {
@@ -42,11 +46,26 @@
       this.$activeFeedback(this.$refs.create);
       this.$activeFeedback(this.$refs.search.$el);
       this.$activeFeedback(this.$refs.setting.$el);
+      this.$activeFeedback(this.$refs.createArticle);
+      this.$activeFeedback(this.$refs.createTrend);
+    },
+    computed: mapState('user', ['userInfo']),
+    methods: {
+      goCreate(name) {
+        if (!this.userInfo.userID) {
+          this.hintText = '请先登录!';
+          return;
+        }
+        this.$router.push({ name });
+      }
+    },
+    components: {
+      hint
     }
   };
 </script>
 
-<style lang='less'>
+<style lang='less' scoped>
   #layout {
     width: 100%;
     background-color: #F5F6FA;
@@ -100,7 +119,8 @@
           }
           i.fa-plus.active {
             transform: rotate(45deg);
-          } // &::before {
+          }
+          // &::before {
           //   content: '';
           //   position: absolute;
           //   width: 10vw;
@@ -127,32 +147,41 @@
         }
         .create-article,
         .create-trend {
+          width: 8vw;
           display: flex;
           position: absolute;
           top: -100%;
           left: 50%;
+          border-radius: 50%;
           transform-origin: 50% 10.5vh;
           z-index: 95;
           .fa {
             font-size: 8vw;
             position: relative;
-            background-color: #FFFFFF;
-            border-radius: 50%;
+            transition: all .1s;
+            transform: scale(1);
+            &.active {
+              transform: scale(0.9);
+            }
+            &::before {
+              background-color: #FFFFFF;
+              border-radius: 50%;
+            }
           }
         }
-        .create-article {
+        .create-trend {
           transform: translateX(-50%) rotate(-150deg);
           transition: transform .7s;
-          &.active {
+          &.activeToggle {
             z-index: 98;
             transition: transform .9s, z-index .1s .9s;
             transform: translateX(-50%) rotate(-45deg);
           }
         }
-        .create-trend {
+        .create-article {
           transform: translateX(-50%) rotate(-180deg);
           transition: transform .9s;
-          &.active {
+          &.activeToggle {
             z-index: 98;
             transition: transform .8s, z-index .1s .8s;
             transform: translateX(-50%) rotate(0deg);

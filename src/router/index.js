@@ -24,7 +24,10 @@ const searchPage = () =>
   import ('@/pages/searchPage');
 const settingPage = () =>
   import ('@/pages/settingPage');
-
+const createArticle = () =>
+  import ('@/pages/createArticle');
+const createTrend = () =>
+  import ('@/pages/createTrend');
 Vue.use(Router);
 
 let fromSubject = 'index';
@@ -96,6 +99,16 @@ export default new Router({
           },
         }
       ]
+    },
+    {
+      path: '/createArticle',
+      name: 'createArticle',
+      component: createArticle
+    },
+    {
+      path: '/createTrend',
+      name: 'createTrend',
+      component: createTrend
     },
     {
       path: '(.*|notFound)',

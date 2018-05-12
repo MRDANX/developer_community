@@ -38,7 +38,7 @@ const actions = {
         localStorage.removeItem('userInfoExpire');
         localStorage.removeItem('userInfo');
       } else if (now - expire >= updateExpire) {
-        dispatch('redrawUserInfo');
+        dispatch('retrieveUserInfo');
       } else if (localStorage.getItem('userInfo')) {
         commit('initializeUserInfo');
       }
@@ -57,7 +57,7 @@ const actions = {
       }).then(result => {
         setTimeout(() => {
           if (!result.data.errno) {
-            dispatch('redrawUserInfo');
+            dispatch('retrieveUserInfo');
           }
           resolve(result);
         }, 500);
@@ -65,7 +65,7 @@ const actions = {
     });
   },
   //request server to update localStrage relative to user's informattion
-  redrawUserInfo({ state, commit }) {
+  retrieveUserInfo({ state, commit }) {
     let userInfo = JSON.parse(localStorage.getItem('userInfo'));
     if (userInfo) {
       let userToken = userInfo.phone,
