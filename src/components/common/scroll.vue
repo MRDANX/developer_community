@@ -13,7 +13,7 @@
           </li>
         </ul> -->
       </div>
-      <div class="bottom-load" ref="bottomLoad" v-if="enableLoadMore&&isPullingUp" :key="3">
+      <div class="bottom-load" v-if="enableLoadMore&&isPullingUp" :key="3">
         <span class="fa fa-spinner fa-spin" ref="loadMoreTips"></span>
       </div>
     </transition-group>
@@ -223,6 +223,7 @@
           }).catch(err => {
             if (err.errno == 0) {
               console.log(err.text);
+              this._refresh();
               let loadMoreTips = this.$refs.loadMoreTips;
               loadMoreTips.setAttribute('class', '');
               loadMoreTips.style.fontSize = '6vw';
@@ -249,8 +250,8 @@
         this.isPullingUp = false;
         this._enableLoadMore = true;
       },
-      disableLoadMore(){
-        this._enableLoadMore=false;
+      disableLoadMore() {
+        this._enableLoadMore = false;
       }
     },
     updated() {
@@ -309,6 +310,8 @@
       }
     }
     .bottom-load {
+      height: 10vw;
+      line-height: 10vw;
       text-align: center;
       font-size: 8vw;
       color: #999999;

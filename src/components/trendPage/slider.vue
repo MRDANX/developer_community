@@ -3,6 +3,9 @@
 		<div class="slider-content">
 			<slot></slot>
 		</div>
+		<div class="friendly-hint" v-if="timer">
+			<i class="fa fa-angle-double-left"></i>
+		</div>
 	</div>
 </template>
 
@@ -18,6 +21,15 @@
       speed: {
         type: Number,
         default: 300
+      },
+      autoPlay: {
+        type: Boolean,
+        default: false
+      }
+    },
+    data() {
+      return {
+        timer: null
       }
     },
     mounted() {
@@ -27,19 +39,39 @@
           scrollY: false,
           click: true,
           momentum: false,
-          // snap: {
-          // 	stepX:414,
-          //   loop: true,
-          //   threshold: 0.3,
-          //   speed: this.speed,
-          // }
+          snap: {
+            loop: this.loop,
+            threshold: 0.3,
+            speed: this.speed,
+          }
         });
-        this.slider.on('flick', () => {
-          console.log(this.slider.directionX);
-					
-
-        })
+        if (!this.autoPlay) {
+          this.timer = setTimeout(() => {
+            this.slider.scrollBy(-10, 0, 500);
+          }, 1500);
+          this.slider.on('beforeScrollStart', () => {
+            this.timer = clearTimeout(this.timer);
+          });
+        }
+        if (this.autoPlay) {
+          this.timer = null;
+					this._play();
+					this.slider.on('beforeScrollStart', () => {
+            clearTimeout(this.autoPlayTimer);
+          });
+          this.slider.on('scrollEnd', () => {
+            this._play();
+          });
+        }
       });
+    },
+    methods: {
+      _play() {
+        clearTimeout(this.autoPlayTimer);
+        this.autoPlayTimer = setTimeout(() => {
+          this.slider.next();
+        }, 2500);
+      }
     }
   }
 </script>
@@ -48,10 +80,36 @@
   .slider-wrapper {
     width: 100%;
     height: 100%;
+    position: relative;
     .slider-content {
       width: fit-content;
       height: 100%;
       display: flex;
+    }
+    .friendly-hint {
+      position: absolute;
+      right: 3vw;
+      top: 0;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      i.fa {
+        font-size: 10vw;
+        color: #CCCCCC;
+        animation: friendlyHint 2s ease 1.5s infinite;
+      }
+    }
+  }
+
+  @keyframes friendlyHint {
+    0% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(-10px);
+    }
+    100% {
+      transform: translateX(0);
     }
   }
 </style>

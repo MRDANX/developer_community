@@ -1,6 +1,6 @@
 <template>
   <div class="search-page">
-    <div class="nav" :class="{searching:isSearching}">
+    <div class="searchBar" :class="{searching:isSearching}">
       <i class="fa fa-angle-left" ref="goBack" @click="goBack"></i>
       <div class="search-box">
         <input type="text" @focus="isSearching=true" v-model="searchText" @keyup.enter="searchButtonPressed=true"/>
@@ -10,7 +10,8 @@
     <div class="content" :class="{searching:isSearching}">
       <transition :name="isSearching?'slide-down':'slide-up'" >
         <keep-alive>
-          <component :is="isSearching?'searchingContent':'searchContent'" v-model="searchText" :searchButtonPressed="searchButtonPressed" @setSearchButton="searchButtonPressed=$event" />
+          <component :is="isSearching?'searchingContent':'searchContent'" v-model="searchText" :searchButtonPressed="searchButtonPressed" @setSearchButton="searchButtonPressed=$event" 
+          @focusSearch="isSearching=true"/>
         </keep-alive>
       </transition>
     </div>
@@ -99,7 +100,7 @@
   div.search-page {
     width: 100vw;
     position: relative;
-    div.nav {
+    div.searchBar {
       width: 100vw;
       background-color: #0080FF;
       height: 7vh;

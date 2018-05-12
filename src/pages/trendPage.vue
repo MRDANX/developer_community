@@ -9,7 +9,9 @@
       </div>
     </div>
     <transition :name="slideDirection">
-      <component :is="currentView" />
+      <keep-alive>
+        <component :is="currentView" />
+      </keep-alive>
     </transition>
   </div>
 </template>
@@ -97,6 +99,7 @@
       text-align: center;
       line-height: 7vh;
       position: relative;
+      z-index: 99;
       .nav-content {
         display: flex;
         justify-content: center;

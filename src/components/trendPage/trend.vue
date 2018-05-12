@@ -6,7 +6,7 @@
 			</div>
 			<div class="user-info">
 				<p class="user-name">{{trend.userName}}</p>
-				<p class="user-meta">{{trend.job}} @ {{trend.company}} • {{trend.date}}</p>
+				<p class="user-meta">{{trend.job}} @ {{trend.company||'公司'}} • {{trend.date|dateFormat}}</p>
 			</div>
 			<div class="user-follow">
 				<i class="fa fa-plus"></i>
@@ -64,6 +64,8 @@
   .trend-item {
     margin: 3vw 0;
     background-color: #FFFFFF;
+    border-top: 1px solid #F1F1F1;
+    border-bottom: 1px solid #F1F1F1;
     .trend-head {
       padding: 3vw;
       display: flex;
@@ -96,6 +98,8 @@
         background-color: #0080FF;
         color: #FFFFFF;
         border-radius: 1vw;
+        height: 5vw;
+        line-height: 5vw;
       }
     }
     .trend-content {

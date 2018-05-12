@@ -10,7 +10,7 @@
         <div class="create-mask"></div>
         <span class="fa-stack fa-lg" ref="create">
           <i class="fa fa-circle fa-stack-2x"></i>
-          <i class="fa fa-plus fa-stack-1x"></i>
+          <i class="fa fa-plus fa-stack-1x" :class="{active:createToggle}"></i>
         </span>
         <div class="create-article" :class="{active:createToggle}">
           <router-link to="/createArticle" class="fa fa-gratipay" tag="i"></router-link>
@@ -95,8 +95,12 @@
           z-index: 97;
           i.fa-plus {
             color: #FFFFFF;
+            transition: all .8s;
+            transform: rotate(0);
           }
-          // &::before {
+          i.fa-plus.active {
+            transform: rotate(45deg);
+          } // &::before {
           //   content: '';
           //   position: absolute;
           //   width: 10vw;
@@ -141,7 +145,7 @@
           transition: transform .7s;
           &.active {
             z-index: 98;
-            transition: transform .9s, z-index .1s .9s; 
+            transition: transform .9s, z-index .1s .9s;
             transform: translateX(-50%) rotate(-45deg);
           }
         }

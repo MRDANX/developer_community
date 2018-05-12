@@ -46,7 +46,7 @@
         //emit the event of parent component with a parameter currentIndex
         this.$emit('changeCurrentArticleList', {
           articleListIndex: this.currentIndex,
-          currentSubject: this.subjectList[this.currentIndex]
+          currentSubject: this.subjectList[this.currentIndex],
         });
       }
     },

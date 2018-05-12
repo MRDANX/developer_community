@@ -47,30 +47,6 @@
         isShow: true
       }
     },
-    filters: {
-      dateFormat(time) {
-        let dayMilli, days, hoursMilli, hours, minutesMilli, minutes, secondMill, seconds;
-        dayMilli = Date.now() - new Date(time).getTime();
-        days = Math.floor(dayMilli / (24 * 3600 * 1000));
-        hoursMilli = dayMilli % (24 * 3600 * 1000);
-        hours = Math.floor(hoursMilli / (3600 * 1000));
-        minutesMilli = hoursMilli % (3600 * 1000);
-        minutes = Math.floor(minutesMilli / (60 * 1000));
-        secondMill = minutesMilli % (60 * 1000);
-        seconds = Math.floor(secondMill / 1000);
-        if (days) {
-          return days + '天前';
-        } else if (hours) {
-          return hours + '小时前';
-        } else if (minutes) {
-          return minutes + '分前';
-        } else if (seconds) {
-          return seconds + '秒前';
-        } else {
-          return 'something went wrong!';
-        }
-      }
-    },
     methods: {
       refresh() {
         this.$refs.refresh.classList.add('refreshing');

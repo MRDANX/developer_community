@@ -1,110 +1,96 @@
 <template>
-	<scroll :enalbeLoadMore='true'>
+	<scroll :enableLoadMore='true' :loadMore="loadMore">
 		<div class="recommend-trend">
 			<div class="slide-trend">
 				<slider>
-					<div class="slide-trend-item">1</div>
-					<div class="slide-trend-item">2</div>
-					<div class="slide-trend-item">3</div>
-					<div class="slide-trend-item">4</div>
-					<div class="slide-trend-item">5</div>
-					<div class="slide-trend-item">6</div>
-					<div class="slide-trend-item">7</div>
-					<div class="slide-trend-item">8</div>
+					<div class="slide-trend-item" v-for="(trend,index) in slideTrend" :key="index">
+						<div class="slide-trend-item-content">
+							<div class="slide-trend-item-head">
+								<i class="fa fa-dot-circle-o"></i>
+								<span>热门动态</span>
+							</div>
+							<div class="slide-trend-text">
+								{{trend.content}}
+							</div>
+						</div>
+						<div class="slide-trend-image" v-if="trend.images">
+								<img :src="trend.images.split(',')[0]"/>
+							</div>
+					</div>
 				</slider>
 			</div>
 			<ul class="trend-list">
 				<trend v-for="(trend,index) in trendList" :key="index" :trend="trend" ref="trends"/>
 			</ul>
+      <loading v-if="showLoading"/>
 		</div>
 	</scroll>
 </template>
 
 <script>
   import scroll from "@/components/common/scroll";
+  import loading from "@/components/common/loading";
   import slider from "@/components/trendPage/slider";
   import trend from "@/components/trendPage/trend";
   export default {
     name: 'recommendTrend',
     data() {
       return {
-        trendList: [{
-          avatar: '/static/images/logo.png',
-          userName: '我是谁',
-          job: '全栈工程师',
-          company: '有限公司',
-          date: '3天前',
-          content: '这是内容<br>这是内容这是<br>内容<br>这是内容<br>这是内容',
-          favors: 12,
-          images: '/static/images/logo.png,/static/images/test1.jpg,/static/images/logo.png,/static/images/test2.jpg,/static/images/test3.jpg',
-          commentNum: 10
-        }, {
-          avatar: '/static/images/logo.png',
-          userName: '我是谁',
-          job: '全栈工程师',
-          company: '有限公司',
-          date: '3天前',
-          content: '这是内容这是内容这是内容这是内容这是内容',
-          favors: 12,
-          images: '/static/images/test3.jpg',
-          commentNum: 10
-        }, {
-          avatar: '/static/images/logo.png',
-          userName: '我是谁',
-          job: '全栈工程师',
-          company: '有限公司',
-          date: '3天前',
-          content: '这是内容这是内容这是内容这是内容这是内容',
-          images: '',
-          favors: 12,
-          commentNum: 10
-        }, {
-          avatar: '/static/images/logo.png',
-          userName: '我是谁',
-          job: '全栈工程师',
-          company: '有限公司',
-          date: '3天前',
-          content: '这是内容这是内容这是内容这是内容这是内容',
-          images: '',
-          favors: 12,
-          commentNum: 10
-        }, {
-          avatar: '/static/images/logo.png',
-          userName: '我是谁',
-          job: '全栈工程师',
-          company: '有限公司',
-          date: '3天前',
-          content: '这是内容这是内容这是内容这是内容这是内容',
-          images: '',
-          favors: 12,
-          commentNum: 10
-        }, {
-          avatar: '/static/images/logo.png',
-          userName: '我是谁',
-          job: '全栈工程师',
-          company: '有限公司',
-          date: '3天前',
-          content: '这是内容这是内容这是内容这是内容这是内容',
-          images: '',
-          favors: 12,
-          commentNum: 10
-        }, {
-          avatar: '/static/images/logo.png',
-          userName: '我是谁',
-          job: '全栈工程师',
-          company: '有限公司',
-          date: '3天前',
-          content: '这是内容这是内容这是内容这是内容这是内容',
-          images: '',
-          favors: 12,
-          commentNum: 10
-        }]
+        trendList: [],
+        slideTrend: [],
+        showLoading: false
+      }
+    },
+    mounted() {
+      this.showLoading = true;
+      this.$axios({
+        method: 'get',
+        url: '/getTrendList',
+        params: {
+          startIndex: 0,
+          number: 5
+        }
+      }).then(result => {
+        this.trendList = result.data;
+        this.showLoading = false;
+      });
+      this.$axios({
+        method: 'get',
+        url: '/getSlideTrend'
+      }).then(result => {
+        this.slideTrend = result.data;
+      });
+    },
+    methods: {
+      loadMore() {
+        return new Promise((resolve, reject) => {
+          this.$axios({
+            method: 'get',
+            url: '/getTrendList',
+            params: {
+              startIndex: this.trendList.length,
+              number: 5
+            }
+          }).then(result => {
+            console.log(result);
+
+            if (result.data.length == 0) {
+              reject({
+                errno: 0,
+                text: 'No more data!'
+              });
+            }
+            this.trendList = this.trendList.concat(result.data);
+            resolve();
+          });
+        });
       }
     },
     components: {
       slider,
       scroll,
-      trend
+      trend,
+      loading
     }
   }
 </script>
@@ -114,13 +100,54 @@
     width: 100vw;
     .slide-trend {
       width: 100vw;
-      height: 25vw;
-      margin-top: 3vw;
+      height: 28vw;
+      margin: 3vw auto 0;
       .slide-trend-item {
-        width: 80vw;
+        width: 96vw;
         height: 100%;
-        margin: 0 3vw;
-        background-color: red;
+        margin: 0 2vw;
+        box-sizing: border-box;
+        padding: 2vw 3vw;
+        background-color: #FFFFFF;
+        box-shadow: 1vw 1vw 1vw #CCCCCC, -1vw 1vw 1vw #CCCCCC;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .slide-trend-item-content {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          margin-right: 2vw;
+          .slide-trend-item-head {
+            font-size: 4.5vw;
+            font-weight: bold;
+            margin-bottom: 2vw;
+            i {
+              color: #0080FF;
+            }
+          }
+          .slide-trend-text {
+            font-size: 4vw;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+          }
+        }
+        .slide-trend-image {
+          max-width: 30vw;
+          min-width: 30vw;
+          height: 24vw;
+          overflow: hidden;
+          position: relative;
+          img {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            height: 24vw;
+          }
+        }
       }
     }
     .trend-list {

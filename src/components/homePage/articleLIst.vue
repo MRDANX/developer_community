@@ -40,7 +40,7 @@
               startIndex: this.articleList.length,
               number: 5
             },
-            timeout: 4000
+            timeout: 20000
           }).then(result => {
             if (result.data.length == 0) {
               reject({

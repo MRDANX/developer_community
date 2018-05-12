@@ -1,5 +1,5 @@
 <template>
-	<scroll :enableScrollToTopButton="true" :enableLoadMore="true" :loadMore="loadMore">
+	<scroll :enableScrollToTopButton="true" :enableLoadMore="true" :loadMore="loadMore" ref="searchContentScroll">
 		<div class="search-content">
 			<div class="carousel">
 				<carousel :loop="true" :autoPlay="true" >
@@ -98,6 +98,17 @@
       });
       // }, 500);
     },
+    mounted() {
+      let searchContentScroll = this.$refs.searchContentScroll;
+      this.$nextTick(() => {
+        searchContentScroll.scroll.on('scroll', (pos) => {
+          if(pos.y>80){
+            this.$emit('focusSearch');
+          }
+        })
+      })
+
+    },
     methods: {
       loadMore() {
         return new Promise((resolve, reject) => {
@@ -127,30 +138,6 @@
             }
           });
         });
-      }
-    },
-    filters: {
-      dateFormat(time) {
-        let dayMilli, days, hoursMilli, hours, minutesMilli, minutes, secondMill, seconds;
-        dayMilli = Date.now() - new Date(time).getTime();
-        days = Math.floor(dayMilli / (24 * 3600 * 1000));
-        hoursMilli = dayMilli % (24 * 3600 * 1000);
-        hours = Math.floor(hoursMilli / (3600 * 1000));
-        minutesMilli = hoursMilli % (3600 * 1000);
-        minutes = Math.floor(minutesMilli / (60 * 1000));
-        secondMill = minutesMilli % (60 * 1000);
-        seconds = Math.floor(secondMill / 1000);
-        if (days) {
-          return days + '天前';
-        } else if (hours) {
-          return hours + '小时前';
-        } else if (minutes) {
-          return minutes + '分前';
-        } else if (seconds) {
-          return seconds + '秒前';
-        } else {
-          return 'something went wrong!';
-        }
       }
     },
     components: {
@@ -234,7 +221,7 @@
         justify-content: space-between;
         align-items: center;
         box-shadow: 0 0 1px #CCCCCC;
-        &.article:last-of-type{
+        &.article:last-of-type {
           box-shadow: none;
         }
         .article-info {

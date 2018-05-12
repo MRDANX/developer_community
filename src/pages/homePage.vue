@@ -3,6 +3,7 @@
     <!-- nav-bar for customized subjects -->
     <div class="nav">
       <subject-bar class="scroll-bar" :subjectList="customizedSubjectList" @changeCurrentArticleList="changeCurrentArticleList"
+      ref="subjectBar"
       />
       <div class="custom-button" ref="customButton">
         <i class="fa fa-caret-down" @click="showSlideOut=true"></i>
@@ -11,7 +12,7 @@
     <!-- scrollable content with slot injected -->
     <transition :name="changeArticleListAnimation">
       <keep-alive>
-        <router-view :key="currentArticleListIndex" :nowScrollToTop="nowScrollToTop" />
+        <router-view :key="currentSubjectName" :nowScrollToTop="nowScrollToTop" />
       </keep-alive>
     </transition>
     <!-- hidden panel for customizing subject -->
@@ -82,6 +83,7 @@
         enabledSubjectsIndex: [0, 1, 2, 4, 5, 8],
         showSlideOut: false,
         currentArticleListIndex: 1,
+        currentSubjectName: 'index',
         changeArticleListAnimation: 'slide-top',
         nowScrollToTop: false
       };
@@ -92,6 +94,8 @@
       this.currentArticleListIndex = this.customizedSubjectList.findIndex(subject => {
         return subject.to === subjectName;
       });
+      //set the current subject name to the corresponding subject
+      this.currentSubjectName = this.$route.params.subject;
     },
     mounted() {
       //add active class for custom button
@@ -118,13 +122,18 @@
     methods: {
       //customed event handler for customized checkbox
       checkout(checkbox) {
-        //push the selected subject's index into enabledSubjectsIndex Array if it's checked
+        //push the selected subject's index into enabledSubjectsIndex Array if it's checked or delete the selected index if it's unchecked
         if (checkbox.isChecked) {
           this.enabledSubjectsIndex.push(checkbox.index);
         } else {
           let indexOfCheckbox = this.enabledSubjectsIndex.indexOf(checkbox.index);
           if (indexOfCheckbox != -1) {
             this.enabledSubjectsIndex.splice(indexOfCheckbox, 1);
+            //go to index page if delete the current show page
+            if (this.subjectList[checkbox.index].to == this.currentSubjectName) {
+              this.$refs.subjectBar.changeCurrentArticleList(0);
+            }
+
           }
         }
       },
@@ -152,6 +161,7 @@
             subject: currentSubject.to
           }
         });
+        this.currentSubjectName = currentSubject.to;
         this.currentArticleListIndex = articleListIndex;
       }
     },

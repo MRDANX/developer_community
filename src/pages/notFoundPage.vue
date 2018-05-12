@@ -108,7 +108,7 @@ a:hover {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  padding: 50px 50px 70px;
+  padding: 50px 5vw 70px;
 }
 
 .error-page-main:before {
@@ -123,19 +123,19 @@ a:hover {
 }
 
 .error-page-main h3 {
-  font-size: 24px;
+  font-size: 5vw;
   font-weight: 400;
   border-bottom: 1px solid #d0d0d0;
 }
 
 .error-page-main h3 strong {
-  font-size: 54px;
+  font-size: 15vw;
   font-weight: 400;
   margin-right: 20px;
 }
 
 .error-page-main h4 {
-  font-size: 20px;
+  font-size: 5vw;
   font-weight: 400;
   color: #333;
 }
@@ -164,6 +164,7 @@ a:hover {
 
 .error-page-actions li {
   line-height: 2.5em;
+  font-size: 4vw;
 }
 
 .error-page-actions:before {

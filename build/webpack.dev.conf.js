@@ -372,7 +372,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         })
       });
 
-      //router for searching for more detailed article 
+      //router for getting more detailed searched article 
       app.get('/searchForMoreDetailedArticle', (req, res) => {
         let searchText = req.query.searchText,
           articleOrderBy = req.query.articleOrderBy,
@@ -386,6 +386,37 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         }).then(articles => {
           res.json(articles);
         });
+      });
+
+      //router for getting slide trend
+      app.get('/getSlideTrend', (req, res) => {
+        let getSlideTrendSql = 'SELECT trendID,content,images FROM trend ORDER BY favors DESC LIMIT 5';
+        connection.query(getSlideTrendSql, (err, result) => {
+          if (err) throw err;
+          res.json(result);
+        });
+      });
+
+      //router for getting trend list
+      app.get('/getTrendList', (req, res) => {
+        let getTrendSql = 'SELECT t.*,u.avatar,u.userName,u.job,u.company,COUNT(tc.trendCommentID) as commentNum FROM trend t LEFT JOIN trendComment tc ON t.trendID=tc.trendID LEFT JOIN user u ON t.userID=u.userID GROUP BY (t.trendID) LIMIT ?,?',
+          startIndex = +req.query.startIndex,
+          number = +req.query.number;
+        let inserts = [startIndex, number];
+        connection.query(getTrendSql, inserts, (err, result) => {
+          if (err) throw err;
+          res.json(result);
+        });
+      });
+
+      //router for getting trend for logged user
+      app.get('/getUsersTrend', (req, res) => {
+        let getUsersTrendSql = 'SELECT t.*, u.avatar, u.userName, u.job, u.company, COUNT(tc.trendCommentID) AS commentNum FROM trend t LEFT JOIN trendComment tc ON t.trendID = tc.trendID LEFT JOIN USER u ON t.userID = u.userID WHERE t.userID IN ( SELECT userID FROM follower WHERE followerUserID = ? ) GROUP BY (t.trendID)',
+          followerUserID = +req.query.followerUserID;
+        connection.query(getUsersTrendSql, [followerUserID], (err, result) => {
+          if (err) throw err;
+          res.json(result);
+        })
       });
     },
 
