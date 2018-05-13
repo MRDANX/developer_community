@@ -10,18 +10,21 @@
 				<router-link to="setting" tag="div" class="login-register-button" ref="loginRegisterButton">登录/注册</router-link>
 			</div>
 		</div>
+    <loading v-if="showLoading" />
 	</scroll>
 </template>
 
 <script>
   import scroll from "@/components/common/scroll";
   import trend from "@/components/trendPage/trend";
+  import loading from "@/components/common/loading";
   import { mapState } from "vuex";
   export default {
     name: 'usersTrend',
     data() {
       return {
-        trendList: []
+        trendList: [],
+        showLoading: false
       }
     },
     mounted() {
@@ -32,6 +35,7 @@
       if (!this.userInfo.userID) {
         this.$refs.usersTrendScroll._disable();
       }
+      this.showLoading = true;
       this.$axios({
         method: 'get',
         url: '/getUsersTrend',
@@ -39,8 +43,9 @@
           followerUserID: this.userInfo.userID
         }
       }).then(result => {
-        console.log(result);
+        // console.log(result);
         this.trendList = result.data;
+        this.showLoading = false;
       })
     },
     computed: {
@@ -48,7 +53,8 @@
     },
     components: {
       trend,
-      scroll
+      scroll,
+      loading
     }
   }
 </script>

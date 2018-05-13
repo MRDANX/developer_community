@@ -188,7 +188,7 @@
           }
         }
         span {
-          font-size: 4.5vw;
+          font-size: 4vw;
         }
       }
     }
