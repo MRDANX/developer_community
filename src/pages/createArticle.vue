@@ -109,13 +109,10 @@
     mounted() {
       let submitButton = this.$refs.submit;
       this.$activeFeedback(submitButton);
+      //check out whether user has login
       if (!this.userInfo.userID) {
-        this.$router.push({ name: settingPage })
+        this.$router.push({ path: '/setting' })
       }
-      let toolbar=this.$refs.quillEditor.quill.getModule('toolbar');
-      toolbar.addHandler('image',value=>{
-        console.dir(value);
-      })
     },
     updated() {
       setTimeout(() => {
@@ -250,10 +247,6 @@
 </script>
 
 <style lang="less" scoped>
-  // .switch-header-enter-active,
-  // .switch-header-leave-active {
-  //   transition: all .3s;
-  // }
   .switch-header-enter,
   .switch-header-leave-to {
     opacity: 0;
@@ -262,7 +255,6 @@
 
   .fluent-enter-active {
     transition: all 1s !important;
-    position: absolute !important;
   }
 
   .fluent-leave-active {

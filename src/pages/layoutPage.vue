@@ -119,8 +119,7 @@
           }
           i.fa-plus.active {
             transform: rotate(45deg);
-          }
-          // &::before {
+          } // &::before {
           //   content: '';
           //   position: absolute;
           //   width: 10vw;
