@@ -1,8 +1,8 @@
 <template>
   <transition name="fade">
-    <keep-alive>
+    <!-- <keep-alive> -->
       <router-view/>
-    </keep-alive>
+    <!-- </keep-alive> -->
   </transition>
 
 </template>

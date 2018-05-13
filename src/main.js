@@ -6,8 +6,6 @@ import router from './router';
 import store from './store';
 import axios from 'axios';
 import 'es6-promise/auto';
-// import MintUI from 'mint-ui';
-// import 'mint-ui/lib/style.css';
 import 'font-awesome/css/font-awesome.min.css';
 
 Vue.config.productionTip = false;
@@ -45,9 +43,9 @@ Vue.filter('dateFormat', function(time) {
   } else {
     return 'something went wrong!';
   }
-})
+});
+
 Vue.prototype.$activeFeedback = activeFeedback;
-// Vue.use(MintUI);
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

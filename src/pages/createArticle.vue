@@ -5,6 +5,7 @@
 				<i class="fa fa-chevron-left" @click="$router.go(-1)" ref="goBack"></i>
 				<span>编写文章</span>
 				<div class="submit" ref="submit">发布</div>
+        <span class="action-hint" v-if="!clickTime">双击切换至状态栏</span>
 			</div>
 			<div class="article-status" v-else-if="headerIndex==1" @click="switchHeader" key="status">
 				<span class="show-title">{{title||'请输入文章标题'}}</span>
@@ -16,7 +17,6 @@
 		</transition>
 		<form class="article-form" :class="{'clear-margin-top':headerIndex==2,'clear-half-margin-top':headerIndex==1}">
 			<div class="article-title">
-				<!-- <span>标题:</span> -->
 				<input type="text" placeholder="请输入文章标题" v-model="title" onfocus="this.placeholder=''" onblur="this.placeholder='请输入文章标题'" />
 			</div>
       <div class="article-cover">
@@ -27,26 +27,39 @@
         </div>
         <div class="cover-show" v-if="cover">
           <img :src="cover" alt="">
+          <i class="fa fa-close" @click="cover=''"></i>
         </div>
       </div>
 			<div class="article-subject">
-				<span>分类:</span>
-				<select name="subject" v-model="subject">
-					<option value="前端" selected>前端</option>
-					<option value="后端">后端</option>
-					<option value="Android">Android</option>
-					<option value="人工智能">人工智能</option>
-					<option value="iOS">iOS</option>
-					<option value="产品">产品</option>
-				</select>
+        <div class="subject-head" @click="showSubjectList=!showSubjectList">
+				  <span class="select-hint">选择分类: </span>
+          <span class="selected-subject">{{selectedsubject}}</span>
+          <i class="fa" v-if="selectedsubject" :class="[showSubjectList?'fa-caret-up':'fa-caret-down']"></i>
+        </div>
+				<div class="subject-group" :class="{selected:selectedsubject!='',reselect:showSubjectList}">
+          <label class="subject" v-for="(subject,index) in subjectList" :key="index" @click="selectCurrentSubject(subject)" :class="{checked:selectedsubject==subject}">{{subject}}</label>
+        </div>
 			</div>
-			<div class="article-tags" >
-				<span>标签:</span>
+			<div class="article-tags">
+        <div class="tags-show">
+				  <span>标签:</span>
+          <div class="add-tag" :class="{'adding-tag':addingTag}" key="addingTag">
+            <input type="text" @focus="addingTag=true" @blur="addTag" v-model="addingTagText" @keyup.enter="addTag" ref="addingTag">
+            <div class="adding-tag-hint">
+              <i class="fa fa-plus"></i>
+            </div>
+          </div>
+        </div>
+        <transition-group name="fluent" tag="div" class="tags-wrapper">
+          <p v-for="(tag,index) in tags" :key="index" class="tag" :style="{'background-color':colorSet[index]}">
+            <i class="fa fa-tag"></i><span>{{tag}}</span>
+          </p>
+        </transition-group>
 			</div>
 			<quill-editor v-model="content" :options="editorOptions" class="article-editor" />
 		</form>
     <hint v-model="hintText" />
-    <loading v-if="showLoading" />
+    <loading v-if="showLoading" :verticalMove="5"/>
 	</div>
 </template>
 
@@ -63,17 +76,36 @@
     data() {
       return {
         editorOptions: {
-          placeholder: '在这里开始书写你的文章'
+          placeholder: '在这里开始书写你的文章',
+          modules: {
+            toolbar: [
+              ['bold', 'italic', 'underline', 'strike'],
+              [{ 'header': 1 }, { 'header': 2 }],
+              [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+              ['blockquote', 'code-block'],
+              ['clean'],
+              [{ 'align': ''},{ 'align': 'right'},{ 'align': 'center'},{ 'align': 'justify'}],
+              [{ 'color': [] }, { 'background': [] }],
+              [{ 'indent': '-1'}, { 'indent': '+1' }],
+              [{ 'size': ['small', false, 'large', 'huge'] }],
+              ['image']
+            ]
+          }
         },
         title: '',
         cover: '',
-        subject: '',
+        selectedsubject: '',
         tags: [],
         content: '',
         headerIndex: 0,
         clickTime: null,
         hintText: '',
-        showLoading: false
+        showLoading: false,
+        subjectList: ['前端', 'Android', '人工智能', 'iOS', '产品', '设计', '工具资源', '阅读', '后端'],
+        showSubjectList: false,
+        addingTag: false,
+        addingTagText: '',
+        colorSet: ['#ffbd4c', '#99cc33', '#66cc99', '#0099ff', '#6cbd45', '#cc3333', '#ff9900']
       }
     },
     mounted() {
@@ -136,8 +168,6 @@
             this.hintText = '图片大小不能超过1MB,请重新选择!';
             return;
           }
-          console.log('loading');
-
           this.showLoading = true;
           fr.readAsDataURL(tmpCover);
           fr.onload = () => {
@@ -145,6 +175,24 @@
             this.showLoading = false;
           }
         }
+      },
+      selectCurrentSubject(subject) {
+        this.selectedsubject = subject;
+        this.showSubjectList = false;
+      },
+      addTag() {
+        this.addingTag = false;
+        if (this.addingTagText) {
+          this.tags.push(this.addingTagText);
+          this.addingTagText = '';
+        }
+        this.$refs.addingTag.blur();
+      },
+      randomNumber() {
+        return this.$randomNumber(0, this.colorSet.length - 1);
+      },
+      randomColor() {
+        return this.colorSet[this.randomNumber()];
       }
     },
     computed: {
@@ -170,6 +218,22 @@
   .switch-header-leave-to {
     opacity: 0;
     transform: translateY(-8vh);
+  }
+
+  .fluent-enter-active,
+  .fluent-leave-active {
+    transition: all 1s;
+    position: absolute;
+  }
+
+  .fluent-enter {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+
+  .fluent-leave-to {
+    opacity: 0;
+    transform: scale(0);
   }
 
   .create-article {
@@ -219,10 +283,21 @@
         border-radius: 1vw;
         color: #FFFFFF;
         user-select: none;
+        background-color: #007FFF;
         &.active {
           background-color: #FAFAFA;
           color: #0080FF;
         }
+      }
+      .action-hint {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 3vw;
+        color: #FAFAFA;
+        opacity: 0;
+        animation: blink 8s linear infinite;
       }
     }
     .article-status {
@@ -270,7 +345,7 @@
     }
     .article-form {
       margin-top: 14vw;
-      transition: all .5s;
+      transition: all .6s;
       font-size: 4vw;
       overflow: hidden;
       &.clear-margin-top {
@@ -303,6 +378,7 @@
           i.fa {
             font-size: 5vw;
             vertical-align: bottom;
+            margin-left: 2vw;
           }
           input[type='file'] {
             position: absolute;
@@ -319,8 +395,128 @@
           border-width: 3px;
           border-color: #CCCCCC;
           border-style: dashed solid;
+          position: relative;
           img {
             width: 100%;
+          }
+          i.fa {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            color: #0080FF;
+            font-size: 3vw;
+          }
+        }
+      }
+      .article-subject {
+        width: 100vw;
+        padding: 0 3vw;
+        box-sizing: border-box;
+        .subject-head {
+          .selected-subject {
+            flex-grow: 1;
+            margin-left: 2vw;
+          }
+        }
+        .subject-group {
+          margin: 1vw 0;
+          display: flex;
+          height: 35vw;
+          justify-content: flex-start;
+          align-items: center;
+          flex-wrap: wrap;
+          transition: all .5s;
+          overflow: hidden;
+          &.selected {
+            height: 0;
+          }
+          &.reselect {
+            height: 35vw;
+          }
+          .subject {
+            border: 1px solid #F1F1F1;
+            color: #909090;
+            margin: 1vw 2vw;
+            padding: 2vw 3vw;
+            border-radius: 5px;
+            transition: all .2s;
+            &.checked {
+              border: 1px solid rgba(0, 127, 255, .15);
+              color: #007fff;
+              background-color: rgba(0, 127, 255, .05);
+            }
+          }
+        }
+      }
+      .article-tags {
+        padding: 0 3vw; // display: flex;
+        // align-items: center;
+        margin-top: 1vw;
+        position: relative;
+        .tags-show {
+          display: inline-block;
+          margin-right: 2vw;
+        }
+        .tags-wrapper {
+          position: relative;
+          margin-top: 2vw;
+          width: 100%;
+          min-height: 8vw; // display: flex;
+          // flex-wrap: wrap;
+          transition: all .5s;
+          .tag {
+            display: inline-block;
+            width: fit-content;
+            margin: 1vw 2vw 0;
+            padding: 1vw 2vw;
+            background-color: #ff9900; //#ff9900;#ffbd4c;#99cc33;#66cc99;#0099ff;#6cbd45;#cc3333
+            border-radius: 5px;
+            color: #FFFFFF;
+            i {
+              margin-right: 1vw;
+            }
+          }
+        }
+        .add-tag {
+          position: relative;
+          display: inline-block;
+          border: 1px dashed #007FFF;
+          padding: 1vw 1vw;
+          border-radius: 5px;
+          color: #666666;
+          width: 5vw;
+          height: 5vw;
+          border-radius: 50%;
+          text-align: center;
+          transition: all 0.5s;
+          font-size: 3.5vw;
+          margin-left: 2vw;
+          &.adding-tag {
+            width: 20vw;
+            border-radius: 2vw;
+          }
+          input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            font-size: 4.5vw;
+            padding: 1vw 1.5vw;
+            box-sizing: border-box;
+            transition: all 0.5s;
+            color: #333333;
+          }
+          .adding-tag-hint {
+            transition: all 0.5s;
+            color: #0080FF;
+          }
+          input:focus+.adding-tag-hint {
+            opacity: 0;
           }
         }
       }
@@ -332,6 +528,24 @@
           min-height: 50vh;
         }
       }
+    }
+  }
+
+  @keyframes blink {
+    0% {
+      opacity: 0;
+    }
+    25% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+    75% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
     }
   }
 </style>
