@@ -4,7 +4,7 @@
 			<div class="article-header" v-if="headerIndex==0" @click="switchHeader($event)" key="header">
 				<i class="fa fa-chevron-left" @click="$router.go(-1)" ref="goBack"></i>
 				<span>编写文章</span>
-				<div class="submit" ref="submit">发布</div>
+				<div class="submit" ref="submit" @click="publishArticle">发布</div>
         <span class="action-hint" v-if="!clickTime">双击切换至状态栏</span>
 			</div>
 			<div class="article-status" v-else-if="headerIndex==1" @click="switchHeader" key="status">
@@ -33,11 +33,11 @@
 			<div class="article-subject">
         <div class="subject-head" @click="showSubjectList=!showSubjectList">
 				  <span class="select-hint">选择分类: </span>
-          <span class="selected-subject">{{selectedsubject}}</span>
-          <i class="fa" v-if="selectedsubject" :class="[showSubjectList?'fa-caret-up':'fa-caret-down']"></i>
+          <span class="selected-subject">{{selectedSubject}}</span>
+          <i class="fa" v-if="selectedSubject" :class="[showSubjectList?'fa-caret-up':'fa-caret-down']"></i>
         </div>
-				<div class="subject-group" :class="{selected:selectedsubject!='',reselect:showSubjectList}">
-          <label class="subject" v-for="(subject,index) in subjectList" :key="index" @click="selectCurrentSubject(subject)" :class="{checked:selectedsubject==subject}">{{subject}}</label>
+				<div class="subject-group" :class="{selected:selectedSubject!='',reselect:showSubjectList}">
+          <label class="subject" v-for="(subject,index) in subjectList" :key="index" @click="selectCurrentSubject(subject)" :class="{checked:selectedSubject==subject}">{{subject}}</label>
         </div>
 			</div>
 			<div class="article-tags">
@@ -45,18 +45,14 @@
 				  <span>标签:</span>
           <div class="add-tag" :class="{'adding-tag':addingTag}" key="addingTag">
             <input type="text" @focus="addingTag=true" @blur="addTag" v-model="addingTagText" @keyup.enter="addTag" ref="addingTag">
-            <div class="adding-tag-hint">
-              <i class="fa fa-plus"></i>
-            </div>
+            <i class="fa fa-plus"></i>
           </div>
         </div>
         <transition-group name="fluent" tag="div" class="tags-wrapper">
-          <p v-for="(tag,index) in tags" :key="index" class="tag" :style="{'background-color':colorSet[index]}">
-            <i class="fa fa-tag"></i><span>{{tag}}</span>
-          </p>
+          <tag v-for="(tag,index) in tags" :key="tag" :tagText="tag" @deleteTag="tags.splice(index,1)"/>
         </transition-group>
 			</div>
-			<quill-editor v-model="content" :options="editorOptions" class="article-editor" />
+			<quill-editor v-model="content" :options="editorOptions" class="article-editor" ref="quillEditor"/>
 		</form>
     <hint v-model="hintText" />
     <loading v-if="showLoading" :verticalMove="5"/>
@@ -69,6 +65,7 @@
   import 'quill/dist/quill.bubble.css';
   import { quillEditor } from 'vue-quill-editor';
   import { mapState } from "vuex";
+  import tag from '@/components/common/tag';
   import hint from '@/components/common/hint';
   import loading from '@/components/common/loading';
   export default {
@@ -81,20 +78,19 @@
             toolbar: [
               ['bold', 'italic', 'underline', 'strike'],
               [{ 'header': 1 }, { 'header': 2 }],
-              [{ 'list': 'ordered' }, { 'list': 'bullet' }],
               ['blockquote', 'code-block'],
+              [{ 'color': [] }, 'image'],
               ['clean'],
-              [{ 'align': ''},{ 'align': 'right'},{ 'align': 'center'},{ 'align': 'justify'}],
-              [{ 'color': [] }, { 'background': [] }],
-              [{ 'indent': '-1'}, { 'indent': '+1' }],
+              [{ 'align': '' }, { 'align': 'right' }, { 'align': 'center' }, { 'align': 'justify' }],
+              [{ 'indent': '-1' }, { 'indent': '+1' }],
+              [{ 'list': 'ordered' }, { 'list': 'bullet' }],
               [{ 'size': ['small', false, 'large', 'huge'] }],
-              ['image']
             ]
           }
         },
         title: '',
         cover: '',
-        selectedsubject: '',
+        selectedSubject: '',
         tags: [],
         content: '',
         headerIndex: 0,
@@ -104,13 +100,22 @@
         subjectList: ['前端', 'Android', '人工智能', 'iOS', '产品', '设计', '工具资源', '阅读', '后端'],
         showSubjectList: false,
         addingTag: false,
-        addingTagText: '',
-        colorSet: ['#ffbd4c', '#99cc33', '#66cc99', '#0099ff', '#6cbd45', '#cc3333', '#ff9900']
+        addingTagText: ''
       }
+    },
+    created() {
+      this.$store.dispatch('user/checkUserInfo');
     },
     mounted() {
       let submitButton = this.$refs.submit;
       this.$activeFeedback(submitButton);
+      if (!this.userInfo.userID) {
+        this.$router.push({ name: settingPage })
+      }
+      let toolbar=this.$refs.quillEditor.quill.getModule('toolbar');
+      toolbar.addHandler('image',value=>{
+        console.dir(value);
+      })
     },
     updated() {
       setTimeout(() => {
@@ -177,22 +182,56 @@
         }
       },
       selectCurrentSubject(subject) {
-        this.selectedsubject = subject;
+        this.selectedSubject = subject;
         this.showSubjectList = false;
       },
       addTag() {
         this.addingTag = false;
         if (this.addingTagText) {
-          this.tags.push(this.addingTagText);
+          if (this.tags.indexOf(this.addingTagText) == -1) {
+            this.tags.push(this.addingTagText);
+          } else {
+            this.hintText = '该标签已存在!';
+          }
           this.addingTagText = '';
         }
         this.$refs.addingTag.blur();
       },
-      randomNumber() {
-        return this.$randomNumber(0, this.colorSet.length - 1);
-      },
-      randomColor() {
-        return this.colorSet[this.randomNumber()];
+      publishArticle() {
+        if (!this.title) {
+          this.hintText = '请输入文章标题!';
+          return;
+        }
+        if (!this.selectedSubject) {
+          this.hintText = '请选择文章分类!';
+          return;
+        }
+        if (!this.content) {
+          this.hintText = '请输入文章内容!';
+          return;
+        }
+        let qs = require('qs');
+        this.showLoading = true;
+        this.$axios({
+          method: 'post',
+          url: '/createUserArticle',
+          data: qs.stringify({
+            userID: this.userInfo.userID,
+            title: this.title,
+            cover: this.cover,
+            subject: this.selectedSubject,
+            tags: this.tags.toString(),
+            content: this.content
+          })
+        }).then(result => {
+          this.showLoading = false;
+          if (!result.data.errno) {
+            this.hintText = result.data.text;
+            this.$router.push({ path: '/subject/index' });
+          } else if (result.data.errno == 1) {
+            this.hintText = result.data.text;
+          }
+        })
       }
     },
     computed: {
@@ -202,9 +241,10 @@
       }
     },
     components: {
-      quillEditor,
+      tag,
       hint,
-      loading
+      loading,
+      quillEditor
     }
   }
 </script>
@@ -220,10 +260,18 @@
     transform: translateY(-8vh);
   }
 
-  .fluent-enter-active,
+  .fluent-enter-active {
+    transition: all 1s !important;
+    position: absolute !important;
+  }
+
   .fluent-leave-active {
-    transition: all 1s;
-    position: absolute;
+    transition: all .5s !important;
+    position: absolute !important;
+  }
+
+  .fluent-move {
+    transition: all 1s !important;
   }
 
   .fluent-enter {
@@ -435,6 +483,7 @@
           }
           .subject {
             border: 1px solid #F1F1F1;
+            box-shadow: 0 0 5px #F1F1F1;
             color: #909090;
             margin: 1vw 2vw;
             padding: 2vw 3vw;
@@ -442,6 +491,7 @@
             transition: all .2s;
             &.checked {
               border: 1px solid rgba(0, 127, 255, .15);
+              box-shadow: 0 0 1px rgba(0, 127, 255, .15);
               color: #007fff;
               background-color: rgba(0, 127, 255, .05);
             }
@@ -449,8 +499,7 @@
         }
       }
       .article-tags {
-        padding: 0 3vw; // display: flex;
-        // align-items: center;
+        padding: 0 3vw;
         margin-top: 1vw;
         position: relative;
         .tags-show {
@@ -459,23 +508,10 @@
         }
         .tags-wrapper {
           position: relative;
-          margin-top: 2vw;
+          margin: 2vw 0;
           width: 100%;
-          min-height: 8vw; // display: flex;
-          // flex-wrap: wrap;
+          min-height: 10vw;
           transition: all .5s;
-          .tag {
-            display: inline-block;
-            width: fit-content;
-            margin: 1vw 2vw 0;
-            padding: 1vw 2vw;
-            background-color: #ff9900; //#ff9900;#ffbd4c;#99cc33;#66cc99;#0099ff;#6cbd45;#cc3333
-            border-radius: 5px;
-            color: #FFFFFF;
-            i {
-              margin-right: 1vw;
-            }
-          }
         }
         .add-tag {
           position: relative;
@@ -486,6 +522,7 @@
           color: #666666;
           width: 5vw;
           height: 5vw;
+          line-height: 5vw;
           border-radius: 50%;
           text-align: center;
           transition: all 0.5s;
@@ -511,11 +548,11 @@
             transition: all 0.5s;
             color: #333333;
           }
-          .adding-tag-hint {
+          i.fa-plus {
             transition: all 0.5s;
             color: #0080FF;
           }
-          input:focus+.adding-tag-hint {
+          input:focus+.fa-plus {
             opacity: 0;
           }
         }

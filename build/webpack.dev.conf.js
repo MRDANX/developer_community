@@ -418,6 +418,27 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           res.json(result);
         })
       });
+
+      //router for publishing article
+      app.post('/createUserArticle', (req, res) => {
+        let createArticleSql = 'INSERT INTO article(userID,title,date,content,subject,tags,cover) VALUE(?,?,?,?,?,?,?)',
+          data = req.body,
+          userID = data.userID,
+          title = data.title,
+          cover = data.cover,
+          subject = data.subject,
+          tags = data.tags,
+          content = data.content;
+        let inserts = [userID, title, new Date(), content, subject, tags, cover];
+        connection.query(createArticleSql, inserts, (err, result) => {
+          if (err) throw err;
+          if (result.affectedRows == 1) {
+            res.json({ errno: null, text: '发布文章成功' });
+          } else {
+            res.json({ errno: 1, text: '发布文章失败' });
+          }
+        });
+      });
     },
 
     clientLogLevel: 'warning',

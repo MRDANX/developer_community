@@ -30,7 +30,7 @@
     <div class="article-action">
       <router-link to="" tag="p">
         <i class="fa fa-heart"></i>
-        <span>{{articleInfo.favors}}</span>
+        <span>{{articleInfo.favors||'点赞'}}</span>
       </router-link>
       <router-link to="" tag="p">
         <i class="fa fa-comment"></i>

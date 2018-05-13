@@ -27,10 +27,10 @@
     },
     computed: {
       relativeTop() {
-        return 'calc(50% + '+this.verticalMove+'vh)';
+        return 'calc(50% + ' + this.verticalMove + 'vh)';
       },
       relativeLeft() {
-        return 'calc(50% + '+this.horizontalMove+'vw)';
+        return 'calc(50% + ' + this.horizontalMove + 'vw)';
       }
     },
     watch: {
@@ -53,11 +53,13 @@
 
   .hint {
     transition: all .5s;
-    position: absolute;
+    position: fixed;
     width: fit-content;
+    height: 6vw;
+    line-height: 6vw;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%,-51%);
     color: #F1F1F1;
     font-size: 4vw;
     padding: 2vw 4vw;
