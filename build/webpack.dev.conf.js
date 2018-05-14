@@ -81,6 +81,26 @@ function getCollection(userID) {
     });
   });
 }
+
+function base64ToImage(base64, publicPath) {
+  return new Promise((resolve, reject) => {
+    let regExp = /^data:image\/(\w+);base64,/,
+      suffix = base64.match(regExp)[1],
+      filePath = `${publicPath}/${Date.now()}.${suffix}`,
+      imgData = base64.replace(regExp, '');
+    let dataBuffer = new Buffer(imgData, 'base64');
+    let fs = require('fs');
+    fs.writeFile(filePath, dataBuffer, err => {
+      if (err) {
+        console.log('save image failed at function base64ToImage');
+        reject();
+      } else {
+        console.log('用户动态图片保存成功');
+        resolve(filePath)
+      }
+    })
+  });
+}
 /**
  * server code end here
  */
@@ -438,6 +458,31 @@ const devWebpackConfig = merge(baseWebpackConfig, {
             res.json({ errno: 1, text: '发布文章失败' });
           }
         });
+      });
+
+      //router for publishing trend
+      app.post('/createUserTrend', (req, res) => {
+        let createTrendSql = 'INSERT INTO trend(userID,content,date,images,topic) VALUE(?,?,?,?,?)',
+          data = req.body,
+          userID = data.userID,
+          content = data.content,
+          date = new Date(),
+          images = JSON.parse(data.images),
+          topic = data.topic,
+          imagesPath;
+        let publicPath = 'static/images/trend',
+          saveImagePromiseList = [];
+        images = images.map(image => {
+          saveImagePromiseList.push(base64ToImage(image, publicPath));
+        });
+        Promise.all(saveImagePromiseList).then(result => {
+          imagesPath = result;
+          let inserts = [userID, content, date, imagesPath, topic];
+          connection.query(createTrendSql, inserts, (err, result) => {
+            if (err) throw err;
+            res.json(result);
+          });
+        })
       });
     },
 

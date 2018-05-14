@@ -5,7 +5,7 @@
 			<div class="top-nav-content">
 				<i class="fa fa-chevron-left" @click="$router.go(-1)"></i>
 				<span class="nav-title">发动态</span>
-				<span class="send-trend">发送</span>
+				<span class="send-trend" @click="publishTrend">发送</span>
 			</div>
 		</div>
 		<div class="trend-content">
@@ -93,6 +93,29 @@
           }
         }
       },
+      publishTrend() {
+        let qs = require('qs'),
+          userID = this.userInfo.userID,
+          content = this.content,
+          images = JSON.stringify(this.images);
+        if (!content) {
+          this.hintText = '先写下你此刻的心情在发送吧!';
+        }
+        this.showLoading = true;
+        this.$axios({
+          method: 'post',
+          url: '/createUserTrend',
+          data: qs.stringify({
+            userID,
+            content,
+            images,
+            topic: ''
+          })
+        }).then(result => {
+          console.log(result);
+          this.showLoading = false;
+        })
+      }
     },
     components: {
       hint,
@@ -240,20 +263,16 @@
         left: 0;
         width: 100vw;
         height: 100%;
-				padding: 0 3vw;
-				box-sizing: border-box;
+        padding: 0 5vw;
+        box-sizing: border-box;
         display: flex;
         justify-content: space-between;
         align-items: center;
-				color: rgba(255, 255, 255, 0.5);
-				font-size: 4.2vw;
-				i.fa{
-					font-size: 6vw;
-				}
-        .length-left {
-					flex-grow: 0.2;
-					text-align: center;
-				}
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 4.2vw;
+        i.fa {
+          font-size: 6vw;
+        }
       }
     }
   }

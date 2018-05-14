@@ -224,7 +224,9 @@
           this.showLoading = false;
           if (!result.data.errno) {
             this.hintText = result.data.text;
-            this.$router.push({ path: '/subject/index' });
+            setTimeout(() => {
+              this.$router.push({ path: '/subject/index' });
+            }, 2000);
           } else if (result.data.errno == 1) {
             this.hintText = result.data.text;
           }

@@ -23,8 +23,8 @@
           {{articleInfo.content | abstractContent}}
         </div>
       </div>
-      <div class="article-image" v-if="articleInfo.image">
-        <img :src="articleInfo.image" alt="">
+      <div class="article-image" v-if="articleInfo.cover">
+        <img :src="articleInfo.cover" alt="">
       </div>
     </router-link>
     <div class="article-action">
@@ -120,6 +120,7 @@
         max-width: 30%;
         min-width: 30%;
         width: 30%;
+        margin-left: 4vw;
         img {
           width: 100%;
           position: relative;
