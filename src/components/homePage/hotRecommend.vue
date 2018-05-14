@@ -15,9 +15,9 @@
       <li v-for="(article,index) in recommendArticles" :key="index">
         <h4>{{article.title}}</h4>
         <div>
-          <div>
+          <div @click="toggleFavor(index)" :class="{isFavorite:isFavorite(index)}">
             <i class="fa fa-heart"></i>
-            <span>{{article.favors}}</span>
+            <span>{{article.favors||'点赞'}}</span>
           </div>
           <div>
             <i class="fa fa-user"></i>
@@ -34,26 +34,115 @@
 </template>
 
 <script>
+  import { mapState } from "vuex";
   export default {
     name: 'hotRecommend',
     props: {
-      recommendArticles: {
-        type: Array,
-        default: () => []
-      }
+      // recommendArticles: {
+      //   type: Array,
+      //   default: () => []
+      // },
+      subject: {
+        type: String,
+        default: 'index'
+      },
     },
     data() {
       return {
-        isShow: true
+        isShow: true,
+        favorLock: false,
+        recommendArticles: []
       }
     },
+    computed: {
+      ...mapState('user', ['userInfo'])
+    },
+    created() {
+      this.getRecommendArticles();
+    },
     methods: {
+      getRecommendArticles() {
+        return new Promise((resolve, reject) => {
+          this.$axios.get('/getArticleList', {
+            params: {
+              subject: this.subject,
+              startIndex: this.recommendArticles.length,
+              number: 3
+            },
+            timeout: 20000
+          }).then(result => {
+            if (result.data.length == 0) {
+              reject({
+                errno: 0,
+                text: '已经是最新的了!'
+              });
+            }
+            this.recommendArticles = result.data.concat(this.recommendArticles);
+            resolve();
+          }).catch(err => {
+            if (err.response) {
+              console.log('error.response: ', err.response);
+            } else if (err.request.readyState == 4 && err.request.status == 0) {
+              console.warn('Request timeout!');
+            } else {
+              console.error(err);
+            }
+          });
+        })
+      },
       refresh() {
         this.$refs.refresh.classList.add('refreshing');
+      },
+      isFavorite(index) {
+        const favoriteArticle = this.userInfo.favoriteArticle,
+          articleID = this.recommendArticles[index].articleID;
+        //check whether user has logined and show the corresponding style of favor button 
+        if (favoriteArticle) {
+          for (let i = 0; i < favoriteArticle.length; i++) {
+            if (articleID == favoriteArticle[i].articleID) {
+              return true;
+            }
+          }
+        }
+        return false;
+      },
+      toggleFavor(index) {
+        if (!this.userInfo.userID) {
+          this.$emit('askLogin');
+          return;
+        }
+        const articleID = this.recommendArticles[index].articleID,
+          isFavorite = !this.isFavorite(index);
+        if (!this.favorLock) {
+          this.favorLock = true;
+          this.$store.dispatch('user/toggleArticleFavor', {
+            articleID,
+            isFavorite
+          }).then(result => {
+            this.updateSpecifiedArticle(index);
+            this.favorLock = false;
+          }).catch(err => {
+            console.log(err);
+          });
+        }
+      },
+      //update the specified article form server
+      updateSpecifiedArticle(index) {
+        const articleID = this.recommendArticles[index].articleID;
+        this.$axios({
+          method: 'get',
+          url: '/getSpecifiedArticle',
+          params: {
+            articleID
+          }
+        }).then(result => {
+          if (result.data) {
+            this.recommendArticles.splice(index, 1, result.data[0]);
+          }
+        })
       }
     }
   }
-
 </script>
 
 <style lang="less" scoped>
@@ -86,7 +175,6 @@
           }
         }
       }
-
     }
     .content {
       li {
@@ -97,6 +185,9 @@
         h4 {
           font-weight: normal;
           font-size: 4vw;
+        }
+        .isFavorite {
+          color: #6cbd45;
         }
         >div {
           display: flex;
@@ -115,5 +206,4 @@
       }
     }
   }
-
 </style>

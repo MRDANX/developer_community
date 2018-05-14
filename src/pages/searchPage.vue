@@ -9,7 +9,7 @@
     </div>
     <div class="content" :class="{searching:isSearching}">
       <transition :name="isSearching?'slide-down':'slide-up'" >
-        <keep-alive>
+        <keep-alive exclude="searchingContent">
           <component :is="isSearching?'searchingContent':'searchContent'" v-model="searchText" :searchButtonPressed="searchButtonPressed" @setSearchButton="searchButtonPressed=$event" 
           @focusSearch="isSearching=true"/>
         </keep-alive>

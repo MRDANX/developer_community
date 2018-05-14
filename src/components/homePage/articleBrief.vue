@@ -28,25 +28,69 @@
       </div>
     </router-link>
     <div class="article-action">
-      <router-link to="" tag="p">
+      <p class="favor" :class="{isFavorite}" @click="toggleFavor">
         <i class="fa fa-heart"></i>
         <span>{{articleInfo.favors||'点赞'}}</span>
-      </router-link>
-      <router-link to="" tag="p">
+      </p>
+      <p class="comment">
         <i class="fa fa-comment"></i>
         <span>{{articleInfo.comment||'评论'}}</span>
-      </router-link>
+      </p>
     </div>
   </li>
 </template>
 
 <script>
+  import { mapState } from "vuex";
   export default {
     name: 'articleBrief',
     props: {
       articleInfo: {
         type: Object,
         default: () => {}
+      }
+    },
+    data() {
+      return {
+        favorLock: false,
+      }
+    },
+    computed: {
+      ...mapState('user', ['userInfo']),
+      isFavorite() {
+        const favoriteArticle = this.userInfo.favoriteArticle,
+          articleID = this.articleInfo.articleID;
+        //check whether user has logined and show the corresponding style of favor button 
+        if (favoriteArticle) {
+          for (let i = 0; i < favoriteArticle.length; i++) {
+            if (articleID == favoriteArticle[i].articleID) {
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+    },
+    methods: {
+      toggleFavor() {
+        if (!this.userInfo.userID) {
+          this.$emit('askLogin');
+          return;
+        }
+        const articleID = this.articleInfo.articleID,
+          isFavorite = !this.isFavorite;
+        if (!this.favorLock) {
+          this.favorLock = true;
+          this.$store.dispatch('user/toggleArticleFavor', {
+            articleID,
+            isFavorite
+          }).then(result => {
+            this.$emit('updateCurrentArticle');
+            this.favorLock = false;
+          }).catch(err => {
+            console.log(err);
+          });
+        }
       }
     },
     filters: {
@@ -141,6 +185,9 @@
         i {
           margin-right: 2vw;
         }
+      }
+      .favor.isFavorite {
+        color: #6cbd45;
       }
     }
   }

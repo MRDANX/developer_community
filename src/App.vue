@@ -18,13 +18,16 @@
       '$route' (to, from) {
         let isBack = this.$router.isBack;
         if (isBack) {
-          this.slideDirection = 'slide-right';
+          this.slideDirection = 'outter-slide-right';
           this.$router.isBack = false;
         } else {
-          this.slideDirection = 'slide-left';
+          this.slideDirection = 'outter-slide-left';
         }
         if (from.path == '/createArticle' || from.path == '/createTrend') {
-          this.slideDirection = 'slide-right';
+          this.slideDirection = 'outter-slide-right';
+        }
+        if (from.path == '/') {
+          this.slideDirection = '';
         }
       }
     }
@@ -32,45 +35,45 @@
 </script>
 
 <style>
-  .slide-left-enter-active {
+  .outter-slide-left-enter-active {
     transition: all .5s;
     position: absolute;
     z-index: 99;
   }
 
-  .slide-left-enter {
+  .outter-slide-left-enter {
     transform: translateX(100%);
   }
 
-  .slide-left-leave-active {
+  .outter-slide-left-leave-active {
     transition: all 5s;
     position: absolute;
     z-index: -1;
   }
 
-  .slide-left-leave-to {
+  .outter-slide-left-leave-to {
     opacity: 0;
   }
 
-  .slide-right-leave-active {
+  .outter-slide-right-leave-active {
     transition: all .5s;
     position: absolute;
     top: 0;
     z-index: 100;
   }
 
-  .slide-right-leave-to {
+  .outter-slide-right-leave-to {
     transform: translateX(100%);
   }
 
-  .slide-right-enter-active {
+  .outter-slide-right-enter-active {
     transition: all .1s;
     position: absolute;
     top: 0;
     z-index: -1;
   }
 
-  .slide-right-enter {
+  .outter-slide-right-enter {
     opacity: 0;
   }
 

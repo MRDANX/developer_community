@@ -282,7 +282,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         });
       });
       //router for getting articleList
-      app.get('/api/getArticleList', (req, res) => {
+      app.get('/getArticleList', (req, res) => {
         let getArticleListSql = 'SELECT a.*,u.userName as author,u.avatar FROM article a,user u where a.userID=u.userID AND subject=? LIMIT ?,?';
         // let inserts = [req.query.articleID];
         // getArticleSql = mysql.format(getArticleSql, inserts);
@@ -293,7 +293,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         let inserts = [subject, startIndex, number];
         switch (subject) {
           case 'index':
-            subject = '';
             getArticleListSql = 'SELECT a.*,u.userName as author,u.avatar FROM article a,user u where a.userID=u.userID LIMIT ?,?';
             inserts = [startIndex, number];
             break;
@@ -343,6 +342,17 @@ const devWebpackConfig = merge(baseWebpackConfig, {
             res.json(result);
           });
         }, 1000);
+      });
+
+      //router for getting the specified article info
+      app.get('/getSpecifiedArticle', (req, res) => {
+        let getSpecifiedArticleSql = 'SELECT a.*,u.userName as author,u.avatar FROM article a,user u where a.userID=u.userID AND articleID=?';
+        let articleID = req.query.articleID,
+          inserts = [articleID];
+        connection.query(getSpecifiedArticleSql,inserts,(err,result)=>{
+          if(err) throw err;
+          res.json(result);
+        })
       });
 
       //router for searching for simple article and user
@@ -483,6 +493,29 @@ const devWebpackConfig = merge(baseWebpackConfig, {
             res.json(result);
           });
         })
+      });
+
+      //router for toggle user's favor of article
+      app.post('/toggleArticleFavor', (req, res) => {
+        let data = req.body,
+          userID = +data.userID,
+          articleID = +data.articleID,
+          isFavorite = JSON.parse(data.isFavorite),
+          inserts = [userID, articleID],
+          toggleFavorSql;
+        if (isFavorite) {
+          toggleFavorSql = 'INSERT INTO favoriteArticle(userID,articleID) VALUE(?,?)';
+        } else {
+          toggleFavorSql = 'DELETE FROM favoriteArticle WHERE userID=? AND articleID=?';
+        }
+        connection.query(toggleFavorSql, inserts, (err, result) => {
+          if (err) throw err;
+          if (result.affectedRows == 1) {
+            res.json({ errno: null, text: '更新文章点赞表成功' })
+          } else {
+            res.json({ errno: 1, text: '更新文章点赞表失败' })
+          }
+        });
       });
     },
 

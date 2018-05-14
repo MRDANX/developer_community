@@ -34,6 +34,7 @@
       }
       if (!this.userInfo.userID) {
         this.$refs.usersTrendScroll._disable();
+        return;
       }
       this.showLoading = true;
       this.$axios({

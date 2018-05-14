@@ -94,6 +94,29 @@ const actions = {
         commit('initializeUserInfo');
       })
     }
+  },
+  //request server to toggle user's favor of the current article
+  toggleArticleFavor({ state, commit, dispatch }, { articleID, isFavorite }) {
+    const userID = state.userInfo.userID;
+    return new Promise((resolve, reject) => {
+      axios({
+        method: 'post',
+        url: '/toggleArticleFavor',
+        data: qs.stringify({
+          userID,
+          articleID,
+          isFavorite
+        })
+      }).then(result => {
+        if (!result.data.errno) {
+          //retrieve user information from server
+          dispatch('retrieveUserInfo');
+          resolve();
+        } else {
+          reject(result.data);
+        }
+      });
+    });
   }
 };
 

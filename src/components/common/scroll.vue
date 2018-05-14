@@ -252,6 +252,9 @@
       },
       disableLoadMore() {
         this._enableLoadMore = false;
+      },
+      showHint(text) {
+        this.hintText = text;
       }
     },
     updated() {
