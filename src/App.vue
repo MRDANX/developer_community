@@ -1,43 +1,77 @@
 <template>
-  <transition name="fade">
-    <!-- <keep-alive> -->
+  <transition :name="slideDirection" >
+    <keep-alive>
       <router-view/>
-    <!-- </keep-alive> -->
+    </keep-alive>
   </transition>
-
 </template>
 
 <script>
   export default {
-    name: "App"
+    name: "App",
+    data() {
+      return {
+        slideDirection: ''
+      }
+    },
+    watch: {
+      '$route' (to, from) {
+        let isBack = this.$router.isBack;
+        if (isBack) {
+          this.slideDirection = 'slide-right';
+          this.$router.isBack = false;
+        } else {
+          this.slideDirection = 'slide-left';
+        }
+        if (from.path == '/createArticle' || from.path == '/createTrend') {
+          this.slideDirection = 'slide-right';
+        }
+      }
+    }
   };
-
 </script>
 
 <style>
-  .fade-enter-active,
-  .fade-leave-active {
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-
-  .fade-enter-active {
+  .slide-left-enter-active {
     transition: all .5s;
+    position: absolute;
+    z-index: 99;
   }
 
-  .fade-leave-active {
-    transition: all .3s;
+  .slide-left-enter {
+    transform: translateX(100%);
   }
 
-  .fade-enter,
-  .fade-leave-to {
+  .slide-left-leave-active {
+    transition: all 5s;
+    position: absolute;
+    z-index: -1;
+  }
+
+  .slide-left-leave-to {
     opacity: 0;
   }
 
-  .fade-enter-to,
-  .fade-leave {
-    opacity: 1;
+  .slide-right-leave-active {
+    transition: all .5s;
+    position: absolute;
+    top: 0;
+    z-index: 100;
+  }
+
+  .slide-right-leave-to {
+    transform: translateX(100%);
+  }
+
+  .slide-right-enter-active {
+    transition: all .1s;
+    position: absolute;
+    top: 0;
+    z-index: -1;
+  }
+
+  .slide-right-enter {
+    opacity: 0;
   }
 
   html,
@@ -68,5 +102,4 @@
   h2 {
     font-weight: normal;
   }
-
 </style>

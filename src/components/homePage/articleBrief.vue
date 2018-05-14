@@ -1,7 +1,7 @@
 <template>
-  <router-link to="" tag="li" class="article">
+  <li  class="article">
     <div class="article-meta">
-      <router-link to="" tag="div">
+      <router-link :to="'/userInfo/'+articleInfo.userID" tag="div">
         <div class="avatar">
           <img :src="articleInfo.avatar" alt="" v-if="articleInfo.avatar">
           <i class="fa fa-user-circle-o" v-else></i>
@@ -11,10 +11,10 @@
         </span>
       </router-link>
       <div>
-        <router-link to="" class="article-subject" tag="span">{{articleInfo.subject}}</router-link>
+        <router-link :to="'/articleSubject/'+articleInfo.subject" class="article-subject" tag="span">{{articleInfo.subject}}</router-link>
       </div>
     </div>
-    <router-link to="" class="article-content" tag="div">
+    <router-link :to="'/articleInfo/'+articleInfo.articleID" class="article-content" tag="div">
       <div class="article-info">
         <div class="article-title">
           <h4>{{articleInfo.title}}</h4>
@@ -24,7 +24,7 @@
         </div>
       </div>
       <div class="article-image" v-if="articleInfo.cover">
-        <img :src="articleInfo.cover" alt="">
+        <img :src="articleInfo.cover">
       </div>
     </router-link>
     <div class="article-action">
@@ -37,7 +37,7 @@
         <span>{{articleInfo.comment||'评论'}}</span>
       </router-link>
     </div>
-  </router-link>
+  </li>
 </template>
 
 <script>

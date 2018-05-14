@@ -1,20 +1,20 @@
 {
-	"name": "Developer Community",
-	"short_name" :"DC",
-	"description": "This is my Developer Community",
-	"start_url": "index.html",
-	"display": "standalone",
-	"orientation": "portrait",
-	"theme_color": "#de698c",
-	"background_color": "#fff",
-	"icons": [{
-	  "src": "/static/img/logo.png",
-	  "sizes": "48x48",
-	  "type": "image/png"
-	}],
-	"permissions": {
-	  "desktop-notification": {
-		"description": "Needed for creating system notifications."
-	  }
-	}
+  "name": "Developer Community",
+  "short_name": "DC",
+  "description": "This is my Developer Community",
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#de698c",
+  "background_color": "#fff",
+  "icons": [{
+    "src": "/static/img/logo.png",
+    "sizes": "48x48",
+    "type": "image/png"
+  }],
+  "permissions": {
+    "desktop-notification": {
+      "description": "Needed for creating system notifications."
+    }
   }
+}

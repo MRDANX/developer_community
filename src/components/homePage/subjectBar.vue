@@ -22,9 +22,13 @@
     created() {
       //initialize currentIndex according to route's params
       let subjectName = this.$route.params.subject;
-      this.currentIndex = this.subjectList.findIndex(subject => {
-        return subject.to === subjectName;
-      });
+      for (let i = 0; i < this.subjectList.length; i++) {
+        const subject = this.subjectList[i];
+        if (subject.to === subjectName) {
+          this.currentIndex = i;
+          return;
+        }
+      }
       //simulate to do the click event on subject's block
       this.changeCurrentArticleList(this.currentIndex);
     },
@@ -74,7 +78,6 @@
   }
 
   ;
-
 </script>
 <style lang="less" scoped>
   .subject-bar {
@@ -124,5 +127,4 @@
       }
     }
   }
-
 </style>

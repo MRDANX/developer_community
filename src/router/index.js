@@ -31,6 +31,11 @@ const createTrend = () =>
 Vue.use(Router);
 
 let fromSubject = 'index';
+Router.prototype.go = function(number) {
+  this.isBack = true;
+  window.history.go(number);
+};
+
 export default new Router({
   mode: 'history',
   routes: [{

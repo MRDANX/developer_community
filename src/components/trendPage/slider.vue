@@ -104,12 +104,15 @@
   @keyframes friendlyHint {
     0% {
       transform: translateX(0);
+      opacity: 1;
     }
     50% {
       transform: translateX(-10px);
+      opacity: 0.3;
     }
     100% {
       transform: translateX(0);
+      opacity: 1;
     }
   }
 </style>

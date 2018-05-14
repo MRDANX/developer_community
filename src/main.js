@@ -46,6 +46,7 @@ Vue.filter('dateFormat', function(time) {
 });
 
 Vue.prototype.$activeFeedback = activeFeedback;
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

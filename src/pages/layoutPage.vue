@@ -67,7 +67,8 @@
 
 <style lang='less' scoped>
   #layout {
-    width: 100%;
+    width: 100vw;
+    height: 100vh;
     background-color: #F5F6FA;
     ul.fixed-nav {
       display: flex;

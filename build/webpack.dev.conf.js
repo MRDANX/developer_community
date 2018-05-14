@@ -476,7 +476,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           saveImagePromiseList.push(base64ToImage(image, publicPath));
         });
         Promise.all(saveImagePromiseList).then(result => {
-          imagesPath = result;
+          imagesPath = result.toString();
           let inserts = [userID, content, date, imagesPath, topic];
           connection.query(createTrendSql, inserts, (err, result) => {
             if (err) throw err;

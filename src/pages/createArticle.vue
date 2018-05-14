@@ -149,6 +149,11 @@
         }
       }, 500);
     },
+    deactivated() {
+      setTimeout(() => {
+        this.resetInput();
+      }, 500);
+    },
     methods: {
       switchHeader(e) {
         if (e.target == this.$refs.submit || e.target == this.$refs.goBack) {
@@ -225,12 +230,20 @@
           if (!result.data.errno) {
             this.hintText = result.data.text;
             setTimeout(() => {
-              this.$router.push({ path: '/subject/index' });
-            }, 2000);
+              this.$router.go(-1);
+            }, 1500);
           } else if (result.data.errno == 1) {
             this.hintText = result.data.text;
           }
         })
+      },
+      resetInput() {
+        this.title = '';
+        this.cover = '';
+        this.content = '';
+        this.selectedSubject = '';
+        this.tags = [];
+        this.headerIndex = 0;
       }
     },
     computed: {
@@ -297,7 +310,7 @@
       font-size: 5vw;
       background-color: #0080FF;
       color: #FFFFFF;
-      z-index: 99;
+      z-index: 999;
       transition: all .3s;
     }
     .article-header {

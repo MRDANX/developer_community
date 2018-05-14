@@ -72,8 +72,6 @@
               number: 5
             }
           }).then(result => {
-            console.log(result);
-
             if (result.data.length == 0) {
               reject({
                 errno: 0,

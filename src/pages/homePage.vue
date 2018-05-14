@@ -91,11 +91,18 @@
     created() {
       //initialize currentArticleListIndex according to route's params
       let subjectName = this.$route.params.subject;
-      this.currentArticleListIndex = this.customizedSubjectList.findIndex(subject => {
-        return subject.to === subjectName;
-      });
+      this.currentSubjectName = subjectName;
+      for (let i = 0; i < this.customizedSubjectList.length; i++) {
+        const subject = this.customizedSubjectList[i];
+        if (subject.to === subjectName) {
+          this.currentArticleListIndex = i;
+          return;
+        }
+      }
+      // this.currentArticleListIndex = this.customizedSubjectList.findIndex(subject => {
+      //   return subject.to === subjectName;
+      // });
       //set the current subject name to the corresponding subject
-      this.currentSubjectName = this.$route.params.subject;
     },
     mounted() {
       //add active class for custom button

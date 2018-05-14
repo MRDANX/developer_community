@@ -15,7 +15,7 @@
 					<uploaded-image :src="src" v-for="(src,index) in images" :key="src" @deleteImage="images.splice(index,1)" class="uploaded-image"/>
 					<div class="upload-image" key="uploadImageButton" ref="uploadImageButton">
 						<span class="plus">+</span>
-						<input type="file" @change="uploadImage($event.target)" accept="image/jpeg,image/jpg,image/png"/>
+						<input type="file" @change="uploadImage($event.target)" accept="image/jpeg,image/jpg,image/png" ref="fileUpload"/>
 					</div>
 				</transition-group>
 			</div>
@@ -23,7 +23,7 @@
 		<div class="bottom-nav">
 			<div class="mask"></div>
 			<div class="bottom-content">
-				<i class="fa fa-photo"></i>
+				<i class="fa fa-photo" @click="$refs.fileUpload.click()"></i>
 				<i class="fa">@</i>
 				<i class="fa fa-slack"></i>
 				<i class="fa fa-smile-o"></i>
@@ -62,6 +62,11 @@
       if (uploadImageButton) {
         this.$activeFeedback(uploadImageButton);
       }
+    },
+    deactivated() {
+      setTimeout(() => {
+        this.resetInput();
+      }, 500);
     },
     computed: {
       ...mapState('user', ['userInfo']),
@@ -114,7 +119,15 @@
         }).then(result => {
           console.log(result);
           this.showLoading = false;
+          this.hintText = '发送成功!';
+          setTimeout(() => {
+            this.$router.go(-1);
+          }, 1500);
         })
+      },
+      resetInput() {
+        this.content = '';
+        this.images = [];
       }
     },
     components: {
@@ -217,7 +230,7 @@
           color: #FFFFFF;
           background-color: rgba(255, 255, 255, 0.2);
           overflow: hidden;
-          margin: 1vw 1vw 0;
+          margin: 1vw 2vw 0;
           border-radius: 2vw;
           transition: all .8s;
           user-select: none;
