@@ -375,7 +375,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
       //router for getting the specified article info
       app.get('/getSpecifiedArticle', (req, res) => {
-        let getSpecifiedArticleSql = 'SELECT a.*,u.userName as author,u.avatar FROM article a,user u where a.userID=u.userID AND articleID=?';
+        let getSpecifiedArticleSql = 'SELECT * FROM articleDetail WHERE articleID=?';
         let articleID = req.query.articleID,
           inserts = [articleID];
         connection.query(getSpecifiedArticleSql, inserts, (err, result) => {
