@@ -38,10 +38,6 @@
   export default {
     name: 'hotRecommend',
     props: {
-      // recommendArticles: {
-      //   type: Array,
-      //   default: () => []
-      // },
       subject: {
         type: String,
         default: 'index'
@@ -67,7 +63,8 @@
             params: {
               subject: this.subject,
               startIndex: this.recommendArticles.length,
-              number: 3
+              number: 3,
+              orderBy:'favors'
             },
             timeout: 20000
           }).then(result => {
@@ -120,7 +117,9 @@
             isFavorite
           }).then(result => {
             this.updateSpecifiedArticle(index);
-            this.favorLock = false;
+            setTimeout(() => {
+              this.favorLock = false;
+            }, 300);
           }).catch(err => {
             console.log(err);
           });
@@ -188,6 +187,9 @@
         }
         .isFavorite {
           color: #6cbd45;
+          i.fa {
+            animation: articleFavorite 1s forwards;
+          }
         }
         >div {
           display: flex;
@@ -204,6 +206,18 @@
           }
         }
       }
+    }
+  }
+
+  @keyframes articleFavorite {
+    0% {
+      transform: translateY(0) rotateY(0);
+    }
+    50% {
+      transform: translateY(-3vw) rotateY(180deg);
+    }
+    100% {
+      transform: translateY(0) rotateY(180deg);
     }
   }
 </style>

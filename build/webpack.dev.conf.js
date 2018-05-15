@@ -52,6 +52,16 @@ function getFavoritelArticle(userID) {
   });
 }
 
+function getFavoritelTrend(userID) {
+  return new Promise((resolve, reject) => {
+    let sql = 'SELECT trendID FROM favoriteTrend where userID=?';
+    connection.query(sql, [userID], (err, result) => {
+      if (err) throw err;
+      resolve(result);
+    });
+  });
+}
+
 function getFollower(userID) {
   return new Promise((resolve, reject) => {
     let sql = 'SELECT followerUserID FROM follower where userID=?';
@@ -156,15 +166,17 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           let userID = userInfo.userID;
           let getOriginalArticlePromise = getOriginalArticle(userID, true);
           let getFavoritelArticlePromise = getFavoritelArticle(userID);
+          let getFavoritelTrendPromise = getFavoritelTrend(userID);
           let getFollowerPromise = getFollower(userID);
           let getFolloweePromise = getFollowee(userID);
           let getCollectionPromise = getCollection(userID);
-          Promise.all([getOriginalArticlePromise, getFavoritelArticlePromise, getFollowerPromise, getFolloweePromise, getCollectionPromise]).then(result => {
+          Promise.all([getOriginalArticlePromise, getFavoritelArticlePromise, getFavoritelTrendPromise, getFollowerPromise, getFolloweePromise, getCollectionPromise]).then(result => {
             //use es6 grammar to deconstruct result into corresponding variable
-            let [originalArticle, favoriteArticle, follower, followee, collection] = result;
+            let [originalArticle, favoriteArticle, favoriteTrend, follower, followee, collection] = result;
             Object.assign(userInfo, {
               originalArticle,
               favoriteArticle,
+              favoriteTrend,
               follower,
               followee,
               collection
@@ -283,17 +295,16 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       });
       //router for getting articleList
       app.get('/getArticleList', (req, res) => {
-        let getArticleListSql = 'SELECT a.*,u.userName as author,u.avatar FROM article a,user u where a.userID=u.userID AND subject=? LIMIT ?,?';
-        // let inserts = [req.query.articleID];
-        // getArticleSql = mysql.format(getArticleSql, inserts);
         let query = req.query,
           subject = query.subject,
+          orderBy = query.orderBy || 'date',
           startIndex = +query.startIndex || 0,
-          number = +query.number || 10;
+          number = +query.number || 3;
+        let getArticleListSql = `SELECT * FROM articleList WHERE subject=? ORDER BY ${orderBy} DESC LIMIT ?,?`;
         let inserts = [subject, startIndex, number];
         switch (subject) {
           case 'index':
-            getArticleListSql = 'SELECT a.*,u.userName as author,u.avatar FROM article a,user u where a.userID=u.userID LIMIT ?,?';
+            getArticleListSql = `SELECT * FROM articleList ORDER BY ${orderBy} DESC LIMIT ?,?`;
             inserts = [startIndex, number];
             break;
           case 'frontend':
@@ -349,8 +360,8 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         let getSpecifiedArticleSql = 'SELECT a.*,u.userName as author,u.avatar FROM article a,user u where a.userID=u.userID AND articleID=?';
         let articleID = req.query.articleID,
           inserts = [articleID];
-        connection.query(getSpecifiedArticleSql,inserts,(err,result)=>{
-          if(err) throw err;
+        connection.query(getSpecifiedArticleSql, inserts, (err, result) => {
+          if (err) throw err;
           res.json(result);
         })
       });
@@ -418,30 +429,31 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         });
       });
 
-      //router for getting slide trend
-      app.get('/getSlideTrend', (req, res) => {
-        let getSlideTrendSql = 'SELECT trendID,content,images FROM trend ORDER BY favors DESC LIMIT 5';
-        connection.query(getSlideTrendSql, (err, result) => {
-          if (err) throw err;
-          res.json(result);
-        });
-      });
-
       //router for getting trend list
       app.get('/getTrendList', (req, res) => {
-        let getTrendSql = 'SELECT t.*,u.avatar,u.userName,u.job,u.company,COUNT(tc.trendCommentID) as commentNum FROM trend t LEFT JOIN trendComment tc ON t.trendID=tc.trendID LEFT JOIN user u ON t.userID=u.userID GROUP BY (t.trendID) LIMIT ?,?',
-          startIndex = +req.query.startIndex,
-          number = +req.query.number;
-        let inserts = [startIndex, number];
+        let startIndex = +req.query.startIndex,
+          number = +req.query.number,
+          orderBy = req.query.orderBy||'date';
+        let getTrendSql = `SELECT * FROM trendList ORDER BY ${orderBy} DESC LIMIT ?,?`,
+          inserts = [startIndex, number];
         connection.query(getTrendSql, inserts, (err, result) => {
           if (err) throw err;
           res.json(result);
         });
       });
-
+      //router for getting the specified trend info
+      app.get('/getSpecifiedTrend', (req, res) => {
+        let getSpecifiedTrendSql = 'SELECT * FROM trendList WHERE trendID = ?';
+        let trendID = +req.query.trendID,
+          inserts = [trendID];
+        connection.query(getSpecifiedTrendSql, inserts, (err, result) => {
+          if (err) throw err;
+          res.json(result);
+        })
+      });
       //router for getting trend for logged user
       app.get('/getUsersTrend', (req, res) => {
-        let getUsersTrendSql = 'SELECT t.*, u.avatar, u.userName, u.job, u.company, COUNT(tc.trendCommentID) AS commentNum FROM trend t LEFT JOIN trendComment tc ON t.trendID = tc.trendID LEFT JOIN USER u ON t.userID = u.userID WHERE t.userID IN ( SELECT userID FROM follower WHERE followerUserID = ? ) GROUP BY (t.trendID)',
+        let getUsersTrendSql = 'SELECT * FROM trendList WHERE userID IN ( SELECT userID FROM follower WHERE followerUserID = ? )',
           followerUserID = +req.query.followerUserID;
         connection.query(getUsersTrendSql, [followerUserID], (err, result) => {
           if (err) throw err;
@@ -514,6 +526,28 @@ const devWebpackConfig = merge(baseWebpackConfig, {
             res.json({ errno: null, text: '更新文章点赞表成功' })
           } else {
             res.json({ errno: 1, text: '更新文章点赞表失败' })
+          }
+        });
+      });
+      //router for toggle user's favor of trend
+      app.post('/toggleTrendFavor', (req, res) => {
+        let data = req.body,
+          userID = +data.userID,
+          trendID = +data.trendID,
+          isFavorite = JSON.parse(data.isFavorite),
+          inserts = [userID, trendID],
+          toggleFavorSql;
+        if (isFavorite) {
+          toggleFavorSql = 'INSERT INTO favoriteTrend(userID,trendID) VALUE(?,?)';
+        } else {
+          toggleFavorSql = 'DELETE FROM favoriteTrend WHERE userID=? AND trendID=?';
+        }
+        connection.query(toggleFavorSql, inserts, (err, result) => {
+          if (err) throw err;
+          if (result.affectedRows == 1) {
+            res.json({ errno: null, text: '更新动态点赞表成功' })
+          } else {
+            res.json({ errno: 1, text: '更新动态点赞表失败' })
           }
         });
       });

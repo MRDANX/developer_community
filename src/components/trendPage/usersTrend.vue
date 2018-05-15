@@ -2,7 +2,8 @@
 	<scroll ref="usersTrendScroll">
 		<div class="users-trend">
 			<ul v-if="userInfo.userID" class="users-trend-list">
-				<trend v-for="(trend,index) in trendList" :key="index" :trend="trend" ref="trends"/>
+				<trend v-for="(trend,index) in trendList" :key="index" :trend="trend" ref="trends"
+        @updateCurrentTrend="updateSpecifiedTrend(index)"/>
 			</ul>
 			<div v-else class="ask-for-login">
 				<i class="fa fa-coffee"></i>
@@ -51,6 +52,22 @@
     },
     computed: {
       ...mapState('user', ['userInfo'])
+    },
+    methods:{
+      updateSpecifiedTrend(index) {
+        const trendID = this.trendList[index].trendID;
+        this.$axios({
+          method: 'get',
+          url: '/getSpecifiedTrend',
+          params: {
+            trendID
+          }
+        }).then(result => {
+          if (result.data) {
+            this.trendList.splice(index, 1, result.data[0]);
+          }
+        })
+      }
     },
     components: {
       trend,

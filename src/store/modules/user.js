@@ -96,7 +96,7 @@ const actions = {
     }
   },
   //request server to toggle user's favor of the current article
-  toggleArticleFavor({ state, commit, dispatch }, { articleID, isFavorite }) {
+  toggleArticleFavor({ state, dispatch }, { articleID, isFavorite }) {
     const userID = state.userInfo.userID;
     return new Promise((resolve, reject) => {
       axios({
@@ -105,6 +105,29 @@ const actions = {
         data: qs.stringify({
           userID,
           articleID,
+          isFavorite
+        })
+      }).then(result => {
+        if (!result.data.errno) {
+          //retrieve user information from server
+          dispatch('retrieveUserInfo');
+          resolve();
+        } else {
+          reject(result.data);
+        }
+      });
+    });
+  },
+  //request server to toggle user's favor of the current trend
+  toggleTrendFavor({ state, dispatch }, { trendID, isFavorite }) {
+    const userID = state.userInfo.userID;
+    return new Promise((resolve, reject) => {
+      axios({
+        method: 'post',
+        url: '/toggleTrendFavor',
+        data: qs.stringify({
+          userID,
+          trendID,
           isFavorite
         })
       }).then(result => {

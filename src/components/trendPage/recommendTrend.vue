@@ -1,5 +1,5 @@
 <template>
-	<scroll :enableLoadMore='true' :loadMore="loadMore">
+	<scroll :enableLoadMore='true' :loadMore="loadMore" ref="recommendScroll">
 		<div class="recommend-trend">
 			<div class="slide-trend">
 				<slider>
@@ -20,7 +20,9 @@
 				</slider>
 			</div>
 			<ul class="trend-list">
-				<trend v-for="(trend,index) in trendList" :key="index" :trend="trend" ref="trends"/>
+				<trend v-for="(trend,index) in trendList" :key="index" :trend="trend" @askLogin="$refs.recommendScroll.showHint('请先登录')"
+        @updateCurrentTrend="updateSpecifiedTrend(index)"
+        @showSharePanel="$emit('showSharePanel',$event)"/>
 			</ul>
       <loading v-if="showLoading"/>
 		</div>
@@ -56,7 +58,12 @@
       });
       this.$axios({
         method: 'get',
-        url: '/getSlideTrend'
+        url: '/getTrendList',
+        params: {
+          startIndex: this.slideTrend.length,
+          number: 5,
+          orderBy: 'favors'
+        }
       }).then(result => {
         this.slideTrend = result.data;
       });
@@ -82,6 +89,20 @@
             resolve();
           });
         });
+      },
+      updateSpecifiedTrend(index) {
+        const trendID = this.trendList[index].trendID;
+        this.$axios({
+          method: 'get',
+          url: '/getSpecifiedTrend',
+          params: {
+            trendID
+          }
+        }).then(result => {
+          if (result.data) {
+            this.trendList.splice(index, 1, result.data[0]);
+          }
+        })
       }
     },
     components: {

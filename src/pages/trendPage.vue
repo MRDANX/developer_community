@@ -10,13 +10,50 @@
     </div>
     <transition :name="slideDirection">
       <keep-alive>
-        <component :is="currentView" />
+        <component :is="currentView" @showSharePanel="_showSharePanel($event)"/>
       </keep-alive>
     </transition>
+    <slide-out slideToDirection="toUp" v-model="showSharePanel" class="share-panel" :showModal="true">
+      <div class="share-content" ontouchstart>
+        <div class="share-icon-wrapper">
+          <div class="share-icon">
+            <img src="/static/images/shareIcon/moments.svg">
+            <span>微信朋友圈</span>
+          </div>
+          <div class="share-icon">
+            <img src="/static/images/shareIcon/wechat.svg">
+            <span>微信</span>
+          </div>
+          <div class="share-icon">
+            <img src="/static/images/shareIcon/sina.svg">
+            <span>微博</span>
+          </div>
+          <div class="share-icon">
+            <img src="/static/images/shareIcon/qq.svg">
+            <span>QQ好友</span>
+          </div>
+          <div class="share-icon">
+            <img src="/static/images/shareIcon/zone.svg">
+            <span>QQ空间</span>
+          </div>
+        </div>
+         <div class="share-icon-wrapper">
+          <div class="share-icon">
+            <img src="/static/images/shareIcon/copyLink.svg">
+            <span>复制链接</span>
+          </div>
+          <div class="share-icon">
+            <img src="/static/images/shareIcon/browser.svg">
+            <span>浏览器打开</span>
+          </div>
+        </div>
+      </div>
+    </slide-out>
   </div>
 </template>
 
 <script>
+  import slideOut from "@/components/common/slideOut";
   import topicTrend from "@/components/trendPage/topicTrend";
   import usersTrend from "@/components/trendPage/usersTrend";
   import recommendTrend from "@/components/trendPage/recommendTrend";
@@ -26,7 +63,9 @@
       return {
         navTabs: ['话题', '推荐', '动态'],
         currentIndex: 1,
-        slideDirection: 'slide-left'
+        slideDirection: 'slide-left',
+        showSharePanel: false,
+        shareTrendID: undefined
       }
     },
     computed: {
@@ -43,6 +82,12 @@
         }
       }
     },
+    methods: {
+      _showSharePanel(trendID) {
+        this.shareTrendID = trendID;
+        this.showSharePanel = true;
+      }
+    },
     watch: {
       currentIndex(newIndex, oldIndex) {
         if (newIndex > oldIndex) {
@@ -53,6 +98,7 @@
       }
     },
     components: {
+      slideOut,
       usersTrend,
       topicTrend,
       recommendTrend
@@ -146,6 +192,35 @@
         text-align: center;
       }
     }
-    .trend-content {}
+    .share-content {
+      width: 100vw;
+      min-height: 25vw;
+      box-sizing: border-box;
+      background-color: #fff;
+      overflow: hidden;
+      border-top-right-radius: 1vw;
+      border-top-left-radius: 1vw;
+      .share-icon-wrapper {
+        display: flex;
+        padding: 3vw;
+        box-sizing: border-box;
+        border-bottom: 1px solid #DFDFDF;
+        .share-icon {
+          width: 15vw;
+          font-size: 3vw;
+          font-weight: bold;
+          text-align: center;
+          margin: 0 1.9vw;
+          img {
+            width: 90%;
+            &:active{
+              transition: all .1s;
+              transform: scale(0.9);
+            }
+          }
+        }
+      }
+      
+    }
   }
 </style>

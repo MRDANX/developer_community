@@ -94,6 +94,7 @@ a:hover {
   padding: 80px 0 180px;
   box-sizing: border-box;
   height: 100vh;
+  width: 100vw;
 }
 
 .error-page-container {

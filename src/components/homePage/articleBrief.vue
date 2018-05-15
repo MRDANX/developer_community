@@ -52,7 +52,7 @@
     },
     data() {
       return {
-        favorLock: false,
+        favorLock: false
       }
     },
     computed: {
@@ -86,7 +86,9 @@
             isFavorite
           }).then(result => {
             this.$emit('updateCurrentArticle');
-            this.favorLock = false;
+            setTimeout(() => {
+              this.favorLock = false;
+            }, 300);
           }).catch(err => {
             console.log(err);
           });
@@ -187,8 +189,23 @@
         }
       }
       .favor.isFavorite {
+        i.fa {
+          animation: articleFavorite 1s forwards;
+        }
         color: #6cbd45;
       }
+    }
+  }
+
+  @keyframes articleFavorite {
+    0% {
+      transform: translateY(0) rotateY(0);
+    }
+    50% {
+      transform: translateY(-3vw) rotateY(180deg);
+    }
+    100% {
+      transform: translateY(0) rotateY(180deg);
     }
   }
 </style>

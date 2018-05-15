@@ -76,7 +76,8 @@
         params: {
           subject: 'index',
           startIndex: this.articleList.length,
-          number: 5
+          number: 5,
+          orderBy: 'favors'
         },
         timeout: 4000
       }).then(result => {
@@ -102,7 +103,7 @@
       let searchContentScroll = this.$refs.searchContentScroll;
       this.$nextTick(() => {
         searchContentScroll.scroll.on('scroll', (pos) => {
-          if(pos.y>80){
+          if (pos.y > 80) {
             this.$emit('focusSearch');
           }
         })
@@ -116,7 +117,8 @@
             params: {
               subject: 'index',
               startIndex: this.articleList.length,
-              number: 5
+              number: 5,
+              orderBy: 'favors'
             },
             timeout: 4000
           }).then(result => {

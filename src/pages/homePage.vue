@@ -6,7 +6,7 @@
       ref="subjectBar"
       />
       <div class="custom-button" ref="customButton">
-        <i class="fa fa-caret-down" @click="showSlideOut=true"></i>
+        <i class="fa fa-caret-down" @click="showCustomPanel=true"></i>
       </div>
     </div>
     <!-- scrollable content with slot injected -->
@@ -16,7 +16,7 @@
       </keep-alive>
     </transition>
     <!-- hidden panel for customizing subject -->
-    <slide-out slideToDirection="toRight" v-model="showSlideOut" title="分 类 自 定 义" class="custom-panel" :showModal="true">
+    <slide-out slideToDirection="toRight" v-model="showCustomPanel" title="分 类 自 定 义" class="custom-panel" :showModal="true">
       <!-- list for customizing subjects exclude index 0(item home-page)-->
       <ul class="custom-list">
         <li v-for="(subject,index) in subjectList" :key="index" v-if="index!=0" class="custom-item">
@@ -81,7 +81,7 @@
           }
         ],
         enabledSubjectsIndex: [0, 1, 2, 4, 5, 8],
-        showSlideOut: false,
+        showCustomPanel: false,
         currentArticleListIndex: 1,
         currentSubjectName: 'index',
         changeArticleListAnimation: 'slide-top',
@@ -266,7 +266,6 @@
       }
     }
     .custom-panel {
-      background-color: #F1F1F1;
       /deep/ .slide-out-header {
         background: linear-gradient(to right, #138be0, #96cbf7 20%, #0080FF);
         color: #FFFFFF;
@@ -274,6 +273,7 @@
       ul.custom-list {
         width: 80vw;
         height: 93vh;
+        background-color: #F1F1F1;
         li.custom-item {
           font-size: 4vh;
           color: #333333;

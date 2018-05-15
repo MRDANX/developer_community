@@ -3,7 +3,7 @@
     <div class="modal" key="modal" v-if="value&&showModal" @click="$emit('input',false)"></div>
     <transition :name="slideToDirection" class="wrapper">
       <div :class="['slide-out',slideToDirection]" v-if="value" key="content">
-        <div :class="['slide-out-header',slideToDirection]">
+        <div :class="['slide-out-header',slideToDirection]" v-if="title">
           <i :class="['fa',directionIcon]" @touchstart="touchstart" @touchend="touchend" ref="goBackButton"></i>
           <span v-if="title">{{title}}</span>
         </div>
@@ -104,7 +104,6 @@
   .slide-out {
     position: fixed;
     margin: auto;
-    background-color: #F1F1F1;
     width: fit-content;
     height: fit-content;
     z-index: 101;
