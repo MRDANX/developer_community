@@ -214,9 +214,15 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         connection.query(checkSql, inserts, (err, result) => {
           if (err) throw err;
           if (result.length >= 1) {
-            res.json({ err: 'duplicated', text: `该${chineseType}已被注册!` });
+            res.json({
+              err: 'duplicated',
+              text: `该${chineseType}已被注册!`
+            });
           } else {
-            res.json({ err: null, text: `该${chineseType}可注册!` })
+            res.json({
+              err: null,
+              text: `该${chineseType}可注册!`
+            })
           }
         })
 
@@ -235,9 +241,15 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         connection.query(registerSql, inserts, (err, result) => {
           if (err) throw err;
           if (result.affectedRows == 1) {
-            res.json({ err: null, text: '注册成功!' });
+            res.json({
+              err: null,
+              text: '注册成功!'
+            });
           } else {
-            res.json({ err: 'failed', text: '注册失败,请重新尝试一次!' });
+            res.json({
+              err: 'failed',
+              text: '注册失败,请重新尝试一次!'
+            });
           }
         });
       });
@@ -280,14 +292,20 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         connection.query(modifySql, inserts, (err, result) => {
           if (err) {
             if (err.code == 'ER_DUP_ENTRY') {
-              res.json({ errno: 1062, text: '用户名已存在!' });
+              res.json({
+                errno: 1062,
+                text: '用户名已存在!'
+              });
               return
             } else {
               throw err;
             }
           }
           if (result.affectedRows == 1) {
-            res.json({ errno: null, text: '修改成功!' });
+            res.json({
+              errno: null,
+              text: '修改成功!'
+            });
           } else {
             console.log('failed to update user\'s information');
           }
@@ -347,7 +365,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
             break;
         }
         setTimeout(() => {
-          connection.query(getArticleListSql, inserts, function(err, result) {
+          connection.query(getArticleListSql, inserts, function (err, result) {
             if (err) throw err;
             //return data of article list as format JSON
             res.json(result);
@@ -364,6 +382,20 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           if (err) throw err;
           res.json(result);
         })
+      });
+
+      //router for getting comments for article
+      app.get('/getArticleComment', (req, res) => {
+        let query = req.query,
+          articleID = query.articleID,
+          startIndex = +query.startIndex || 0,
+          number = +query.number || 3;
+        let getCommentsSql = "SELECT a.*, u.userName, u.avatar FROM articlecomment a INNER JOIN USER u ON a.userID = u.userID WHERE articleID=? LIMIT ?,?",
+          inserts = [articleID, startIndex, number];
+        connection.query(getCommentsSql, inserts, (err, result) => {
+          if (err) throw err;
+          res.json(result);
+        });
       });
 
       //router for searching for simple article and user
@@ -385,7 +417,10 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         });
         Promise.all([getUsers, getArticles]).then(result => {
           let [users, articles] = result;
-          res.json({ users, articles })
+          res.json({
+            users,
+            articles
+          })
         })
       });
 
@@ -409,7 +444,10 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         });
         Promise.all([getUsers, getArticles]).then(result => {
           let [users, articles] = result;
-          res.json({ users, articles })
+          res.json({
+            users,
+            articles
+          })
         })
       });
 
@@ -433,7 +471,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       app.get('/getTrendList', (req, res) => {
         let startIndex = +req.query.startIndex,
           number = +req.query.number,
-          orderBy = req.query.orderBy||'date';
+          orderBy = req.query.orderBy || 'date';
         let getTrendSql = `SELECT * FROM trendList ORDER BY ${orderBy} DESC LIMIT ?,?`,
           inserts = [startIndex, number];
         connection.query(getTrendSql, inserts, (err, result) => {
@@ -475,9 +513,15 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         connection.query(createArticleSql, inserts, (err, result) => {
           if (err) throw err;
           if (result.affectedRows == 1) {
-            res.json({ errno: null, text: '发布文章成功' });
+            res.json({
+              errno: null,
+              text: '发布文章成功'
+            });
           } else {
-            res.json({ errno: 1, text: '发布文章失败' });
+            res.json({
+              errno: 1,
+              text: '发布文章失败'
+            });
           }
         });
       });
@@ -523,9 +567,15 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         connection.query(toggleFavorSql, inserts, (err, result) => {
           if (err) throw err;
           if (result.affectedRows == 1) {
-            res.json({ errno: null, text: '更新文章点赞表成功' })
+            res.json({
+              errno: null,
+              text: '更新文章点赞表成功'
+            })
           } else {
-            res.json({ errno: 1, text: '更新文章点赞表失败' })
+            res.json({
+              errno: 1,
+              text: '更新文章点赞表失败'
+            })
           }
         });
       });
@@ -545,9 +595,15 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         connection.query(toggleFavorSql, inserts, (err, result) => {
           if (err) throw err;
           if (result.affectedRows == 1) {
-            res.json({ errno: null, text: '更新动态点赞表成功' })
+            res.json({
+              errno: null,
+              text: '更新动态点赞表成功'
+            })
           } else {
-            res.json({ errno: 1, text: '更新动态点赞表失败' })
+            res.json({
+              errno: 1,
+              text: '更新动态点赞表失败'
+            })
           }
         });
       });

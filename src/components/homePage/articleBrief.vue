@@ -1,7 +1,7 @@
 <template>
-  <li  class="article">
+  <li class="article">
     <div class="article-meta">
-      <router-link :to="'/userInfo/'+articleInfo.userID" tag="div">
+      <router-link :to="{name:'userDetail',params:{userID:articleInfo.userID}}" tag="div">
         <div class="avatar">
           <img :src="articleInfo.avatar" alt="" v-if="articleInfo.avatar">
           <i class="fa fa-user-circle-o" v-else></i>
@@ -11,10 +11,10 @@
         </span>
       </router-link>
       <div>
-        <router-link :to="'/articleSubject/'+articleInfo.subject" class="article-subject" tag="span">{{articleInfo.subject}}</router-link>
+        <router-link :to="{name:'subjectDetail',params:{subject:articleInfo.subject}}" class="article-subject" tag="span">{{articleInfo.subject}}</router-link>
       </div>
     </div>
-    <router-link :to="'/articleInfo/'+articleInfo.articleID" class="article-content" tag="div">
+    <router-link :to="{name:'articleDetail',params:{articleID:articleInfo.articleID}}" class="article-content" tag="div">
       <div class="article-info">
         <div class="article-title">
           <h4>{{articleInfo.title}}</h4>
@@ -41,7 +41,9 @@
 </template>
 
 <script>
-  import { mapState } from "vuex";
+  import {
+    mapState
+  } from "vuex";
   export default {
     name: 'articleBrief',
     props: {
@@ -101,6 +103,7 @@
       }
     }
   };
+
 </script>
 
 
@@ -208,4 +211,5 @@
       transform: translateY(0) rotateY(180deg);
     }
   }
+
 </style>

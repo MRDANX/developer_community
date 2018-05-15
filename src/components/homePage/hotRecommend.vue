@@ -25,7 +25,7 @@
           </div>
           <div>
             <i class="fa fa-clock-o"></i>
-            <span>{{article.date|dateFormat}}</span>
+            <span>{{article.date|timeFromNow}}</span>
           </div>
         </div>
       </li>

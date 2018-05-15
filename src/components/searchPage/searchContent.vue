@@ -41,7 +41,7 @@
 					<div class="article-info">
 						<h4>{{article.title}}</h4>
 						<p>
-							<span>{{article.favors}}人喜欢 • {{article.author}} • {{article.date|dateFormat}}</span>
+							<span>{{article.favors}}人喜欢 • {{article.author}} • {{article.date|timeFromNow}}</span>
 						</p>
 					</div>
 					<img :src="article.image" class="article-img" v-if="article.image">

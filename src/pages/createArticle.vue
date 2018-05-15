@@ -507,7 +507,7 @@
       }
       .article-tags {
         padding: 0 3vw;
-        margin-top: 1vw;
+        margin-top: 2vw;
         position: relative;
         .tags-show {
           display: inline-block;

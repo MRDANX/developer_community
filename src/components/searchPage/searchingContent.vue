@@ -29,7 +29,7 @@
               <li class="related-article-content" v-for="(article,index) in detailedSearchArticles" :key="index">
                 <h4 class="title" v-html="highlightMatch(article.title)"></h4>
                 <p class="content" v-html="highlightMatch(tagFilter(article.content))"></p>
-                <p class="meta"><span>{{article.favors}} 人喜欢 • {{article.author}} • {{article.date|dateFormat}}</span></p>
+                <p class="meta"><span>{{article.favors}} 人喜欢 • {{article.author}} • {{article.date|timeFromNow}}</span></p>
               </li>
             </ul>
           </div>

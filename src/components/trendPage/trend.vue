@@ -6,7 +6,7 @@
 			</router-link>
 			<router-link :to="'/userInfo/'+trend.userID" class="user-info" tag="div">
 				<p class="user-name">{{trend.userName}}</p>
-				<p class="user-meta">{{trend.job}} @ {{trend.company||'公司'}} • {{trend.date|dateFormat}}</p>
+				<p class="user-meta">{{trend.job}} @ {{trend.company||'公司'}} • {{trend.date|timeFromNow}}</p>
 			</router-link>
 			<div class="user-follow">
 				<i class="fa fa-plus"></i>

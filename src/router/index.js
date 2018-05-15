@@ -28,6 +28,12 @@ const createArticle = () =>
   import ('@/pages/createArticle');
 const createTrend = () =>
   import ('@/pages/createTrend');
+const articleDetail = () =>
+  import ('@/pages/articleDetail');
+  const userDetail = () =>
+  import ('@/pages/userDetail');
+  const subjectDetail = () =>
+  import ('@/pages/subjectDetail');
 Vue.use(Router);
 
 let fromSubject = 'index';
@@ -114,6 +120,24 @@ export default new Router({
       path: '/createTrend',
       name: 'createTrend',
       component: createTrend
+    },
+    {
+      path: '/articleDetail/:articleID(\\d+)',
+      name: 'articleDetail',
+      component: articleDetail,
+      props:true
+    },
+    {
+      path: '/userDetail/:userID',
+      name: 'userDetail',
+      component: userDetail,
+      props:true
+    },
+    {
+      path: '/subjectDetail/:subject',
+      name: 'subjectDetail',
+      component: subjectDetail,
+      props:true
     },
     {
       path: '(.*|notFound)',

@@ -1,6 +1,6 @@
 <template>
-  <transition :name="slideDirection" >
-    <keep-alive>
+  <transition :name="slideDirection">
+    <keep-alive exclude="articleDetail">
       <router-view/>
     </keep-alive>
   </transition>
@@ -23,7 +23,8 @@
         } else {
           this.slideDirection = 'outter-slide-left';
         }
-        if (from.path == '/createArticle' || from.path == '/createTrend') {
+        if (from.name == 'createArticle' || from.name == 'createTrend' || from.name == 'articleDetail' || from.name ==
+          'userDetail' || from.name == 'subjectDetail') {
           this.slideDirection = 'outter-slide-right';
         }
         if (from.path == '/') {
@@ -32,6 +33,7 @@
       }
     }
   };
+
 </script>
 
 <style>
@@ -46,7 +48,7 @@
   }
 
   .outter-slide-left-leave-active {
-    transition: all 5s;
+    transition: all 0s .5s;
     position: absolute;
     z-index: -1;
   }
@@ -67,7 +69,7 @@
   }
 
   .outter-slide-right-enter-active {
-    transition: all .1s;
+    transition: all 0s;
     position: absolute;
     top: 0;
     z-index: -1;
@@ -96,6 +98,15 @@
     background-color: #f1f1f1;
   }
 
+  html {
+    -ms-overflow-style: none;
+    overflow: -moz-scrollbars-none;
+  }
+
+  html::-webkit-scrollbar {
+    width: 0px;
+  }
+
   ul {
     list-style-type: none;
     padding: 0;
@@ -105,4 +116,5 @@
   h2 {
     font-weight: normal;
   }
+
 </style>

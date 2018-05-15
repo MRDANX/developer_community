@@ -5,7 +5,7 @@
 			<div class="top-nav-content">
 				<i class="fa fa-chevron-left" @click="$router.go(-1)"></i>
 				<span class="nav-title">发动态</span>
-				<span class="send-trend" @click="publishTrend">发送</span>
+				<span class="send-trend" @click="publishTrend"><i class="fa fa-send"></i>发送</span>
 			</div>
 		</div>
 		<div class="trend-content">
@@ -104,7 +104,8 @@
           content = this.content,
           images = JSON.stringify(this.images);
         if (!content) {
-          this.hintText = '先写下你此刻的心情在发送吧!';
+          this.hintText = '先写下你此刻的心情再发送吧!';
+          return;
         }
         this.showLoading = true;
         this.$axios({
@@ -192,6 +193,9 @@
         color: #FFFFFF;
         .nav-title {
           flex-grow: 0.8;
+        }
+        .send-trend i.fa {
+          margin-right: 2vw;
         }
       }
     }

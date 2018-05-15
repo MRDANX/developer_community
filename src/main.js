@@ -22,7 +22,7 @@ function activeFeedback(el) {
   });
 }
 
-Vue.filter('dateFormat', function(time) {
+Vue.filter('timeFromNow', function(time) {
   let dayMilli, days, hoursMilli, hours, minutesMilli, minutes, secondMill, seconds;
   dayMilli = Date.now() - new Date(time).getTime();
   days = Math.floor(dayMilli / (24 * 3600 * 1000));
