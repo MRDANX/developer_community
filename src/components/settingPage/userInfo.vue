@@ -7,8 +7,8 @@
           <!-- <i class="fa fa-user-circle-o" v-else></i> -->
         </div>
         <div class="user-name">
-          <span>{{userInfo.userName||'登录/注册'}}</span>
-          <span class="job-company">{{userInfo.job||'添加职位'}} @ {{userInfo.company||'添加公司'}}</span>
+          <span>{{userInfo.userName}}</span>
+          <span class="job-company">{{userInfo.job}} @ {{userInfo.company}}</span>
         </div>
       </div>
       <div class="follower-edit">
@@ -27,9 +27,9 @@
         <personal-setting></personal-setting>
       </slide-out>
     </li>
-    <li class="margin-top">动态</li>
-    <li class="margin-top">沸点
-      <span>{{userInfo.trend&&userInfo.trend.length||0}}</span>
+    <li class="margin-top">所有动态</li>
+    <li class="margin-top">用户动态
+      <span>{{userInfo.trendNum}}</span>
     </li>
     <li>原创文章
       <span>{{userInfo.originalArticle&&userInfo.originalArticle.length||0}}</span>

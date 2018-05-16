@@ -4,16 +4,16 @@
       <img :src="storedAvatar||'/static/images/avatar/default-avatar.png'" alt="">
     </div>
     <div class="input-area">
-      <text-input v-model="userToken" inputType="text" hint="手机/邮箱" @pressEnter="requestLogin"/>
-      <text-input v-model="password" inputType="password" hint="密  码" @pressEnter="requestLogin"/>
+      <text-input v-model="userToken" inputType="text" hint="手机/邮箱" @pressEnter="requestLogin" />
+      <text-input v-model="password" inputType="password" hint="密  码" @pressEnter="requestLogin" />
       <button class="login-button" @click="requestLogin" ref="loginButton">登录</button>
       <button class="register-button" ref="registerButton" @click="showRegister=true">注册</button>
     </div>
-    <hint v-model="hintText"/>
-    <loading v-if="showLoading" :verticalMove="-5" color="#FFFFFF"/>
+    <hint v-model="hintText" />
+    <loading v-if="showLoading" :verticalMove="-5" color="#FFFFFF" />
     <slide-out id="register" v-model="showRegister" title="用户注册">
       <scroll>
-        <register v-model="showRegister"/>
+        <register v-model="showRegister" />
       </scroll>
     </slide-out>
   </div>
@@ -79,6 +79,7 @@
           let data = result.data;
           if (data.errno && data.errno == 404) {
             this.hintText = data.text;
+            this.showLoading = false;
             return;
           }
           //remind user that login successfully and register user's information into vuex by committing mutation to vuex
@@ -102,6 +103,7 @@
       loading
     }
   }
+
 </script>
 
 <style lang="less" scoped>
@@ -111,8 +113,9 @@
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
-    justify-content: space-around; // background-image: url("/static/images/login_bg.jpg");
-    // background-size: 110% 100%;
+    justify-content: space-around;
+    background-image: url("/static/images/login_bg.jpg");
+    background-size: 110% 100%;
     .user-avatar {
       width: 40vw;
       height: 40vw;
@@ -167,4 +170,5 @@
       height: 93vh;
     }
   }
+
 </style>

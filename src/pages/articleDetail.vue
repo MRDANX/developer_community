@@ -1,7 +1,7 @@
 <template>
   <div class="article-detail">
     <div class="header" ref="header">
-      <i class="fa fa-arrow-left" @click="$router.go(-1)"></i>
+      <i class="fa fa-arrow-left" @click.self="$router.go(-1)"></i>
       <h4 class="head-title" ref="headTitle" @click="scrollToTop">{{articleInfo.title}}</h4>
       <i class="fa fa-ellipsis-v"></i>
     </div>
@@ -13,10 +13,10 @@
         <h2 class="title" ref="title">{{articleInfo.title}}</h2>
         <div class="user-info">
           <div class="user-info-wrapper">
-            <div class="avatar">
+            <router-link :to="{name:'userDetail',params:{userID:articleInfo.userID}}" tag="div" class="avatar">
               <img :src="articleInfo.avatar" alt="">
-            </div>
-            <span class="author">{{articleInfo.author}}</span>
+            </router-link>
+            <router-link :to="{name:'userDetail',params:{userID:articleInfo.userID}}" tag="span" class="author">{{articleInfo.author}}</router-link>
             <div class="user-follow">
               <i class="fa fa-plus"></i>
               <span>关注</span>
@@ -233,6 +233,7 @@
         }).then(result => {
           if (!result.data.errno) {
             this.getArticleComment();
+            this.getArticleInfo();
           } else {
             console.log(result.data);
           }
@@ -320,7 +321,7 @@
     width: 100vw;
     font-size: 4vw;
     min-height: 100vh;
-    background-color: #F1F1F1;
+    background-color: #FFFFFF;
     .header {
       width: 100vw;
       height: 12vw;
@@ -349,12 +350,6 @@
         transition: all .5s;
         font-size: 4vw;
 
-      }
-      &.hide {
-        top: -12vw;
-      }
-      &.show {
-        top: 0;
       }
     }
     .content-wrapper {

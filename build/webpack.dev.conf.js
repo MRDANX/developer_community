@@ -42,12 +42,32 @@ function getOriginalArticle(userID, simplification) {
   });
 }
 
+function getOriginalArticleNumber(userID) {
+  return new Promise((resolve, reject) => {
+    let sql = 'SELECT COUNT(*) AS originalArticleNum FROM article where userID=?';
+    connection.query(sql, [userID], (err, result) => {
+      if (err) throw err;
+      resolve(result[0].originalArticleNum);
+    });
+  });
+}
+
 function getFavoritelArticle(userID) {
   return new Promise((resolve, reject) => {
     let sql = 'SELECT articleID FROM favoriteArticle where userID=?';
     connection.query(sql, [userID], (err, result) => {
       if (err) throw err;
       resolve(result);
+    });
+  });
+}
+
+function getFavoritelArticleNumber(userID) {
+  return new Promise((resolve, reject) => {
+    let sql = 'SELECT count(*) as favoriteArticleNum FROM favoriteArticle where userID=?';
+    connection.query(sql, [userID], (err, result) => {
+      if (err) throw err;
+      resolve(result[0].favoriteArticleNum);
     });
   });
 }
@@ -62,12 +82,32 @@ function getFavoritelTrend(userID) {
   });
 }
 
+function getTrendNumber(userID) {
+  return new Promise((resolve, reject) => {
+    let sql = 'SELECT count(*) as trendNum FROM trend where userID=?';
+    connection.query(sql, [userID], (err, result) => {
+      if (err) throw err;
+      resolve(result[0].trendNum);
+    });
+  });
+}
+
 function getFollower(userID) {
   return new Promise((resolve, reject) => {
     let sql = 'SELECT followerUserID FROM follower where userID=?';
     connection.query(sql, [userID], (err, result) => {
       if (err) throw err;
       resolve(result);
+    });
+  });
+}
+
+function getFollowerNumber(userID) {
+  return new Promise((resolve, reject) => {
+    let sql = 'SELECT COUNT(*) AS followerNum FROM follower where userID=?';
+    connection.query(sql, [userID], (err, result) => {
+      if (err) throw err;
+      resolve(result[0].followerNum);
     });
   });
 }
@@ -82,12 +122,32 @@ function getFollowee(userID) {
   });
 }
 
+function getFolloweeNumber(userID) {
+  return new Promise((resolve, reject) => {
+    let sql = 'SELECT COUNT(*) AS followeeNum FROM follower where followerUserID=?';
+    connection.query(sql, [userID], (err, result) => {
+      if (err) throw err;
+      resolve(result[0].followeeNum);
+    });
+  });
+}
+
 function getCollection(userID) {
   return new Promise((resolve, reject) => {
     let sql = 'SELECT collectionID,collectionName,articleID FROM collection where userID=?';
     connection.query(sql, [userID], (err, result) => {
       if (err) throw err;
       resolve(result);
+    });
+  });
+}
+
+function getCollectionNumber(userID) {
+  return new Promise((resolve, reject) => {
+    let sql = 'SELECT COUNT(*) AS collectionNum FROM collection where userID=?';
+    connection.query(sql, [userID], (err, result) => {
+      if (err) throw err;
+      resolve(result[0].collectionNum);
     });
   });
 }
@@ -143,7 +203,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           userToken = req.body.userToken,
           password = req.body.password,
           querySql;
-
         if (tokenType == 'phone') {
           querySql = 'SELECT * FROM user where phone=? AND password=?';
         } else {
@@ -158,23 +217,25 @@ const devWebpackConfig = merge(baseWebpackConfig, {
             } else {
               reject({
                 errno: 404,
-                text: '用户名或密码错误!'
+                text: '手机号/邮箱或密码错误!'
               });
             }
           });
         }).then(userInfo => {
           let userID = userInfo.userID;
           let getOriginalArticlePromise = getOriginalArticle(userID, true);
+          let getTrendNumberPromise = getTrendNumber(userID);
           let getFavoritelArticlePromise = getFavoritelArticle(userID);
           let getFavoritelTrendPromise = getFavoritelTrend(userID);
           let getFollowerPromise = getFollower(userID);
           let getFolloweePromise = getFollowee(userID);
           let getCollectionPromise = getCollection(userID);
-          Promise.all([getOriginalArticlePromise, getFavoritelArticlePromise, getFavoritelTrendPromise, getFollowerPromise, getFolloweePromise, getCollectionPromise]).then(result => {
+          Promise.all([getOriginalArticlePromise, getTrendNumberPromise, getFavoritelArticlePromise, getFavoritelTrendPromise, getFollowerPromise, getFolloweePromise, getCollectionPromise]).then(result => {
             //use es6 grammar to deconstruct result into corresponding variable
-            let [originalArticle, favoriteArticle, favoriteTrend, follower, followee, collection] = result;
+            let [originalArticle, trendNum, favoriteArticle, favoriteTrend, follower, followee, collection] = result;
             Object.assign(userInfo, {
               originalArticle,
+              trendNum,
               favoriteArticle,
               favoriteTrend,
               follower,
@@ -190,6 +251,49 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         });
       });
 
+      //router for user simplified info
+      app.get('/getUserDetail', (req, res) => {
+        let userID = +req.query.userID,
+          querySql = 'SELECT * FROM user where userID=?';
+        let inserts = [userID];
+        new Promise((resolve, reject) => {
+          connection.query(querySql, inserts, (err, result) => {
+            if (err) throw err;
+            if (result.length != 0) {
+              resolve(result[0]);
+            } else {
+              reject({
+                errno: 404,
+                text: '用户不存在!'
+              });
+            }
+          });
+        }).then(userInfo => {
+          let getOriginalArticleNumberPromise = getOriginalArticleNumber(userID);
+          let getTrendNumberPromise = getTrendNumber(userID);
+          let getFavoritelArticleNumberPromise = getFavoritelArticleNumber(userID);
+          let getFollowerNumberPromise = getFollowerNumber(userID);
+          let getFolloweeNumberPromise = getFolloweeNumber(userID);
+          let getCollectionNumberPromise = getCollectionNumber(userID);
+          Promise.all([getOriginalArticleNumberPromise, getTrendNumberPromise, getFavoritelArticleNumberPromise, getFollowerNumberPromise, getFolloweeNumberPromise, getCollectionNumberPromise]).then(result => {
+            //use es6 grammar to deconstruct result into corresponding variable
+            let [originalArticleNum, trendNum, favoriteArticleNum, followerNum, followeeNum, collectionNum] = result;
+            Object.assign(userInfo, {
+              originalArticleNum,
+              trendNum,
+              favoriteArticleNum,
+              followerNum,
+              followeeNum,
+              collectionNum
+            });
+            res.json(userInfo);
+          }).catch(err => {
+            res.end('something went wrong when querying database');
+          });
+        }).catch(err => {
+          res.json('something went wrong when querying database after');
+        });
+      });
       //router for check whether field is duplicated
       app.get('/checkUserInfoDuplicate', (req, res) => {
         let type = req.query.type,
@@ -311,6 +415,16 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           }
         });
       });
+
+      //router for getting user detail info
+      app.get('/getUserDetail', (req, res) => {
+        let userID = +req.query.userID,
+          getUserSql = 'SELECT * FROM user WHERE userID=?';
+        connection.query(getUserSql, [userID], (err, result) => {
+
+        })
+      });
+
       //router for getting articleList
       app.get('/getArticleList', (req, res) => {
         let query = req.query,
@@ -386,10 +500,10 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       app.post('/increaseArticlePV', (req, res) => {
         let increaseSql = 'UPDATE article SET pv=pv+1 WHERE articleID=?',
           articleID = req.body.articleID;
-          connection.query(increaseSql,[articleID],(err,result)=>{
-            if(err) throw err;
-            res.json('article has been read.')
-          });
+        connection.query(increaseSql, [articleID], (err, result) => {
+          if (err) throw err;
+          res.json('article has been read.')
+        });
       });
 
       //router for getting comments for article

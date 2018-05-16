@@ -1,6 +1,6 @@
 <template>
   <transition :name="slideDirection">
-    <keep-alive exclude="articleDetail">
+    <keep-alive exclude="articleDetail,userDetail,subjectDetail">
       <router-view/>
     </keep-alive>
   </transition>
@@ -11,7 +11,8 @@
     name: "App",
     data() {
       return {
-        slideDirection: ''
+        slideDirection: '',
+        slideRightList: ['createArticle', 'createTrend', 'articleDetail', 'userDetail', 'subjectDetail']
       }
     },
     created() {
@@ -26,8 +27,7 @@
         } else {
           this.slideDirection = 'outter-slide-left';
         }
-        if (from.name == 'createArticle' || from.name == 'createTrend' || from.name == 'articleDetail' || from.name ==
-          'userDetail' || from.name == 'subjectDetail') {
+        if (this.slideRightList.indexOf(from.name) != -1) {
           this.slideDirection = 'outter-slide-right';
         }
         if (from.path == '/') {
@@ -63,7 +63,7 @@
   .outter-slide-right-leave-active {
     transition: all .5s;
     position: absolute;
-    top: 0;
+    /* top: 0; */
     z-index: 100;
   }
 
@@ -74,7 +74,7 @@
   .outter-slide-right-enter-active {
     transition: all 0s;
     position: absolute;
-    top: 0;
+    /* top: 0; */
     z-index: -1;
   }
 

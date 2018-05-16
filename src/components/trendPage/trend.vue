@@ -1,43 +1,45 @@
 <template>
-	<li class="trend-item">
-		<div class="trend-head">
-			<router-link class="user-avatar"  :to="'/userInfo/'+trend.userID" tag="div">
-				<img :src="trend.avatar" />
-			</router-link>
-			<router-link :to="'/userInfo/'+trend.userID" class="user-info" tag="div">
-				<p class="user-name">{{trend.userName}}</p>
-				<p class="user-meta">{{trend.job}} @ {{trend.company||'公司'}} • {{trend.date|timeFromNow}}</p>
-			</router-link>
-			<div class="user-follow">
-				<i class="fa fa-plus"></i>
-				<span>关注</span>
-			</div>
-		</div>
-		<div class="trend-content" ref="trendContent">
-			<p class="trend-text" v-html="trend.content"></p>
-			<div class="trend-image-set" v-if="trend.images">
-				<img :src="image" v-for="(image,index) in trend.images.split(',')" :key="index">
-			</div>
-		</div>
-		<div class="trend-foot" ref="trendFoot">
-			<div class="trend-favor" :class="{isFavorite}" @click="toggleFavor">
-				<i class="fa" :class="[isFavorite?'fa-thumbs-up':'fa-thumbs-o-up']"></i>
-				<span>{{trend.favors||'赞'}}</span>
-			</div>
-			<div class="trend-comment">
-				<i class="fa fa-commenting-o"></i>
-				<span>{{trend.commentNum||'评论'}}</span>
-			</div>
-			<div class="trend-share" @click="$emit('showSharePanel',trend.trendID)">
-				<i class="fa fa-share-alt"></i>
-			</div>
-		</div>
-    
-	</li>
+  <li class="trend-item">
+    <div class="trend-head">
+      <router-link class="user-avatar" :to="'/userDetail/'+trend.userID" tag="div">
+        <img :src="trend.avatar" />
+      </router-link>
+      <router-link :to="'/userDetail/'+trend.userID" class="user-info" tag="div">
+        <p class="user-name">{{trend.userName}}</p>
+        <p class="user-meta">{{trend.job}} @ {{trend.company||'公司'}} • {{trend.date|timeFromNow}}</p>
+      </router-link>
+      <div class="user-follow">
+        <i class="fa fa-plus"></i>
+        <span>关注</span>
+      </div>
+    </div>
+    <div class="trend-content" ref="trendContent">
+      <p class="trend-text" v-html="trend.content"></p>
+      <div class="trend-image-set" v-if="trend.images">
+        <img :src="image" v-for="(image,index) in trend.images.split(',')" :key="index">
+      </div>
+    </div>
+    <div class="trend-foot" ref="trendFoot">
+      <div class="trend-favor" :class="{isFavorite}" @click="toggleFavor">
+        <i class="fa" :class="[isFavorite?'fa-thumbs-up':'fa-thumbs-o-up']"></i>
+        <span>{{trend.favors||'赞'}}</span>
+      </div>
+      <div class="trend-comment">
+        <i class="fa fa-commenting-o"></i>
+        <span>{{trend.commentNum||'评论'}}</span>
+      </div>
+      <div class="trend-share" @click="$emit('showSharePanel',trend.trendID)">
+        <i class="fa fa-share-alt"></i>
+      </div>
+    </div>
+
+  </li>
 </template>
 
 <script>
-  import { mapState } from "vuex";
+  import {
+    mapState
+  } from "vuex";
   export default {
     name: 'trend',
     props: {
@@ -105,6 +107,7 @@
       }
     }
   }
+
 </script>
 
 <style lang="less" scoped>
@@ -208,4 +211,5 @@
       transform: rotate(0) scale(1);
     }
   }
+
 </style>
