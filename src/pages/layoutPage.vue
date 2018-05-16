@@ -37,9 +37,7 @@
         hintText: ''
       }
     },
-    created() {
-      this.$store.dispatch('user/checkUserInfo');
-    },
+
     mounted() {
       this.$activeFeedback(this.$refs.subject.$el);
       this.$activeFeedback(this.$refs.trend.$el);

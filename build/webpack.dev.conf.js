@@ -318,11 +318,11 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           orderBy = query.orderBy || 'date',
           startIndex = +query.startIndex || 0,
           number = +query.number || 3;
-        let getArticleListSql = `SELECT * FROM articleList WHERE subject=? ORDER BY ${orderBy} DESC LIMIT ?,?`;
+        let getArticleListSql = `SELECT * FROM articleDetail WHERE subject=? ORDER BY ${orderBy} DESC LIMIT ?,?`;
         let inserts = [subject, startIndex, number];
         switch (subject) {
           case 'index':
-            getArticleListSql = `SELECT * FROM articleList ORDER BY ${orderBy} DESC LIMIT ?,?`;
+            getArticleListSql = `SELECT * FROM articleDetail ORDER BY ${orderBy} DESC LIMIT ?,?`;
             inserts = [startIndex, number];
             break;
           case 'frontend':
@@ -395,6 +395,30 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         connection.query(getCommentsSql, inserts, (err, result) => {
           if (err) throw err;
           res.json(result);
+        });
+      });
+
+      //router for publishing comment of an article
+      app.post('/publishComment', (req, res) => {
+        let data = req.body,
+          userID = +data.userID,
+          articleID = +data.articleID,
+          commentText = data.commentText;
+        let publishSql = 'INSERT INTO articleComment(userID,articleID,content,date) VALUE(?,?,?,?)',
+          inserts = [userID, articleID, commentText, new Date()];
+        connection.query(publishSql, inserts, (err, result) => {
+          if (err) throw err;
+          if (result.affectedRows == 1) {
+            res.json({
+              errno: null,
+              text: '提交评论成功'
+            });
+          } else {
+            res.json({
+              errno: 1,
+              text: '提交评论失败'
+            });
+          }
         });
       });
 

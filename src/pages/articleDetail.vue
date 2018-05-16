@@ -35,13 +35,17 @@
         <div class="comments-header">
           {{comments.length}}条评论
         </div>
-        <article-comment v-for="(comment,index) in comments" :key="index" :floor="index+1" :comment="comment" />
-        <div class="comments-end">
-          -- end --
-        </div>
+        <article-comment v-for="(comment,index) in comments" :key="index" :floor="index+1" :comment="comment" @replyAt="replyAt($event)"
+        />
+        <div class="comments-end">-- end --</div>
       </div>
       <slide-out slideToDirection="toUp" :showModal="true" v-model="showCommentPanel">
-        showCommentPanel
+        <div class="comment-panel">
+          <textarea name="comment" class="comment-area" v-model="commentText"></textarea>
+          <div class="comment-action">
+            <div class="publish-comment" @click="publishComment">发表评论</div>
+          </div>
+        </div>
       </slide-out>
     </div>
     <div v-else class="loading">
@@ -49,23 +53,28 @@
     </div>
     <div class="footer">
       <div class="article-action">
-        <i class="fa fa-heart-o"></i>
-        <i class="fa fa-heart-o"></i>
-        <i class="fa fa-heart-o"></i>
+        <i class="fa fa-heart-o favor" :class="{isFavorite}" @click="toggleFavor"></i>
+        <i class="fa fa-comment-o" @click="showCommentPanel=true"></i>
+        <i class="fa fa-plus-square-o"></i>
       </div>
-      <p>
+      <p class="meta">
         <span>喜欢 {{articleInfo.favors}}</span> •
         <span>评论 {{articleInfo.commentNum}}</span>
       </p>
     </div>
+    <hint v-model="hintText" />
   </div>
 </template>
 
 <script>
   import tag from "@/components/common/tag";
+  import hint from "@/components/common/hint";
   import loading from "@/components/common/loading";
   import slideOut from "@/components/common/slideOut";
   import articleComment from "@/components/articleDetail/articleComment";
+  import {
+    mapState
+  } from "vuex";
   export default {
     name: 'articleDetail',
     props: ['articleID'],
@@ -73,10 +82,14 @@
       return {
         articleInfo: {},
         comments: [],
-        showCommentPanel: false
+        showCommentPanel: false,
+        commentText: '',
+        hintText: '',
+        favorLock: false
       }
     },
     computed: {
+      ...mapState('user', ['userInfo']),
       scrollTop() {
         return document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
       },
@@ -85,12 +98,23 @@
       },
       wordCount() {
         return this.articleInfo.content.replace(/<\/?[^>]>/g, '').length;
+      },
+      isFavorite() {
+        const favoriteArticle = this.userInfo.favoriteArticle,
+          articleID = this.articleID;
+        //check whether user has logined and show the corresponding style of favor button 
+        if (favoriteArticle) {
+          for (let i = 0; i < favoriteArticle.length; i++) {
+            if (articleID == favoriteArticle[i].articleID) {
+              return true;
+            }
+          }
+        }
+        return false;
       }
     },
     created() {
-      let articleID = +this.articleID;
       this.getArticleInfo();
-
     },
     methods: {
       getArticleInfo() {
@@ -117,6 +141,62 @@
         }).then(result => {
           this.comments = this.comments.concat(result.data);
         })
+      },
+      publishComment() {
+        if (!this.userInfo.userID) {
+          this.hintText = '请先登录';
+          return;
+        }
+        if (!this.commentText) {
+          this.hintText = '请先输入评论再发表';
+          return;
+        }
+        let qs = require('qs'),
+          userID = this.userInfo.userID,
+          articleID = this.articleID,
+          commentText = this.commentText;
+        this.$axios({
+          method: 'post',
+          url: '/publishComment',
+          data: qs.stringify({
+            userID,
+            articleID,
+            commentText
+          })
+        }).then(result => {
+          if (!result.data.errno) {
+            this.getArticleInfo();
+          } else {
+            console.log(result.data);
+          }
+          this.showCommentPanel = false;
+        })
+      },
+      toggleFavor() {
+        if (!this.userInfo.userID) {
+          this.hintText = '请先登录';
+          return;
+        }
+        const articleID = this.articleID,
+          isFavorite = !this.isFavorite;
+        if (!this.favorLock) {
+          this.favorLock = true;
+          this.$store.dispatch('user/toggleArticleFavor', {
+            articleID,
+            isFavorite
+          }).then(result => {
+            this.getArticleInfo();
+            setTimeout(() => {
+              this.favorLock = false;
+            }, 300);
+          }).catch(err => {
+            console.log(err);
+          });
+        }
+      },
+      replyAt(userName) {
+        this.commentText = `＠${userName} `;
+        this.showCommentPanel = true;
       }
     },
     filters: {
@@ -132,6 +212,7 @@
     },
     components: {
       tag,
+      hint,
       loading,
       slideOut,
       articleComment
@@ -170,11 +251,16 @@
     .content-wrapper {
       padding: 12vw 0;
       width: 100vw;
+      min-height: 100vh;
+      background-color: #F1F1F1;
       overflow: hidden;
       .main-body-wrapper {
         background-color: #FFFFFF;
+        overflow: hidden;
         .cover {
           width: 100vw;
+          max-height: 50vw;
+          overflow: hidden;
           img {
             width: 100%;
           }
@@ -249,26 +335,91 @@
         .comments-end {
           text-align: center;
           padding: 0 0 5vw;
+          color: #666666;
+        }
+      }
+      .comment-panel {
+        width: 100vw;
+        height: 40vw;
+        background-color: #FFFFFF;
+        box-shadow: 0 -1vw 1vw #FFFFFF;
+        padding: 1vw 4vw;
+        box-sizing: border-box;
+        .comment-area {
+          width: 100%;
+          min-height: 25vw;
+          font-size: 4.5vw;
+          outline: none;
+          box-shadow: 0 0 1vw #CCCCCC;
+          box-sizing: border-box;
+          padding: 2vw;
+        }
+        .comment-action {
+          margin-top: 2vw;
+          display: flex;
+          justify-content: flex-end;
+          .publish-comment {
+            border: 1px solid #0080FF;
+            padding: 1.5vw 3vw;
+            border-radius: 1vw;
+            color: #0080FF;
+          }
         }
       }
     }
     .loading {
       width: 100vw;
       height: 100vh;
+      background-color: #F1F1F1;
     }
     .footer {
       width: 100vw;
       height: 12vw;
       box-sizing: border-box;
       padding: 0 3vw;
-      box-shadow: 0 -1px 5px #CCCCCC;
+      box-shadow: 0 -1px 5px #979797;
       background-color: #FFFFFF;
       position: fixed;
       bottom: 0;
       left: 0;
+      z-index: 99;
+      transition: all .5s;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      .article-action {
+        font-size: 8vw;
+        flex-grow: 0.5;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #0080FF; // position: relative;
+        i.favor {
+          width: 8vw;
+          height: 8vw;
+          position: relative;
+          &::before {
+            position: absolute;
+          }
+          &::after {
+            content: "\F004";
+            position: absolute;
+            transform: scale(0);
+            transition: all .3s ease-in-out;
+          }
+          &.isFavorite::after {
+            transform: scale(1);
+          }
+        }
+        i.fa-comment-o {
+          position: relative;
+          top: -2px;
+        }
+      }
+      .meta {
+        color: #8b8b8b;
+        font-size: 4.5vw;
+      }
     }
   }
 

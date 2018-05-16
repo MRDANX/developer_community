@@ -12,7 +12,7 @@
       </div>
     </div>
     <ul class="content">
-      <li v-for="(article,index) in recommendArticles" :key="index">
+      <router-link :to="{name:'articleDetail',params:{articleID:article.articleID}}" v-for="(article,index) in recommendArticles" :key="index" tag="li">
         <h4>{{article.title}}</h4>
         <div>
           <div @click="toggleFavor(index)" :class="{isFavorite:isFavorite(index)}">
@@ -28,7 +28,7 @@
             <span>{{article.date|timeFromNow}}</span>
           </div>
         </div>
-      </li>
+      </router-link>
     </ul>
   </li>
 </template>
@@ -186,7 +186,7 @@
           font-size: 4vw;
         }
         .isFavorite {
-          color: #6cbd45;
+          color: #0080FF;
           i.fa {
             animation: articleFavorite 1s forwards;
           }

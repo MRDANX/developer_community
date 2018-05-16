@@ -34,7 +34,7 @@
       </p>
       <p class="comment">
         <i class="fa fa-comment"></i>
-        <span>{{articleInfo.comment||'评论'}}</span>
+        <span>{{articleInfo.commentNum||'评论'}}</span>
       </p>
     </div>
   </li>
@@ -195,7 +195,7 @@
         i.fa {
           animation: articleFavorite 1s forwards;
         }
-        color: #6cbd45;
+        color: #0080FF;
       }
     }
   }

@@ -14,6 +14,9 @@
         slideDirection: ''
       }
     },
+    created() {
+      this.$store.dispatch('user/checkUserInfo');
+    },
     watch: {
       '$route' (to, from) {
         let isBack = this.$router.isBack;

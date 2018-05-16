@@ -6,10 +6,10 @@
       </div>
       <div class="comment-meta">
         <p class="user-name">{{comment.userName}}</p>
-        <p class="others">{{floor}}楼　•　{{comment.date|dateFormat}}</p>
+        <p class="others">{{floor}}楼 • {{comment.date|dateFormat}}</p>
       </div>
       <div class="comment-action">
-        <p class="add-comment">
+        <p class="add-comment" @click="$emit('replyAt',comment.userName)">
           <i class="fa fa-comments-o"></i>
         </p>
         <p class="favor">
@@ -37,7 +37,7 @@
           minute = date.getMinutes();
         return `${year}.${month}.${day} ${hour}:${minute}`;
       }
-    },
+    }
   }
 
 </script>
@@ -61,25 +61,29 @@
         }
       }
       .comment-meta {
-        flex: 1;
-        margin-left: 5vw;
+        flex-grow: 1;
+        margin-left: 3vw;
         .user-name {
           font-weight: bold;
         }
         .others {
-          font-size: 3.6vw;
+          margin-top: 1vw;
+          font-size: 3.4vw;
           color: #666666;
         }
       }
       .comment-action {
         display: flex;
-        justify-content: space-between;
-        min-width: 20vw;
+        justify-content: space-around;
+        min-width: 26vw;
         font-size: 6vw;
+        color: #666666;
       }
     }
     .comment-content {
       margin: 2vw 0;
+      padding: 0 1vw;
+      box-sizing: border-box;
     }
   }
 

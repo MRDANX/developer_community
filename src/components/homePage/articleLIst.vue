@@ -1,8 +1,10 @@
 <template>
-  <scroll :refresh="refresh" :loadMore="loadMore" :enableScrollToTopButton="true" :nowScrollToTop="nowScrollToTop" :enableRefresh="true" :enableLoadMore="true" ref="articleList">
+  <scroll :refresh="refresh" :loadMore="loadMore" :enableScrollToTopButton="true" :nowScrollToTop="nowScrollToTop" :enableRefresh="true"
+    :enableLoadMore="true" ref="articleList">
     <ul class="articleList">
-      <hot-recommend :subject="subject" @askLogin="$refs.articleList.showHint('请先登录')"/>
-      <article-brief v-for="(item,index) in articleList" :key="index" :articleInfo="item" @updateCurrentArticle="updateSpecifiedArticle(index)" @askLogin="$refs.articleList.showHint('请先登录')"/>
+      <hot-recommend :subject="subject" @askLogin="$refs.articleList.showHint('请先登录')" />
+      <article-brief v-for="(item,index) in articleList" :key="index" :articleInfo="item" @updateCurrentArticle="updateSpecifiedArticle(index)"
+        @askLogin="$refs.articleList.showHint('请先登录')" />
     </ul>
   </scroll>
 </template>
@@ -23,7 +25,7 @@
     data() {
       return {
         articleList: [],
-        hintText:''
+        hintText: ''
       }
     },
     computed: {
@@ -38,7 +40,7 @@
           this.$axios.get('/getArticleList', {
             params: {
               subject: this.subject,
-              startIndex: this.articleList.length,
+              startIndex: 0,
               number: 5
             },
             timeout: 20000
@@ -49,7 +51,18 @@
                 text: '已经是最新的了!'
               });
             }
-            this.articleList = result.data.concat(this.articleList);
+            let filteredData = result.data.filter(newArticle => {
+              return !this.articleList.some(existArticle => {
+                return newArticle.articleID == existArticle.articleID;
+              })
+            });
+            if (filteredData.length == 0) {
+              reject({
+                errno: 0,
+                text: '已经是最新的了!'
+              });
+            }
+            this.articleList = filteredData.concat(this.articleList);
             resolve();
           }).catch(err => {
             if (err.response) {
@@ -101,9 +114,9 @@
           params: {
             articleID
           }
-        }).then(result=>{
-          if(result.data){
-            this.articleList.splice(index,1,result.data[0]);
+        }).then(result => {
+          if (result.data) {
+            this.articleList.splice(index, 1, result.data[0]);
           }
         })
       }
@@ -114,6 +127,7 @@
       hotRecommend
     }
   }
+
 </script>
 
 <style lang="less" scoped>
@@ -130,4 +144,5 @@
       box-shadow: 0 1px 5px #CCCCCC;
     }
   }
+
 </style>
