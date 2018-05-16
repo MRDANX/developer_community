@@ -31,13 +31,18 @@
           </div>
         </div>
       </div>
-      <div class="comments">
+      <div class="comments" ref="comments">
         <div class="comments-header">
-          {{comments.length}}条评论
+          {{articleInfo.commentNum}}条评论
         </div>
-        <article-comment v-for="(comment,index) in comments" :key="index" :floor="index+1" :comment="comment" @replyAt="replyAt($event)"
-        />
-        <div class="comments-end">-- end --</div>
+        <transition-group name="comment-slide-in" tag="div">
+          <article-comment v-for="(comment,index) in comments" :key="index" :floor="index+1" :comment="comment" @replyAt="replyAt($event)"
+            class="comment" />
+          <div class="comments-bottom" key="bottom">
+            <div class="loading-more" v-if="hasMoreComments" @click="getArticleComment">加载更多</div>
+            <div class="comments-end" v-else>-- end --</div>
+          </div>
+        </transition-group>
       </div>
       <slide-out slideToDirection="toUp" :showModal="true" v-model="showCommentPanel">
         <div class="comment-panel">
@@ -52,6 +57,7 @@
       <loading />
     </div>
     <div class="footer">
+      <div class="footer-mask"></div>
       <div class="article-action">
         <i class="fa fa-heart-o favor" :class="{isFavorite}" @click="toggleFavor"></i>
         <i class="fa fa-comment-o" @click="showCommentPanel=true"></i>
@@ -63,6 +69,7 @@
       </p>
     </div>
     <hint v-model="hintText" />
+    <loading v-if="showLoading" color="#FFFFFF" />
   </div>
 </template>
 
@@ -85,7 +92,10 @@
         showCommentPanel: false,
         commentText: '',
         hintText: '',
-        favorLock: false
+        favorLock: false,
+        showLoading: false,
+        hasMoreComments: true,
+        initialComments: false
       }
     },
     computed: {
@@ -116,6 +126,16 @@
     created() {
       this.getArticleInfo();
     },
+    mounted() {
+      window.addEventListener('scroll', this.initializeComments);
+    },
+    updated() {
+      //load comments if it's in the visible view and it's not yet been initialized
+      let comments = this.$refs.comments;
+      if (comments && !this.initialComments) {
+        this.initializeComments();
+      }
+    },
     methods: {
       getArticleInfo() {
         this.$axios({
@@ -126,7 +146,6 @@
           }
         }).then(result => {
           this.articleInfo = result.data[0];
-          this.getArticleComment();
         })
       },
       getArticleComment() {
@@ -139,10 +158,37 @@
             number: 5
           }
         }).then(result => {
+          if (result.data.length < 5) {
+            this.hasMoreComments = false;
+            // return;
+          }
           this.comments = this.comments.concat(result.data);
         })
       },
+      initializeComments() {
+        if (!this.$refs.comments) {
+          return;
+        }
+        let clientHeight = document.documentElement.clientHeight,
+          commentsTop = this.$refs.comments.getBoundingClientRect().top;
+        if (commentsTop < clientHeight && !this.initialComments) {
+          this.initialComments = true;
+          this.getArticleComment();
+          //increase pv of article when initialize it's comments
+          let qs = require('qs');
+          this.$axios({
+            method: 'post',
+            url: '/increaseArticlePV',
+            data: qs.stringify({
+              articleID: this.articleID
+            })
+          }).then(result => {
+            // console.log(result);
+          });
+        }
+      },
       publishComment() {
+        //check whether user has logged in
         if (!this.userInfo.userID) {
           this.hintText = '请先登录';
           return;
@@ -155,6 +201,8 @@
           userID = this.userInfo.userID,
           articleID = this.articleID,
           commentText = this.commentText;
+        this.showLoading = true;
+        //post a publish comment request
         this.$axios({
           method: 'post',
           url: '/publishComment',
@@ -165,11 +213,13 @@
           })
         }).then(result => {
           if (!result.data.errno) {
-            this.getArticleInfo();
+            this.getArticleComment();
           } else {
             console.log(result.data);
           }
           this.showCommentPanel = false;
+          this.showLoading = false;
+          this.commentText = '';
         })
       },
       toggleFavor() {
@@ -210,6 +260,13 @@
         return `${year}-${month}-${day} ${hour}:${minute}`;
       }
     },
+    watch: {
+      initialComments(newVal) {
+        if (newVal) {
+          window.removeEventListener('scroll', this.initializeComments);
+        }
+      }
+    },
     components: {
       tag,
       hint,
@@ -222,9 +279,19 @@
 </script>
 
 <style lang="less" scoped>
+  .comment-slide-in-enter-active {
+    transition: all 1.5s;
+  }
+
+  .comment-slide-in-move {
+    transition: all .5s;
+  }
+
   .article-detail {
     width: 100vw;
     font-size: 4vw;
+    min-height: 100vh;
+    background-color: #F1F1F1;
     .header {
       width: 100vw;
       height: 12vw;
@@ -251,8 +318,6 @@
     .content-wrapper {
       padding: 12vw 0;
       width: 100vw;
-      min-height: 100vh;
-      background-color: #F1F1F1;
       overflow: hidden;
       .main-body-wrapper {
         background-color: #FFFFFF;
@@ -306,12 +371,11 @@
             color: #8b8b8b;
             margin-top: 3vw;
           }
-
         }
         .content {
           overflow: hidden;
           .main-body {
-            margin-top: 6vw;
+            margin: 4vw 0;
             padding: 0 3vw;
           }
           .tags {
@@ -321,7 +385,6 @@
           }
         }
       }
-
       .comments {
         padding: 0 3vw;
         width: 100vw;
@@ -332,7 +395,15 @@
           font-size: 5vw;
           padding: 2vw 0;
         }
-        .comments-end {
+        .comment:nth-of-type(2n).comment-slide-in-enter {
+          opacity: 0;
+          transform: translateX(-100%);
+        }
+        .comment:nth-of-type(2n+1).comment-slide-in-enter {
+          opacity: 0;
+          transform: translateX(100%);
+        }
+        .comments-bottom {
           text-align: center;
           padding: 0 0 5vw;
           color: #666666;
@@ -341,9 +412,9 @@
       .comment-panel {
         width: 100vw;
         height: 40vw;
-        background-color: #FFFFFF;
-        box-shadow: 0 -1vw 1vw #FFFFFF;
-        padding: 1vw 4vw;
+        background-color: #FAFAFA;
+        box-shadow: 0 -0.1vw 1vw #FFFFFF;
+        padding: 3vw;
         box-sizing: border-box;
         .comment-area {
           width: 100%;
@@ -355,14 +426,19 @@
           padding: 2vw;
         }
         .comment-action {
-          margin-top: 2vw;
+          margin-top: 1.5vw;
           display: flex;
           justify-content: flex-end;
           .publish-comment {
             border: 1px solid #0080FF;
-            padding: 1.5vw 3vw;
+            padding: 1vw 4vw;
             border-radius: 1vw;
             color: #0080FF;
+            user-select: none;
+            &:active {
+              color: #FFFFFF;
+              background-color: #0080FF;
+            }
           }
         }
       }
@@ -370,15 +446,13 @@
     .loading {
       width: 100vw;
       height: 100vh;
-      background-color: #F1F1F1;
     }
     .footer {
       width: 100vw;
       height: 12vw;
       box-sizing: border-box;
       padding: 0 3vw;
-      box-shadow: 0 -1px 5px #979797;
-      background-color: #FFFFFF;
+      box-shadow: 0 -1px 2px #D1D1D1; // background-color: #FFFFFF;
       position: fixed;
       bottom: 0;
       left: 0;
@@ -387,16 +461,26 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      .footer-mask {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+        filter: blur(5px);
+        z-index: -1;
+      }
       .article-action {
-        font-size: 8vw;
+        font-size: 6vw;
         flex-grow: 0.5;
         display: flex;
         justify-content: space-between;
         align-items: center;
         color: #0080FF; // position: relative;
         i.favor {
-          width: 8vw;
-          height: 8vw;
+          width: 6vw;
+          height: 6vw;
           position: relative;
           &::before {
             position: absolute;

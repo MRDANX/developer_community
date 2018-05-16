@@ -1,63 +1,67 @@
 <template>
-	<scroll :enableScrollToTopButton="true" :enableLoadMore="true" :loadMore="loadMore" ref="searchContentScroll">
-		<div class="search-content">
-			<div class="carousel">
-				<carousel :loop="true" :autoPlay="true" >
-					<img src="/static/images/activity/carousel1.jpg" class="item">
-					<img src="/static/images/activity/carousel2.jpg" class="item">
-					<img src="/static/images/activity/carousel3.jpg" class="item">
-				</carousel>
-			</div>
-			<div class="activity">
-				<div>
-					<i class="fa fa-book"></i>
-					<span>小册</span>
-				</div>
-				<div>
-					<i class="fa fa-free-code-camp"></i>
-					<span>本周最热</span>
-				</div>
-				<div>
-					<i class="fa fa-bookmark"></i>
-					<span>收藏集</span>
-				</div>
-				<div>
-					<i class="fa fa-bullhorn"></i>
-					<span>活动</span>
-				</div>
-			</div>
-			<ul class="hot-article">
-				<li class="title">
-					<div class="title-left">
-						<i class="fa fa-free-code-camp"></i>
-						<span>热门文章</span>
-					</div>
-					<div class="title-right">
-						<i class="fa fa-cogs"></i>
-						<span>定制热门</span>
-					</div>
-				</li>
-				<li  v-for="(article,index) in articleList" :key="index" class="article" >
-					<div class="article-info">
-						<h4>{{article.title}}</h4>
-						<p>
-							<span>{{article.favors}}人喜欢 • {{article.author}} • {{article.date|timeFromNow}}</span>
-						</p>
-					</div>
-					<img :src="article.image" class="article-img" v-if="article.image">
-				</li>
-				<li v-if="articleList.length==0" class="article-loading" v-for="i in 3" :key="i">
-					<div class="article-info">
-						<h4></h4>
-						<p>
-							<span class="text"></span> • <span class="text"></span> • <span class="text"></span>
-						</p>
-					</div>
-					<div class="article-img"/>
-				</li>
-			</ul>
-		</div>
-	</scroll>
+  <scroll :enableScrollToTopButton="true" :enableLoadMore="true" :loadMore="loadMore" ref="searchContentScroll">
+    <div class="search-content">
+      <div class="carousel">
+        <carousel :loop="true" :autoPlay="true">
+          <img src="/static/images/activity/carousel1.jpg" class="item">
+          <img src="/static/images/activity/carousel2.jpg" class="item">
+          <img src="/static/images/activity/carousel3.jpg" class="item">
+        </carousel>
+      </div>
+      <div class="activity">
+        <div>
+          <i class="fa fa-book"></i>
+          <span>小册</span>
+        </div>
+        <div>
+          <i class="fa fa-free-code-camp"></i>
+          <span>本周最热</span>
+        </div>
+        <div>
+          <i class="fa fa-bookmark"></i>
+          <span>收藏集</span>
+        </div>
+        <div>
+          <i class="fa fa-bullhorn"></i>
+          <span>活动</span>
+        </div>
+      </div>
+      <ul class="hot-article">
+        <li class="title">
+          <div class="title-left">
+            <i class="fa fa-free-code-camp"></i>
+            <span>热门文章</span>
+          </div>
+          <div class="title-right">
+            <i class="fa fa-cogs"></i>
+            <span>定制热门</span>
+          </div>
+        </li>
+        <li v-for="(article,index) in articleList" :key="index" class="article">
+          <div class="article-info">
+            <router-link :to="{name:'articleDetail',params:{articleID:article.articleID}}" tag="h4">{{article.title}}</router-link>
+            <p>
+              <span>{{article.favors}}人喜欢</span> •
+              <router-link :to="{name:'userDetail',params:{userID:article.userID}}" tag="span">{{article.author}}</router-link> •
+              <span>{{article.date|timeFromNow}}</span>
+            </p>
+          </div>
+          <img :src="article.image" class="article-img" v-if="article.image">
+        </li>
+        <li v-if="articleList.length==0" class="article-loading" v-for="i in 3" :key="i">
+          <div class="article-info">
+            <h4></h4>
+            <p>
+              <span class="text"></span> •
+              <span class="text"></span> •
+              <span class="text"></span>
+            </p>
+          </div>
+          <div class="article-img" />
+        </li>
+      </ul>
+    </div>
+  </scroll>
 </template>
 
 <script>
@@ -147,6 +151,7 @@
       carousel
     }
   }
+
 </script>
 
 <style lang="less" scoped>
@@ -174,7 +179,7 @@
         justify-content: space-around;
         align-items: center;
         i {
-          font-size: 8vw;
+          font-size: 7vw;
           display: block;
           &.fa-book {
             color: #0080FF;
@@ -237,7 +242,7 @@
             -webkit-line-clamp: 2;
             overflow: hidden;
           }
-          span {
+          p {
             font-size: 4vw;
             display: inline-block;
             margin: 2vw 0;
@@ -309,4 +314,5 @@
       opacity: 1;
     }
   }
+
 </style>

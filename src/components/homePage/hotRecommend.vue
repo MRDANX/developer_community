@@ -12,23 +12,23 @@
       </div>
     </div>
     <ul class="content">
-      <router-link :to="{name:'articleDetail',params:{articleID:article.articleID}}" v-for="(article,index) in recommendArticles" :key="index" tag="li">
-        <h4>{{article.title}}</h4>
+      <li v-for="(article,index) in recommendArticles" :key="index" tag="li">
+        <router-link :to="{name:'articleDetail',params:{articleID:article.articleID}}" tag="h4">{{article.title}}</router-link>
         <div>
           <div @click="toggleFavor(index)" :class="{isFavorite:isFavorite(index)}">
             <i class="fa fa-heart"></i>
             <span>{{article.favors||'点赞'}}</span>
           </div>
-          <div>
+          <router-link :to="{name:'userDetail',params:{userID:article.userID}}" tag="div">
             <i class="fa fa-user"></i>
             <span>{{article.author}}</span>
-          </div>
+          </router-link>
           <div>
             <i class="fa fa-clock-o"></i>
             <span>{{article.date|timeFromNow}}</span>
           </div>
         </div>
-      </router-link>
+      </li>
     </ul>
   </li>
 </template>

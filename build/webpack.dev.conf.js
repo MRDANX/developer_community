@@ -364,13 +364,11 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           default:
             break;
         }
-        setTimeout(() => {
-          connection.query(getArticleListSql, inserts, function (err, result) {
-            if (err) throw err;
-            //return data of article list as format JSON
-            res.json(result);
-          });
-        }, 1000);
+        connection.query(getArticleListSql, inserts, function (err, result) {
+          if (err) throw err;
+          //return data of article list as format JSON
+          res.json(result);
+        });
       });
 
       //router for getting the specified article info
@@ -384,13 +382,23 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         })
       });
 
+      //router for increasing PV of article
+      app.post('/increaseArticlePV', (req, res) => {
+        let increaseSql = 'UPDATE article SET pv=pv+1 WHERE articleID=?',
+          articleID = req.body.articleID;
+          connection.query(increaseSql,[articleID],(err,result)=>{
+            if(err) throw err;
+            res.json('article has been read.')
+          });
+      });
+
       //router for getting comments for article
       app.get('/getArticleComment', (req, res) => {
         let query = req.query,
           articleID = query.articleID,
           startIndex = +query.startIndex || 0,
           number = +query.number || 3;
-        let getCommentsSql = "SELECT a.*, u.userName, u.avatar FROM articlecomment a INNER JOIN USER u ON a.userID = u.userID WHERE articleID=? LIMIT ?,?",
+        let getCommentsSql = "SELECT a.*, u.userName, u.avatar FROM articlecomment a INNER JOIN USER u ON a.userID = u.userID WHERE articleID=? ORDER BY date LIMIT ?,?",
           inserts = [articleID, startIndex, number];
         connection.query(getCommentsSql, inserts, (err, result) => {
           if (err) throw err;

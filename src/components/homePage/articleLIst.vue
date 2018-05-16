@@ -45,12 +45,12 @@
             },
             timeout: 20000
           }).then(result => {
-            if (result.data.length == 0) {
-              reject({
-                errno: 0,
-                text: '已经是最新的了!'
-              });
-            }
+            // if (result.data.length == 0) {
+            //   reject({
+            //     errno: 0,
+            //     text: '已经是最新的了!'
+            //   });
+            // }
             let filteredData = result.data.filter(newArticle => {
               return !this.articleList.some(existArticle => {
                 return newArticle.articleID == existArticle.articleID;
