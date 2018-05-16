@@ -1,7 +1,8 @@
 <template>
   <div class="article-detail">
-    <div class="header" :class="scrollTop>10?'hide':'show'">
+    <div class="header" ref="header">
       <i class="fa fa-arrow-left" @click="$router.go(-1)"></i>
+      <h4 class="head-title" ref="headTitle" @click="scrollToTop">{{articleInfo.title}}</h4>
       <i class="fa fa-ellipsis-v"></i>
     </div>
     <div class="content-wrapper" v-if="articleInfo.articleID">
@@ -9,7 +10,7 @@
         <div class="cover" v-if="articleInfo.cover">
           <img :src="articleInfo.cover" alt="">
         </div>
-        <h2 class="title">{{articleInfo.title}}</h2>
+        <h2 class="title" ref="title">{{articleInfo.title}}</h2>
         <div class="user-info">
           <div class="user-info-wrapper">
             <div class="avatar">
@@ -100,9 +101,9 @@
     },
     computed: {
       ...mapState('user', ['userInfo']),
-      scrollTop() {
-        return document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
-      },
+      // scrollTop() {
+      //   return document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+      // },
       tags() {
         return this.articleInfo.tags.split(',');
       },
@@ -128,6 +129,7 @@
     },
     mounted() {
       window.addEventListener('scroll', this.initializeComments);
+      window.addEventListener('scroll', this.toggleHeadTitle);
     },
     updated() {
       //load comments if it's in the visible view and it's not yet been initialized
@@ -169,7 +171,7 @@
         if (!this.$refs.comments) {
           return;
         }
-        let clientHeight = document.documentElement.clientHeight,
+        let clientHeight = document.documentElement.clientHeight || document.body.clientHeight,
           commentsTop = this.$refs.comments.getBoundingClientRect().top;
         if (commentsTop < clientHeight && !this.initialComments) {
           this.initialComments = true;
@@ -185,6 +187,23 @@
           }).then(result => {
             // console.log(result);
           });
+        }
+      },
+      toggleHeadTitle() {
+        let headTitle = this.$refs.headTitle,
+          header = this.$refs.header,
+          title = this.$refs.title;
+        if (!headTitle || !header || !title) {
+          return;
+        }
+        let headerBottom = header.getBoundingClientRect().bottom,
+          titleTop = title.getBoundingClientRect().bottom;
+        if (titleTop < headerBottom) {
+          headTitle.style.opacity = 1;
+          headTitle.style.transform = 'scale(1)';
+        } else {
+          headTitle.style.opacity = 0;
+          headTitle.style.transform = 'scale(0.9)';
         }
       },
       publishComment() {
@@ -247,6 +266,16 @@
       replyAt(userName) {
         this.commentText = `＠${userName} `;
         this.showCommentPanel = true;
+      },
+      scrollToTop() {
+        let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        let toTopTimer = setInterval(() => {
+          scrollTop -= 50;
+          window.scrollTo(0, scrollTop);
+          if (scrollTop < 0) {
+            clearInterval(toTopTimer);
+          }
+        }, 20)
       }
     },
     filters: {
@@ -308,6 +337,19 @@
       left: 0;
       z-index: 99;
       transition: all .5s;
+      overflow: hidden;
+      .head-title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 74vw;
+        position: relative; // top: 10vw;
+        opacity: 0;
+        transform: scale(0.9);
+        transition: all .5s;
+        font-size: 4vw;
+
+      }
       &.hide {
         top: -12vw;
       }
