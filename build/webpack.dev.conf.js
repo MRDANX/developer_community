@@ -251,7 +251,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         });
       });
 
-      //router for user simplified info
+      //router for user's detail info
       app.get('/getUserDetail', (req, res) => {
         let userID = +req.query.userID,
           querySql = 'SELECT * FROM user where userID=?';
@@ -294,6 +294,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           res.json('something went wrong when querying database after');
         });
       });
+
       //router for check whether field is duplicated
       app.get('/checkUserInfoDuplicate', (req, res) => {
         let type = req.query.type,
@@ -416,15 +417,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         });
       });
 
-      //router for getting user detail info
-      app.get('/getUserDetail', (req, res) => {
-        let userID = +req.query.userID,
-          getUserSql = 'SELECT * FROM user WHERE userID=?';
-        connection.query(getUserSql, [userID], (err, result) => {
-
-        })
-      });
-
       //router for getting articleList
       app.get('/getArticleList', (req, res) => {
         let query = req.query,
@@ -544,6 +536,63 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         });
       });
 
+      //router for publishing article
+      app.post('/createUserArticle', (req, res) => {
+        let createArticleSql = 'INSERT INTO article(userID,title,date,content,subject,tags,cover) VALUE(?,?,?,?,?,?,?)',
+          data = req.body,
+          userID = data.userID,
+          title = data.title,
+          cover = data.cover,
+          subject = data.subject,
+          tags = data.tags,
+          content = data.content;
+        let inserts = [userID, title, new Date(), content, subject, tags, cover];
+        connection.query(createArticleSql, inserts, (err, result) => {
+          if (err) throw err;
+          if (result.affectedRows == 1) {
+            res.json({
+              errno: null,
+              text: '发布文章成功'
+            });
+          } else {
+            res.json({
+              errno: 1,
+              text: '发布文章失败'
+            });
+          }
+        });
+      });
+
+      //router for toggle user's favor of article
+      app.post('/toggleArticleFavor', (req, res) => {
+        let data = req.body,
+          userID = +data.userID,
+          articleID = +data.articleID,
+          isFavorite = JSON.parse(data.isFavorite),
+          inserts = [userID, articleID],
+          toggleFavorSql;
+        if (isFavorite) {
+          toggleFavorSql = 'INSERT INTO favoriteArticle(userID,articleID) VALUE(?,?)';
+        } else {
+          toggleFavorSql = 'DELETE FROM favoriteArticle WHERE userID=? AND articleID=?';
+        }
+        connection.query(toggleFavorSql, inserts, (err, result) => {
+          if (err) throw err;
+          if (result.affectedRows == 1) {
+            res.json({
+              errno: null,
+              text: '更新文章点赞表成功'
+            })
+          } else {
+            res.json({
+              errno: 1,
+              text: '更新文章点赞表失败'
+            })
+          }
+        });
+      });
+
+
       //router for searching for simple article and user
       app.get('/searchForSimple', (req, res) => {
         let searchText = req.query.searchText;
@@ -645,32 +694,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         })
       });
 
-      //router for publishing article
-      app.post('/createUserArticle', (req, res) => {
-        let createArticleSql = 'INSERT INTO article(userID,title,date,content,subject,tags,cover) VALUE(?,?,?,?,?,?,?)',
-          data = req.body,
-          userID = data.userID,
-          title = data.title,
-          cover = data.cover,
-          subject = data.subject,
-          tags = data.tags,
-          content = data.content;
-        let inserts = [userID, title, new Date(), content, subject, tags, cover];
-        connection.query(createArticleSql, inserts, (err, result) => {
-          if (err) throw err;
-          if (result.affectedRows == 1) {
-            res.json({
-              errno: null,
-              text: '发布文章成功'
-            });
-          } else {
-            res.json({
-              errno: 1,
-              text: '发布文章失败'
-            });
-          }
-        });
-      });
+
 
       //router for publishing trend
       app.post('/createUserTrend', (req, res) => {
@@ -697,34 +721,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         })
       });
 
-      //router for toggle user's favor of article
-      app.post('/toggleArticleFavor', (req, res) => {
-        let data = req.body,
-          userID = +data.userID,
-          articleID = +data.articleID,
-          isFavorite = JSON.parse(data.isFavorite),
-          inserts = [userID, articleID],
-          toggleFavorSql;
-        if (isFavorite) {
-          toggleFavorSql = 'INSERT INTO favoriteArticle(userID,articleID) VALUE(?,?)';
-        } else {
-          toggleFavorSql = 'DELETE FROM favoriteArticle WHERE userID=? AND articleID=?';
-        }
-        connection.query(toggleFavorSql, inserts, (err, result) => {
-          if (err) throw err;
-          if (result.affectedRows == 1) {
-            res.json({
-              errno: null,
-              text: '更新文章点赞表成功'
-            })
-          } else {
-            res.json({
-              errno: 1,
-              text: '更新文章点赞表失败'
-            })
-          }
-        });
-      });
+
       //router for toggle user's favor of trend
       app.post('/toggleTrendFavor', (req, res) => {
         let data = req.body,
