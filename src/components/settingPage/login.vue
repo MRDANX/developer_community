@@ -114,8 +114,8 @@
     flex-flow: column nowrap;
     align-items: center;
     justify-content: space-around;
-    background-image: url("/static/images/login_bg.jpg");
-    background-size: 110% 100%;
+    // background-image: url("/static/images/login_bg.jpg");
+    // background-size: cover;
     .user-avatar {
       width: 40vw;
       height: 40vw;

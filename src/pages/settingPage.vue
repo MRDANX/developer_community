@@ -8,7 +8,7 @@
         <li class="user-info" ref="userInfo" @click="showUserOrLogin=true">
           <div>
             <div class="avatar">
-              <img :src="userInfo.avatar" v-if="userInfo.avatar"/>
+              <img :src="userInfo.avatar" v-if="userInfo.avatar" />
               <i class="fa fa-user-circle-o" v-else></i>
             </div>
             <div class="user-name">
@@ -65,12 +65,10 @@
         </li>
       </ul>
     </scroll>
-    <slide-out id="userInfo" v-model="showUserOrLogin" 
-              :class="userInfo.userID?'hide-login-panel':'login-background'" 
-              :title="userInfo.userID?'个人主页':'用户登录'">
+    <slide-out id="userInfo" v-model="showUserOrLogin" :class="userInfo.userID?'hide-login-panel':'login-background'" :title="userInfo.userID?'个人主页':'用户登录'">
       <component :is="showComponent" v-model="showUserOrLogin"></component>
     </slide-out>
-    <slide-out id="otherSetting" v-model="showOtherSetting" title="设置" >
+    <slide-out id="otherSetting" v-model="showOtherSetting" title="设置">
       <scroll>
         <setting />
       </scroll>
@@ -119,6 +117,7 @@
       setting
     }
   };
+
 </script>
 
 <style lang="less" scoped>
@@ -225,7 +224,7 @@
     .login-background {
       /deep/ .slide-out {
         background-image: url("/static/images/login_bg.jpg");
-        background-size: 110% 100%;
+        background-size: cover;
       }
       /deep/ .slide-out-header {
         color: #FFFFFF;
@@ -253,4 +252,5 @@
       }
     }
   }
+
 </style>

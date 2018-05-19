@@ -1,8 +1,10 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-const welcomePage = () =>
-  import ('@/pages/welcomePage');
+import welcomePage from '@/pages/welcomePage';
+
+// const welcomePage = () =>
+//   import ('@/pages/welcomePage');
 const notFoundPage = () =>
   import ('@/pages/notFoundPage');
 const layoutPage = () =>
