@@ -137,6 +137,7 @@
           flex-direction: column;
           justify-content: space-between;
           margin-right: 2vw;
+          min-height: 16vw;
           .slide-trend-item-head {
             font-size: 4.5vw;
             font-weight: bold;

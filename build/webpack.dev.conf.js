@@ -685,7 +685,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       });
       //router for getting trend for logged user
       app.get('/getUsersTrend', (req, res) => {
-        let getUsersTrendSql = 'SELECT * FROM trendList WHERE userID IN ( SELECT userID FROM follower WHERE followerUserID = ? )',
+        let getUsersTrendSql = 'SELECT * FROM trendList WHERE userID IN ( SELECT userID FROM follower WHERE followerUserID = ? ) ORDER BY date DESC',
           followerUserID = +req.query.followerUserID;
         connection.query(getUsersTrendSql, [followerUserID], (err, result) => {
           if (err) throw err;
@@ -747,7 +747,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           }
         });
       });
-      
+
     },
 
     clientLogLevel: 'warning',
