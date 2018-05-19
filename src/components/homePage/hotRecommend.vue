@@ -1,5 +1,5 @@
 <template>
-  <li class="hot-recommend" v-if="isShow&&recommendArticles.length!=0">
+  <li class="hot-recommend" v-if="recommendArticles.length!=0" :class="{close:!isShow}">
     <div class="header">
       <div>
         <!-- fa-h-square -->
@@ -34,7 +34,9 @@
 </template>
 
 <script>
-  import { mapState } from "vuex";
+  import {
+    mapState
+  } from "vuex";
   export default {
     name: 'hotRecommend',
     props: {
@@ -64,7 +66,7 @@
               subject: this.subject,
               startIndex: this.recommendArticles.length,
               number: 3,
-              orderBy:'favors'
+              orderBy: 'favors'
             },
             timeout: 20000
           }).then(result => {
@@ -142,14 +144,23 @@
       }
     }
   }
+
 </script>
 
 <style lang="less" scoped>
   .hot-recommend {
     width: 100%;
+    height: 75vw;
     background-color: #FFFFFF;
     margin: 1vw 0 3vw;
     box-shadow: 0 1px 5px #CCCCCC;
+    transition: all .5s;
+    opacity: 1;
+    overflow: hidden;
+    &.close{
+      height: 0;
+      opacity: 0;
+    }
     .header {
       width: 100%;
       display: flex;
@@ -220,4 +231,5 @@
       transform: translateY(0) rotateY(180deg);
     }
   }
+
 </style>

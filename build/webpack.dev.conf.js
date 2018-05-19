@@ -592,7 +592,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         });
       });
 
-
       //router for searching for simple article and user
       app.get('/searchForSimple', (req, res) => {
         let searchText = req.query.searchText;
@@ -694,8 +693,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         })
       });
 
-
-
       //router for publishing trend
       app.post('/createUserTrend', (req, res) => {
         let createTrendSql = 'INSERT INTO trend(userID,content,date,images,topic) VALUE(?,?,?,?,?)',
@@ -750,6 +747,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           }
         });
       });
+      
     },
 
     clientLogLevel: 'warning',

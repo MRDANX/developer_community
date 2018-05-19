@@ -1,18 +1,20 @@
 <template>
-	<scroll :enableLoadMore="true" :loadMore="loadMoreDetailedArticles" ref="searchingScroll">
-		<div class="searching-content">
-			<transition name="fade">
-				<div class="searching-result" v-if="searchText" key="result">
+  <scroll :enableLoadMore="true" :loadMore="loadMoreDetailedArticles" ref="searchingScroll">
+    <div class="searching-content">
+      <transition name="fade">
+        <div class="searching-result" v-if="searchText" key="result">
           <div v-if="getResult" class="detailed-result">
             <div class="related-user" v-if="detailedSearchUsers.length!=0">
-              <p>相关用户 <i class="fa fa-angle-right" v-if="detailedSearchUsers.length>8"></i> </p>
+              <p>相关用户
+                <i class="fa fa-angle-right" v-if="detailedSearchUsers.length>8"></i>
+              </p>
               <ul>
-                <li v-for="(user,index) in detailedSearchUsers.slice(0,7)" :key="index">
+                <router-link v-for="(user,index) in detailedSearchUsers.slice(0,7)" :key="index" :to="{name:'userDetail',params:{userID:user.userID}}" tag="li">
                   <div class="avatar">
                     <img :src="user.avatar" />
                   </div>
                   <span class="user-name">{{user.userName}}</span>
-                </li>
+                </router-link>
               </ul>
             </div>
             <ul class="related-article" v-if="detailedSearchArticles.length!=0">
@@ -27,17 +29,19 @@
                 </div>
               </li>
               <li class="related-article-content" v-for="(article,index) in detailedSearchArticles" :key="index">
-                <h4 class="title" v-html="highlightMatch(article.title)"></h4>
+                <router-link :to="{name: 'articleDetail',params:{articleID:article.articleID}}" tag="h4" class="title" v-html="highlightMatch(article.title)"></router-link>
                 <p class="content" v-html="highlightMatch(tagFilter(article.content))"></p>
-                <p class="meta"><span>{{article.favors}} 人喜欢 • {{article.author}} • {{article.date|timeFromNow}}</span></p>
+                <p class="meta">
+                  <span>{{article.favors}} 人喜欢 • {{article.author}} • {{article.date|timeFromNow}}</span>
+                </p>
               </li>
             </ul>
           </div>
           <ul v-else class="simple-result">
-            <li v-for="(user,index) in simpleSearchUsers" :key="'user'+index" class="result-user">
+            <router-link v-for="(user,index) in simpleSearchUsers" :key="'user'+index" class="result-user" :to="{name:'userDetail',params:{userID:user.userID}}" tag="li">
               <div class="result-user-left">
                 <div class="avatar">
-                  <img :src="user.avatar"/>
+                  <img :src="user.avatar" />
                 </div>
                 <div>
                   <p v-html="highlightMatch(user.userName)"></p>
@@ -45,15 +49,15 @@
                 </div>
               </div>
               <span class="result-user-right">作者</span>
-            </li>
+            </router-link>
             <li v-for="(article,index) in simpleSearchArticles" :key="'article'+index" class="result-article">
-              <span class="title" v-html="highlightMatch(article.title)"></span>
-              <span  class="pv">阅读 {{article.pv}}</span>
+              <router-link class="title" v-html="highlightMatch(article.title)" :to="{name: 'articleDetail',params:{articleID:article.articleID}}" tag="span"></router-link>
+              <span class="pv">阅读 {{article.pv}}</span>
             </li>
           </ul>
-				</div>
-				<div class="searching-recommend" v-else key="recommend">
-					<div class="searching-hot">
+        </div>
+        <div class="searching-recommend" v-else key="recommend">
+          <div class="searching-hot">
             <div class="hot-header">
               <div>
                 <i class="fa fa-free-code-camp"></i>
@@ -70,21 +74,21 @@
               </ul>
             </transition>
           </div>
-            <transition-group name="clear-history" tag="ul" class="searching-history" >
-              <li v-for="(history,index) in searchHistory" :key="history" class="history-item">
-                <div>
-                  <i class="fa fa-clock-o"></i>
-                  <span @click="getResultDirectly(history)">{{history}}</span>
-                </div>
-                <span class="item-clear" @click="removeClickedHistory(index)" ref="clearItem">X</span>
-              </li>
-              <li class="clear-all-history" @click="clearAllHistory" key="clearAllHistory" v-if="searchHistory.length!=0" ref="clearAll">清除全部搜索记录</li>
-            </transition-group>
-				</div>
-			</transition>
-      <loading v-if="showLoading"/>
-		</div>
-	</scroll>
+          <transition-group name="clear-history" tag="ul" class="searching-history">
+            <li v-for="(history,index) in searchHistory" :key="history" class="history-item">
+              <div>
+                <i class="fa fa-clock-o"></i>
+                <span @click="getResultDirectly(history)">{{history}}</span>
+              </div>
+              <span class="item-clear" @click="removeClickedHistory(index)" ref="clearItem">X</span>
+            </li>
+            <li class="clear-all-history" @click="clearAllHistory" key="clearAllHistory" v-if="searchHistory.length!=0" ref="clearAll">清除全部搜索记录</li>
+          </transition-group>
+        </div>
+      </transition>
+      <loading v-if="showLoading" />
+    </div>
+  </scroll>
 </template>
 
 <script>
@@ -105,7 +109,9 @@
     data() {
       return {
         showLoading: false,
-        hots: ['单页面应用', 'Android', '前端', 'iOS', '反向代理', 'vue.js', '跨域', '小程序', 'nginx', 'Google', '面向对象', 'node', 'webpack', '用户体验', 'localStorage', 'mysql', 'bootstrap'],
+        hots: ['单页面应用', 'Android', '前端', 'iOS', '反向代理', 'vue.js', '跨域', '小程序', 'nginx', 'Google', '面向对象', 'node',
+          'webpack', '用户体验', 'localStorage', 'mysql', 'bootstrap'
+        ],
         currentHotsIndex: 0,
         hotsRefreshing: false,
         searchHistory: [],
@@ -256,7 +262,10 @@
             }
           }).then(result => {
             if (result.data.length == 0) {
-              reject({ errno: 0, text: 'no more data.' })
+              reject({
+                errno: 0,
+                text: 'no more data.'
+              })
             }
             this.detailedSearchArticles = this.detailedSearchArticles.concat(result.data);
             resolve();
@@ -306,6 +315,7 @@
       loading
     }
   }
+
 </script>
 
 <style lang="less" scoped>
@@ -334,7 +344,7 @@
         padding: 0 3vw;
         li {
           border-bottom: 1px solid #CCCCCC;
-          &:last-of-type{
+          &:last-of-type {
             border-bottom: none;
           }
         }
@@ -588,4 +598,5 @@
       }
     }
   }
+
 </style>
