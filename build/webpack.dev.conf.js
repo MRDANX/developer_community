@@ -673,6 +673,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           res.json(result);
         });
       });
+
       //router for getting the specified trend info
       app.get('/getSpecifiedTrend', (req, res) => {
         let getSpecifiedTrendSql = 'SELECT * FROM trendList WHERE trendID = ?';
@@ -683,6 +684,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           res.json(result);
         })
       });
+
       //router for getting trend for logged user
       app.get('/getUsersTrend', (req, res) => {
         let getUsersTrendSql = 'SELECT * FROM trendList WHERE userID IN ( SELECT userID FROM follower WHERE followerUserID = ? ) ORDER BY date DESC',
@@ -718,7 +720,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         })
       });
 
-
       //router for toggle user's favor of trend
       app.post('/toggleTrendFavor', (req, res) => {
         let data = req.body,
@@ -748,6 +749,34 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         });
       });
 
+      //router for toggle user's follow
+      app.post('/toggleUserFollow', (req, res) => {
+        let data = req.body,
+          userID = +data.userID,
+          followeeUserID = +data.followeeUserID,
+          wantFollow = JSON.parse(data.wantFollow),
+          inserts = [followeeUserID, userID],
+          toggleFollowSql;
+        if (wantFollow) {
+          toggleFollowSql = 'INSERT INTO follower(userID,followerUserID) VALUE(?,?)';
+        } else {
+          toggleFollowSql = 'DELETE FROM follower WHERE UserID=? AND followerUserID=?';
+        }
+        connection.query(toggleFollowSql, inserts, (err, result) => {
+          if (err) throw err;
+          if (result.affectedRows == 1) {
+            res.json({
+              errno: null,
+              text: '更新关注信息成功'
+            })
+          } else {
+            res.json({
+              errno: 1,
+              text: '更新关注信息失败'
+            })
+          }
+        });
+      });
     },
 
     clientLogLevel: 'warning',

@@ -140,6 +140,28 @@ const actions = {
         }
       });
     });
+  },
+  toggleUserFollow({state,dispatch},{followeeUserID,wantFollow}){
+    const userID=state.userInfo.userID;
+    return new Promise((resolve,reject)=>{
+      axios({
+        method: 'post',
+        url: '/toggleUserFollow',
+        data: qs.stringify({
+          userID,
+          followeeUserID,
+          wantFollow
+        })
+      }).then(result => {
+        if (!result.data.errno) {
+          //retrieve user information from server
+          dispatch('retrieveUserInfo');
+          resolve();
+        } else {
+          reject(result.data);
+        }
+      });
+    });
   }
 };
 

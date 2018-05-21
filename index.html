@@ -4,28 +4,51 @@
 <head>
   <title>开发者社区 — 专属于开发者的交流平台</title>
   <meta charset="utf-8">
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0,minimal-ui"/>
-  <!-- <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+  />
+  <link rel="shortcut icon" href="/static/images/icons/favicon.ico">
+  <!-- 
   <meta content="telephone=yes" name="format-detection" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="white" />
   <meta name="x5-fullscreen" content="true" />
   <meta name="apple-touch-fullscreen" content="yes" /> -->
-  <!-- <link href="css/pc/index.css" type="text/css" rel="stylesheet" /> -->
-  <!-- <link rel="apple-touch-icon" sizes="57x57" href="/static/img/logo.png" />
-  <link href="/static/img/logo.png" rel="shortcut icon" />
-  <link rel="manifest" href="/static/manifest.json"> -->
 
+  <!-- iOS desktop icon -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-touch-fullscreen" content="yes">
+  <meta name="apple-moblie-web-app-status-bar-style" content="black">
+  <meta name="apple-moblie-web-app-title" content="DevCommunity">
+  <link name="apple-touch-icon" href="/static/images/icons/apple-icon-precomposed.png">
+
+  <meta name="theme-color" content="#0080FF">
+  <link rel="manifest" href="/static/manifest.json">
+  <link rel="apple-touch-start-image" href="/static/images/login.jpg" />
   <!-- <script>
     let html = document.documentElement;
     let rem = html.getBoundingClientRect().width / 25;
     html.style.fontSize = rem + 'px';
   </script> -->
+
 </head>
 
 <body>
   <div id="app"></div>
   <!-- built files will be auto injected -->
+  <!-- <script type="text/javascript">
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/static/sw.js',{scope:'/static/'}).then(function (registration) {
+        console.log('Register Service Worker successfully');
+        if (registration.installing) {
+          console.log('installing');
+        } else if (registration.waiting) {
+          console.log('Service worker installed');
+        } else if (registration.active) {
+          console.log('Service worker active');
+        }
+      }).catch(e => {
+        console.log(e);
+      })
+    }
+  </script> -->
 </body>
 
 </html>

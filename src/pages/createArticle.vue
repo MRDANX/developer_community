@@ -49,7 +49,7 @@
           </div>
         </div>
         <transition-group name="fluent" tag="div" class="tags-wrapper">
-          <tag v-for="(tag,index) in tags" :key="tag" :tagText="tag" @deleteTag="tags.splice(index,1)"/>
+          <tag v-for="(tag,index) in tags" :key="tag" :tagText="tag" @deleteTag="tags.splice(index,1)" :deletable="true" :focusable="true" />
         </transition-group>
 			</div>
 			<quill-editor v-model="content" :options="editorOptions" class="article-editor" ref="quillEditor"/>

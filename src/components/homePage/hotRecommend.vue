@@ -150,14 +150,16 @@
 <style lang="less" scoped>
   .hot-recommend {
     width: 100%;
-    min-height: 75vw;
+    min-height: 80vw;
     background-color: #FFFFFF;
     margin: 1vw 0 3vw;
     box-shadow: 0 1px 5px #CCCCCC;
-    transition: all .5s;
+    transition: all .4s;
     opacity: 1;
-    overflow: hidden;
+    // overflow: hidden;
     &.close{
+      min-height: 0;
+      margin: 0;
       height: 0;
       opacity: 0;
     }

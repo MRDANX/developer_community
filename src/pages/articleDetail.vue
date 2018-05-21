@@ -5,58 +5,65 @@
       <h4 class="head-title" ref="headTitle" @click="scrollToTop">{{articleInfo.title}}</h4>
       <i class="fa fa-ellipsis-v"></i>
     </div>
-    <div class="content-wrapper" v-if="articleInfo.articleID">
-      <div class="main-body-wrapper">
-        <div class="cover" v-if="articleInfo.cover">
-          <img :src="articleInfo.cover" alt="">
-        </div>
-        <h2 class="title" ref="title">{{articleInfo.title}}</h2>
-        <div class="user-info">
-          <div class="user-info-wrapper">
-            <router-link :to="{name:'userDetail',params:{userID:articleInfo.userID}}" tag="div" class="avatar">
-              <img :src="articleInfo.avatar" alt="">
-            </router-link>
-            <router-link :to="{name:'userDetail',params:{userID:articleInfo.userID}}" tag="span" class="author">{{articleInfo.author}}</router-link>
-            <div class="user-follow">
-              <i class="fa fa-plus"></i>
-              <span>关注</span>
+    <transition name="fade-in">
+      <div class="content-wrapper" v-if="articleInfo.articleID" key="article">
+        <div class="main-body-wrapper">
+          <div class="cover" v-if="articleInfo.cover">
+            <img :src="articleInfo.cover" alt="">
+          </div>
+          <h2 class="title" ref="title">{{articleInfo.title}}</h2>
+          <div class="user-info">
+            <div class="user-info-wrapper">
+              <router-link :to="{name:'userDetail',params:{userID:articleInfo.userID}}" tag="div" class="avatar">
+                <img :src="articleInfo.avatar" alt="">
+              </router-link>
+              <router-link :to="{name:'userDetail',params:{userID:articleInfo.userID}}" tag="span" class="author">{{articleInfo.author}}</router-link>
+              <div class="user-follow">
+                <i class="fa fa-plus"></i>
+                <span>关注</span>
+              </div>
+            </div>
+            <p class="article-info">{{articleInfo.date|dateFormat}} • 字数 {{wordCount}} • 阅读 {{articleInfo.pv}} •
+              <i class="fa fa-file-text"></i> {{articleInfo.subject}}</p>
+          </div>
+          <div class="content">
+            <div class="main-body" v-html="articleInfo.content"></div>
+            <div class="tags">
+              <tag :tagText="tag" v-for="(tag,index) in tags" :key="index" />
             </div>
           </div>
-          <p class="article-info">{{articleInfo.date|dateFormat}} • 字数 {{wordCount}} • 阅读 {{articleInfo.pv}} •
-            <i class="fa fa-file-text"></i> {{articleInfo.subject}}</p>
         </div>
-        <div class="content">
-          <div class="main-body" v-html="articleInfo.content"></div>
-          <div class="tags">
-            <tag :tagText="tag" v-for="(tag,index) in tags" :key="index" />
+        <div class="comments" ref="comments">
+          <div class="comments-header">
+            {{articleInfo.commentNum}}条评论
           </div>
+          <transition-group name="comment-slide-in" tag="div">
+            <article-comment v-for="(comment,index) in comments" :key="index" :floor="index+1" :comment="comment" @replyAt="replyAt($event)"
+              class="comment" />
+            <div class="comments-bottom" key="bottom">
+              <div v-if="hasMoreComments" @click="getArticleComment">
+                <div class="comment-loading fa-spin" :class="{'loading-comment':loadingComment}">
+                  <img src="/static/images/common/loading.svg">
+                </div>
+                <div class="loading-more" :class="{'load-more':!loadingComment}">加载更多</div>
+              </div>
+              <div class="comments-end" v-else>-- end --</div>
+            </div>
+          </transition-group>
         </div>
+        <slide-out slideToDirection="toUp" :showModal="true" v-model="showCommentPanel">
+          <div class="comment-panel">
+            <textarea name="comment" class="comment-area" v-model="commentText"></textarea>
+            <div class="comment-action">
+              <div class="publish-comment" @click="publishComment">发表评论</div>
+            </div>
+          </div>
+        </slide-out>
       </div>
-      <div class="comments" ref="comments">
-        <div class="comments-header">
-          {{articleInfo.commentNum}}条评论
-        </div>
-        <transition-group name="comment-slide-in" tag="div">
-          <article-comment v-for="(comment,index) in comments" :key="index" :floor="index+1" :comment="comment" @replyAt="replyAt($event)"
-            class="comment" />
-          <div class="comments-bottom" key="bottom">
-            <div class="loading-more" v-if="hasMoreComments" @click="getArticleComment">加载更多</div>
-            <div class="comments-end" v-else>-- end --</div>
-          </div>
-        </transition-group>
+      <div v-else class="loading" key="loading">
+        <loading />
       </div>
-      <slide-out slideToDirection="toUp" :showModal="true" v-model="showCommentPanel">
-        <div class="comment-panel">
-          <textarea name="comment" class="comment-area" v-model="commentText"></textarea>
-          <div class="comment-action">
-            <div class="publish-comment" @click="publishComment">发表评论</div>
-          </div>
-        </div>
-      </slide-out>
-    </div>
-    <div v-else class="loading">
-      <loading />
-    </div>
+    </transition>
     <div class="footer">
       <div class="footer-mask"></div>
       <div class="article-action">
@@ -95,6 +102,7 @@
         hintText: '',
         favorLock: false,
         showLoading: false,
+        loadingComment: false,
         hasMoreComments: true,
         initialComments: false
       }
@@ -138,6 +146,18 @@
         this.initializeComments();
       }
     },
+    activated() {
+      this.getArticleInfo();
+      window.addEventListener('scroll', this.initializeComments);
+    },
+    deactivated() {
+      setTimeout(() => {
+        this.articleInfo = {};
+        this.comments = [];
+        this.initialComments = false;
+        this.hasMoreComments = true;
+      }, 500);
+    },
     methods: {
       getArticleInfo() {
         this.$axios({
@@ -151,6 +171,7 @@
         })
       },
       getArticleComment() {
+        this.loadingComment = true;
         this.$axios({
           method: 'get',
           url: '/getArticleComment',
@@ -164,6 +185,7 @@
             this.hasMoreComments = false;
             // return;
           }
+          this.loadingComment = false;
           this.comments = this.comments.concat(result.data);
         })
       },
@@ -317,6 +339,14 @@
     transition: all .5s;
   }
 
+  .fade-in-enter-active {
+    transition: all .5s;
+  }
+
+  .fade-in-enter {
+    opacity: 0;
+  }
+
   .article-detail {
     width: 100vw;
     font-size: 4vw;
@@ -388,6 +418,7 @@
               img {
                 height: 100%;
               }
+              color: #CB4E44;
             }
             .author {
               font-weight: bold;
@@ -444,6 +475,25 @@
           text-align: center;
           padding: 0 0 5vw;
           color: #666666;
+          .comment-loading {
+            width: 6vw;
+            height: 6vw;
+            margin: 0 auto;
+            display: none;
+            img {
+              height: 100%;
+            }
+            &.loading-comment {
+              display: block;
+            }
+          }
+          .loading-more {
+            display: none;
+            &.load-more {
+              display: block;
+            }
+          }
+
         }
       }
       .comment-panel {

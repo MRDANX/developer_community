@@ -1,7 +1,9 @@
 <template>
-	<p class="tag" :style="{'background-color':_bgColor}" @click="$refs.hiddenInput.focus()" :class="{active:showDelete}">
-		<i class="fa fa-tag"></i><span>{{tagText}}</span><i class="fa fa-close" v-if="showDelete" @click="$emit('deleteTag')"></i>
-		<input type="text" @focus="showDelete=true" @blur="showDelete=false" ref="hiddenInput">
+  <p class="tag" :style="{'background-color':_bgColor}" @click="focusable&&$refs.hiddenInput.focus()" :class="{active:showDelete&&deletable}">
+    <i class="fa fa-tag"></i>
+    <span>{{tagText}}</span>
+    <i class="fa fa-close" v-if="showDelete&&deletable" @click="$emit('deleteTag')"></i>
+    <input type="text" @focus="showDelete=true" @blur="showDelete=false" ref="hiddenInput">
   </p>
 </template>
 
@@ -12,6 +14,14 @@
       tagText: {
         type: String,
         default: 'tag'
+      },
+      deletable: {
+        type: Boolean,
+        default: false
+      },
+      focusable: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -36,18 +46,21 @@
       }
     }
   }
+
 </script>
 
 <style scoped>
   .tag {
     display: inline-block;
-    width: fit-content;
+    /* width: fit-content; */
     margin: 1vw 2vw;
     padding: 1vw 2vw;
     border-radius: 5px;
     color: #FFFFFF;
     position: relative;
-		transition: all .3s;
+    transition: all .3s;
+    height: 6vw;
+    line-height: 6vw;
   }
 
   .tag.active {
@@ -62,13 +75,14 @@
     position: absolute;
     right: 0;
     top: 0;
-		font-size: 3vw;
+    font-size: 3vw;
   }
 
   input {
-		width: 0;
-		height: 0;
-		border: none;
-		outline: none;
+    width: 0;
+    height: 0;
+    border: none;
+    outline: none;
   }
+
 </style>

@@ -8,9 +8,15 @@
         <p class="user-name">{{trend.userName}}</p>
         <p class="user-meta">{{trend.job}} @ {{trend.company||'公司'}} • {{trend.date|timeFromNow}}</p>
       </router-link>
-      <div class="user-follow">
-        <i class="fa fa-plus"></i>
-        <span>关注</span>
+      <div class="user-follow" :class="{isFollowee}">
+        <div class="not-follow" @click="toggleFollow">
+          <i class="fa fa-plus"></i>
+          <span>关注</span>
+        </div>
+        <div class="has-follow" @click="toggleFollow">
+          <i class="fa fa-check"></i>
+          <span>已关注</span>
+        </div>
       </div>
     </div>
     <div class="trend-content" ref="trendContent">
@@ -32,7 +38,6 @@
         <i class="fa fa-share-alt"></i>
       </div>
     </div>
-
   </li>
 </template>
 
@@ -50,7 +55,8 @@
     },
     data() {
       return {
-        favorLock: false
+        favorLock: false,
+        followLock: false
       }
     },
     mounted() {
@@ -80,6 +86,18 @@
           }
         }
         return false;
+      },
+      isFollowee() {
+        const followee = this.userInfo.followee,
+          userID = this.trend.userID;
+        if (followee) {
+          for (let i = 0; i < followee.length; i++) {
+            if (userID == followee[i].userID) {
+              return true;
+            }
+          }
+        }
+        return false;
       }
     },
     methods: {
@@ -99,6 +117,28 @@
             this.$emit('updateCurrentTrend');
             setTimeout(() => {
               this.favorLock = false;
+            }, 300);
+          }).catch(err => {
+            console.log(err);
+          });
+        }
+      },
+      toggleFollow() {
+        if (!this.userInfo.userID) {
+          this.$emit('askLogin');
+          return;
+        }
+        const followeeUserID = this.trend.userID,
+          wantFollow = !this.isFollowee;
+        if (!this.followLock) {
+          this.followLock = true;
+          this.$store.dispatch('user/toggleUserFollow', {
+            followeeUserID,
+            wantFollow
+          }).then(result => {
+            this.$emit('updateCurrentTrend');
+            setTimeout(() => {
+              this.followLock = false;
             }, 300);
           }).catch(err => {
             console.log(err);
@@ -148,8 +188,29 @@
         background-color: #0080FF;
         color: #FFFFFF;
         border-radius: 1vw;
-        height: 5vw;
-        line-height: 5vw;
+        height: 6vw;
+        line-height: 6vw;
+        width: 14vw;
+        text-align: center;
+        transition: all .5s;
+          overflow: hidden;
+        .not-follow {
+          display: block;
+        }
+        .has-follow {
+          display: none;
+          white-space: nowrap;
+        }
+        &.isFollowee {
+          background-color: #6A03F2;
+          width: 18vw;
+          .not-follow {
+            display: none;
+          }
+          .has-follow {
+            display: block;
+          }
+        }
       }
     }
     .trend-content {

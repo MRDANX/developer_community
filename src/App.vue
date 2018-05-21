@@ -1,6 +1,6 @@
 <template>
   <transition :name="slideDirection">
-    <keep-alive exclude="articleDetail,userDetail,subjectDetail">
+    <keep-alive exclude="userDetail,subjectDetail">
       <router-view/>
     </keep-alive>
   </transition>

@@ -1,25 +1,27 @@
 <template>
-	<scroll ref="usersTrendScroll">
-		<div class="users-trend">
-			<ul v-if="userInfo.userID" class="users-trend-list">
-				<trend v-for="(trend,index) in trendList" :key="index" :trend="trend" ref="trends"
-        @updateCurrentTrend="updateSpecifiedTrend(index)"/>
-			</ul>
-			<div v-else class="ask-for-login">
-				<i class="fa fa-coffee"></i>
-				<p>需要您登录，登录后使用更多功能</p>
-				<router-link to="setting" tag="div" class="login-register-button" ref="loginRegisterButton">登录/注册</router-link>
-			</div>
-		</div>
+  <scroll ref="usersTrendScroll">
+    <div class="users-trend">
+      <ul v-if="userInfo.userID" class="users-trend-list">
+        <trend v-for="(trend,index) in trendList" :key="index" :trend="trend" ref="trends" @updateCurrentTrend="updateSpecifiedTrend(index)"
+          @showSharePanel="$emit('showSharePanel',$event)" />
+      </ul>
+      <div v-else class="ask-for-login">
+        <i class="fa fa-coffee"></i>
+        <p>需要您登录，登录后使用更多功能</p>
+        <router-link to="setting" tag="div" class="login-register-button" ref="loginRegisterButton">登录/注册</router-link>
+      </div>
+    </div>
     <loading v-if="showLoading" />
-	</scroll>
+  </scroll>
 </template>
 
 <script>
   import scroll from "@/components/common/scroll";
   import trend from "@/components/trendPage/trend";
   import loading from "@/components/common/loading";
-  import { mapState } from "vuex";
+  import {
+    mapState
+  } from "vuex";
   export default {
     name: 'usersTrend',
     data() {
@@ -53,7 +55,7 @@
     computed: {
       ...mapState('user', ['userInfo'])
     },
-    methods:{
+    methods: {
       updateSpecifiedTrend(index) {
         const trendID = this.trendList[index].trendID;
         this.$axios({
@@ -75,6 +77,7 @@
       loading
     }
   }
+
 </script>
 
 <style lang="less" scoped>
@@ -115,4 +118,5 @@
       }
     }
   }
+
 </style>

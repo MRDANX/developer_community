@@ -299,7 +299,7 @@
     .top-refresh {
       text-align: center;
       font-size: 10vw;
-      color: #0099CC;
+      color: #00A0FF;
       &.positionChange {
         position: absolute;
         top: -12vw;

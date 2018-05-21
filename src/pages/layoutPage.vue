@@ -4,30 +4,34 @@
       <router-view />
     </keep-alive>
     <ul class="fixed-nav">
-      <router-link to="/subject" class="fa fa-home" tag="li" ref="subject"/>
-      <router-link to="/trend" class="fa fa-comments" tag="li"  ref="trend"/>
-      <li class="create-wrapper" @click="createToggle=!createToggle" >
+      <router-link to="/subject" class="fa fa-home" tag="li" ref="subject" />
+      <router-link to="/trend" class="fa fa-comments" tag="li" ref="trend" />
+      <li class="create-wrapper" @click="createToggle=!createToggle">
         <div class="create-mask"></div>
         <span class="fa-stack fa-lg" ref="create">
           <i class="fa fa-circle fa-stack-2x"></i>
           <i class="fa fa-plus fa-stack-1x" :class="{active:createToggle}"></i>
         </span>
         <div class="create-trend" :class="{activeToggle:createToggle}" @click="goCreate('createTrend')">
-          <i class="fa fa-gratipay" ref="createTrend"></i>
+          <!-- <i class="fa fa-gratipay" ref="createTrend"></i> -->
+          <img src="/static/images/common/publish-trend2.svg" alt="" ref="createTrend">
         </div>
         <div class="create-article" :class="{activeToggle:createToggle}" @click="goCreate('createArticle')">
           <i class="fa fa-telegram" ref="createArticle"></i>
+          <!-- <img src="/static/images/common/publish-article.svg" alt="" ref="createArticle"> -->
         </div>
       </li>
-      <router-link to="/search" class="fa fa-search" tag="li"  ref="search"/>
-      <router-link to="/setting" class="fa fa-user" tag="li"  ref="setting"/>
+      <router-link to="/search" class="fa fa-search" tag="li" ref="search" />
+      <router-link to="/setting" class="fa fa-user" tag="li" ref="setting" />
     </ul>
-    <hint v-model="hintText"/>
+    <hint v-model="hintText" />
   </div>
 </template>
 
 <script>
-  import { mapState } from "vuex";
+  import {
+    mapState
+  } from "vuex";
   import hint from '@/components/common/hint';
   export default {
     name: "layoutPage",
@@ -54,13 +58,16 @@
           this.hintText = '请先登录!';
           return;
         }
-        this.$router.push({ name });
+        this.$router.push({
+          name
+        });
       }
     },
     components: {
       hint
     }
   };
+
 </script>
 
 <style lang='less' scoped>
@@ -162,14 +169,36 @@
               transform: scale(0.9);
             }
             &::before {
-              background-color: #FFFFFF;
-              border-radius: 50%;
+              // background-color: #FFFFFF;
+              // border-radius: 50%;
             }
           }
         }
         .create-trend {
           transform: translateX(-50%) rotate(-150deg);
           transition: transform .7s;
+          width: 8vw;
+          height: 8vw;
+          &::after {
+            content: '';
+            width: 80%;
+            height: 80%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            background-color: #FFFFFF;
+            border-radius: 50%;
+            z-index: -1;
+          }
+          img {
+            height: 100%;
+            transition: all .1s;
+            transform: scale(1);
+            &.active {
+              transform: scale(0.9);
+            }
+          }
           &.activeToggle {
             z-index: 98;
             transition: transform .9s, z-index .1s .9s;
@@ -179,6 +208,18 @@
         .create-article {
           transform: translateX(-50%) rotate(-180deg);
           transition: transform .9s;
+          i.fa::after {
+            content: '';
+            width: 80%;
+            height: 80%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%,-50%);
+            background: white;
+            z-index: -1;
+            border-radius: 50%;
+          }
           &.activeToggle {
             z-index: 98;
             transition: transform .8s, z-index .1s .8s;
@@ -188,4 +229,5 @@
       }
     }
   }
+
 </style>
