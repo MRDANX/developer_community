@@ -12,7 +12,11 @@
     data() {
       return {
         slideDirection: '',
-        slideRightList: ['createArticle', 'createTrend', 'articleDetail', 'userDetail', 'subjectDetail']
+        slideRightList: ['createArticle', 'createTrend', 'articleDetail', 'userDetail', 'subjectDetail'],
+        fromToList: [{
+          from: 'topicTrends',
+          to: 'trendPage'
+        }]
       }
     },
     created() {
@@ -29,6 +33,12 @@
         }
         if (this.slideRightList.indexOf(from.name) != -1) {
           this.slideDirection = 'outter-slide-right';
+        }
+        for (let i = 0; i < this.fromToList.length; i++) {
+          const route = this.fromToList[i];
+            if (from.name == route.from && to.name == route.to) {
+              this.slideDirection = 'outter-slide-right';
+            }
         }
         if (from.path == '/') {
           this.slideDirection = '';

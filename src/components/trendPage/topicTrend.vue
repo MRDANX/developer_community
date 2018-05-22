@@ -1,34 +1,36 @@
 <template>
-	<scroll>
-		<div class="topic-trend">
-			<div class="topic-banner">
-				<slider :loop="true" :autoPlay="true">
-					<div class="banner">
-						<img src="/static/images/test1.jpg" alt="">
-					</div>
-					<div class="banner">
-						<img src="/static/images/test2.jpg" alt="">
-					</div>
-					<div class="banner">
-						<img src="/static/images/test3.jpg" alt="">
-					</div>
-				</slider>
-			</div>
-			<ul class="more-topic">
-				<li class="head"><i class="topic-icon"></i>更多话题</li>
-				<li class="topic" v-for="(topic,index) in topics" :key="index">
-					<div class="topic-image">
-						<img :src="topic.image">
-					</div>
-					<div class="topic-content">
-						<p class="title">{{topic.title}}</p>
-						<p class="desc">{{topic.desc}}</p>
-					</div>
-					<!-- <div class="focus">关注</div> -->
-				</li>
-			</ul>
-		</div>
-	</scroll>
+  <scroll>
+    <div class="topic-trend">
+      <div class="topic-banner">
+        <slider :loop="true" :autoPlay="true">
+          <div class="banner">
+            <img src="/static/images/test1.jpg" alt="">
+          </div>
+          <div class="banner">
+            <img src="/static/images/test2.jpg" alt="">
+          </div>
+          <div class="banner">
+            <img src="/static/images/test3.jpg" alt="">
+          </div>
+        </slider>
+      </div>
+      <ul class="more-topic">
+        <li class="head">
+          <i class="topic-icon"></i>更多话题</li>
+        <router-link :to="{path:'/topicTrend',query:{topic:topic.title}}" class="topic" v-for="(topic,index) in topics" :key="index"
+          tag="li">
+          <div class="topic-image">
+            <img :src="topic.cover">
+          </div>
+          <div class="topic-content">
+            <p class="title">{{topic.title}}</p>
+            <p class="desc">{{topic.description}}</p>
+          </div>
+          <!-- <div class="focus">关注</div> -->
+        </router-link>
+      </ul>
+    </div>
+  </scroll>
 </template>
 
 <script>
@@ -38,32 +40,20 @@
     name: 'topicTrend',
     data() {
       return {
-        topics: [{
-          topicID: 1,
-          image: '/static/images/test1.jpg',
-          title: '每天一道算法题',
-          desc: '每天精选一道算法题，帮助你更好地提高算法能力'
-        },{
-          topicID: 1,
-          image: '/static/images/test1.jpg',
-          title: '每天一道算法题',
-          desc: '每天精选一道算法题，帮助你更好地提高算法能力'
-        },{
-          topicID: 1,
-          image: '/static/images/test1.jpg',
-          title: '每天一道算法题',
-          desc: '每天精选一道算法题，帮助你更好地提高算法能力'
-        },{
-          topicID: 1,
-          image: '/static/images/test1.jpg',
-          title: '每天一道算法题',
-          desc: '每天精选一道算法题，帮助你更好地提高算法能力'
-        },{
-          topicID: 1,
-          image: '/static/images/test1.jpg',
-          title: '每天一道算法题',
-          desc: '每天精选一道算法题，帮助你更好地提高算法能力'
-        }]
+        topics: []
+      }
+    },
+    created() {
+      this.getTopicList();
+    },
+    methods: {
+      getTopicList() {
+        this.$axios({
+          method: 'get',
+          url: '/getTrendTopic'
+        }).then(result => {
+          this.topics = result.data;
+        })
       }
     },
     components: {
@@ -71,6 +61,7 @@
       slider
     }
   }
+
 </script>
 
 <style lang="less" scoped>
@@ -105,11 +96,7 @@
         border-bottom: 1px solid #F0F0F0;
         display: flex;
         align-items: center;
-				// i.fa{
-				// 	margin-right: 2vw;
-				// 	font-size: 5vw;
-        // }
-        .topic-icon{
+        .topic-icon {
           width: 6vw;
           height: 6vw;
           margin-right: 2vw;
@@ -120,40 +107,39 @@
       }
       li.topic {
         padding: 0 3vw;
-				height: 20vw;
+        height: 20vw;
         display: flex;
         justify-content: space-between;
-				align-items: center;
+        align-items: center;
         border-bottom: 1px solid #F0F0F0;
         .topic-image {
           height: 14vw;
           width: 14vw;
           overflow: hidden;
-					border-radius: 5px;
-					position: relative;
+          border-radius: 5px;
+          position: relative;
           img {
-						height: 100%;
-						position: absolute;
-						left: 50%;
-						transform: translateX(-50%);
+            height: 100%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
           }
         }
         .topic-content {
-					width: 75vw;
-					.title{
-						font-size: 4.5vw;
-						margin-bottom: 1vw;
-						font-weight: bold;
-					}
-					.desc{
-						font-size: 3.8vw;
-						white-space: nowrap;
-						text-overflow: ellipsis;
-						overflow: hidden;
-						color: #555555;
-					}
-        }
-        // .focus {
+          width: 75vw;
+          .title {
+            font-size: 4.5vw;
+            margin-bottom: 1vw;
+            font-weight: bold;
+          }
+          .desc {
+            font-size: 3.8vw;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            color: #555555;
+          }
+        } // .focus {
         //   height: 8vw;
         //   width: 10vw;
         //   border-radius: 5px;
@@ -167,4 +153,5 @@
       }
     }
   }
+
 </style>

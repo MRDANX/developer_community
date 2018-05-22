@@ -79,12 +79,12 @@
       margin-top: 3vw;
     }
     li {
-      background-color: #F6F6F6;
+      background-color: rgba(255,255,255,0.9);
       box-shadow: 0 0 5px #FFFFFF;
     }
     li:not(:first-of-type) {
       height: 12vw;
-      box-shadow: 0 0 1px #DDDDDD, 0 0 3px #FFFFFF;
+      box-shadow: 0 0 5px #CCCCCC;
       padding: 0 5vw;
       line-height: 12vw;
       font-size: 5vw;

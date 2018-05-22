@@ -698,6 +698,25 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         });
       });
 
+      //router for gettin trend by topic
+      app.get('/getTrendTopic', (req, res) => {
+        let trendTopicSql = 'SELECT * FROM trendTopic';
+        connection.query(trendTopicSql, (err, result) => {
+          if (err) throw err;
+          res.json(result);
+        });
+      });
+
+      //router for gettin trend topics
+      app.get('/getTrendByTopic', (req, res) => {
+        let trendTopicSql = 'SELECT * FROM trendList WHERE topic=?',
+          topic = req.query.topic;
+        connection.query(trendTopicSql, [topic], (err, result) => {
+          if (err) throw err;
+          res.json(result);
+        });
+      });
+
       //router for getting the specified trend info
       app.get('/getSpecifiedTrend', (req, res) => {
         let getSpecifiedTrendSql = 'SELECT * FROM trendList WHERE trendID = ?';

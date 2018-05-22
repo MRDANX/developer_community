@@ -169,8 +169,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background-color: #FDFDFD;
-        box-shadow: 0 0 1px #CCCCCC, 0 0 3px #FFFFFF;
+        background-color: rgba(255,255,255,0.9);
+        box-shadow: 0 0 5px #CCCCCC;
         font-size: 5vw;
         &:active {
           background-color: #DDDDDD;

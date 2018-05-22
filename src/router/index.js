@@ -25,14 +25,17 @@ const createTrend = () =>
   import ('@/pages/createTrend');
 const articleDetail = () =>
   import ('@/pages/articleDetail');
-  const userDetail = () =>
+const userDetail = () =>
   import ('@/pages/userDetail');
-  const subjectDetail = () =>
+const subjectDetail = () =>
   import ('@/pages/subjectDetail');
+const topicTrends = () =>
+  import ('@/pages/topicTrends');
+
 Vue.use(Router);
 
 let fromSubject = 'index';
-Router.prototype.go = function(number) {
+Router.prototype.go = function (number) {
   this.isBack = true;
   window.history.go(number);
 };
@@ -120,19 +123,25 @@ export default new Router({
       path: '/articleDetail/:articleID(\\d+)',
       name: 'articleDetail',
       component: articleDetail,
-      props:true
+      props: true
     },
     {
       path: '/userDetail/:userID',
       name: 'userDetail',
       component: userDetail,
-      props:true
+      props: true
     },
     {
       path: '/subjectDetail/:subject',
       name: 'subjectDetail',
       component: subjectDetail,
-      props:true
+      props: true
+    },
+    {
+      path: '/topicTrend',
+      name: 'topicTrends',
+      component: topicTrends,
+      props: route=>({topic:route.query.topic})
     },
     {
       path: '(.*|notFound)',
