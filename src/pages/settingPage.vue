@@ -66,7 +66,7 @@
       </ul>
     </scroll>
     <slide-out id="userInfo" v-model="showUserOrLogin" :class="userInfo.userID?'hide-login-panel':'login-background'" :title="userInfo.userID?'个人主页':'用户登录'">
-      <component :is="showComponent" v-model="showUserOrLogin"></component>
+      <component :is="showComponent" v-model="showUserOrLogin" />
     </slide-out>
     <slide-out id="otherSetting" v-model="showOtherSetting" title="设置">
       <scroll>
@@ -167,8 +167,12 @@
             overflow: hidden;
             border-radius: 50%;
             text-align: center;
+            position: relative;
             img {
               // width: 100%;
+              position: absolute;
+              left: 50%;
+              transform: translateX(-50%);
               height: 100%;
             }
           }
@@ -221,6 +225,7 @@
         }
       }
     }
+    .hide-login-panel,
     .login-background {
       /deep/ .slide-out {
         background-image: url("/static/images/login_bg.jpg");
@@ -233,7 +238,7 @@
         }
       }
     }
-    .hide-login-panel,
+
     #otherSetting {
       /deep/ .slide-out {
         background-color: #f6f6f6;

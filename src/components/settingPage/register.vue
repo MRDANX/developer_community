@@ -1,33 +1,23 @@
 <template>
   <div class="register-panel">
     <div class="user-avatar">
-      <img :src="avatar" alt="">
+      <img :src="avatar" alt="" @click="$refs.uploadAvatar.click()">
       <!-- a file input covering on img for uploading user's avatar -->
-      <input type="file" accept="image/jpeg,image/jpg,image/png" @change="avatarUpload($event.target)">
+      <input type="file" accept="image/jpeg,image/jpg,image/png" @change="avatarUpload($event.target)" ref="uploadAvatar">
     </div>
     <div class="input-area">
-      <text-input v-model="phone" hint="手机号" 
-                  @blur="chekcUserInfoDuplicate('phone')" 
-                  :emphasizedHint="checkPhoneText"
-                  @clearInputText="checkPhoneText=''"/>
-      <text-input v-model="email" hint="邮箱"  
-                  @blur="chekcUserInfoDuplicate('email')"
-                  :emphasizedHint="checkEmailText"
-                  @clearInputText="checkEmailText=''"/>
-      <text-input v-model="userName" hint="用户名"  
-                  @blur="chekcUserInfoDuplicate('userName')"
-                  :emphasizedHint="checkUserNameText"
-                  @clearInputText="checkUserNameText=''"/>
-      <text-input v-model="password" hint="密　码" 
-                  inputType="password" />
-      <text-input v-model="confirmPassword"  hint="确认密码" 
-                  inputType="password" :emphasizedHint="checkPasswordText"/>
-      <button class="register-button" 
-              @click="requestRegister" 
-              ref="registerButton">注册</button>
+      <text-input v-model="phone" hint="手机号" @blur="chekcUserInfoDuplicate('phone')" :emphasizedHint="checkPhoneText" @clearInputText="checkPhoneText=''"
+      />
+      <text-input v-model="email" hint="邮箱" @blur="chekcUserInfoDuplicate('email')" :emphasizedHint="checkEmailText" @clearInputText="checkEmailText=''"
+      />
+      <text-input v-model="userName" hint="用户名" @blur="chekcUserInfoDuplicate('userName')" :emphasizedHint="checkUserNameText"
+        @clearInputText="checkUserNameText=''" />
+      <text-input v-model="password" hint="密　码" inputType="password" />
+      <text-input v-model="confirmPassword" hint="确认密码" inputType="password" :emphasizedHint="checkPasswordText" />
+      <button class="register-button" @click="requestRegister" ref="registerButton">注册</button>
     </div>
-    <hint v-model="hintText" :verticalMove="-14"/>
-    <loading v-if="showLoading" color="#FFFFFF" :verticalMove="-14"/>
+    <hint v-model="hintText" :verticalMove="-14" />
+    <loading v-if="showLoading" color="#FFFFFF" :verticalMove="-14" />
   </div>
 </template>
 
@@ -56,7 +46,8 @@
         allowUserName: false,
         allowPassword: false,
         hintText: '',
-        showLoading: false
+        showLoading: false,
+        registerLock: false
       }
     },
     computed: {
@@ -94,8 +85,9 @@
           return;
         }
         //post a request to register user's information
-        if (this.allowRegister) {
+        if (this.allowRegister && !this.registerLock) {
           this.showLoading = true;
+          this.registerLock = true;
           this.$axios({
             method: 'post',
             url: '/requestRegister',
@@ -239,6 +231,7 @@
       textInput
     }
   }
+
 </script>
 
 <style lang="less" scoped>
@@ -251,22 +244,22 @@
     justify-content: space-around;
     .user-avatar {
       position: relative;
+      min-width: 40vw;
+      min-height: 40vw;
       width: 40vw;
       height: 40vw;
       overflow: hidden;
       border-radius: 50%;
       img {
         // width: 100%;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
         height: 100%;
       }
       input[type='file'] {
-        position: absolute;
-        top: -20%;
-        left: 0;
-        width: 100%;
-        height: 120%;
-        outline: none;
-        background-color: transparent;
+        width: 0;
+        height: 0;
       }
     }
     .input-area {
@@ -307,4 +300,5 @@
       }
     }
   }
+
 </style>

@@ -6,7 +6,7 @@
       </router-link>
       <router-link :to="'/userDetail/'+trend.userID" class="user-info" tag="div">
         <p class="user-name">{{trend.userName}}</p>
-        <p class="user-meta">{{trend.job}} @ {{trend.company||'公司'}} • {{trend.date|timeFromNow}}</p>
+        <p class="user-meta">{{trend.job||'未添加职位'}} @ {{trend.company||'未添加公司'}} • {{trend.date|timeFromNow}}</p>
       </router-link>
       <div class="user-follow" :class="{isFollowee}">
         <div class="not-follow" @click="toggleFollow">
@@ -167,7 +167,11 @@
         width: 10vw;
         border-radius: 50%;
         overflow: hidden;
+        position: relative;
         img {
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
           height: 100%;
         }
       }
@@ -181,6 +185,10 @@
           padding: 1vw 0;
           font-size: 3.5vw;
           color: #666666;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          max-width: 60vw;
         }
       }
       .user-follow {
@@ -193,7 +201,7 @@
         width: 14vw;
         text-align: center;
         transition: all .5s;
-          overflow: hidden;
+        overflow: hidden;
         .not-follow {
           display: block;
         }

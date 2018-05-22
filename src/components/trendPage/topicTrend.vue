@@ -15,7 +15,7 @@
 				</slider>
 			</div>
 			<ul class="more-topic">
-				<li class="head"><i class="fa fa-drupal"></i>更多话题</li>
+				<li class="head"><i class="topic-icon"></i>更多话题</li>
 				<li class="topic" v-for="(topic,index) in topics" :key="index">
 					<div class="topic-image">
 						<img :src="topic.image">
@@ -24,7 +24,7 @@
 						<p class="title">{{topic.title}}</p>
 						<p class="desc">{{topic.desc}}</p>
 					</div>
-					<div class="focus">关注</div>
+					<!-- <div class="focus">关注</div> -->
 				</li>
 			</ul>
 		</div>
@@ -96,16 +96,27 @@
     .more-topic {
       width: 100vw;
       background-color: #FFFFFF;
+      overflow: hidden;
       li.head {
         padding: 0 3vw;
         font-size: 4.5vw;
         height: 10vw;
         line-height: 10vw;
-				border-bottom: 1px solid #F0F0F0;
-				i.fa{
-					margin-right: 2vw;
-					font-size: 5vw;
-				}
+        border-bottom: 1px solid #F0F0F0;
+        display: flex;
+        align-items: center;
+				// i.fa{
+				// 	margin-right: 2vw;
+				// 	font-size: 5vw;
+        // }
+        .topic-icon{
+          width: 6vw;
+          height: 6vw;
+          margin-right: 2vw;
+          display: inline-block;
+          background-image: url('/static/images/common/topic.svg');
+          background-size: cover;
+        }
       }
       li.topic {
         padding: 0 3vw;
@@ -128,7 +139,7 @@
           }
         }
         .topic-content {
-					width: 60vw;
+					width: 75vw;
 					.title{
 						font-size: 4.5vw;
 						margin-bottom: 1vw;
@@ -142,17 +153,17 @@
 						color: #555555;
 					}
         }
-        .focus {
-          height: 8vw;
-          width: 10vw;
-          border-radius: 5px;
-          background-color: #0080FF;
-          color: #FFFFFF;
-          text-align: center;
-          line-height: 8vw;
-          font-size: 4vw;
-          padding: 0 2vw;
-        }
+        // .focus {
+        //   height: 8vw;
+        //   width: 10vw;
+        //   border-radius: 5px;
+        //   background-color: #0080FF;
+        //   color: #FFFFFF;
+        //   text-align: center;
+        //   line-height: 8vw;
+        //   font-size: 4vw;
+        //   padding: 0 2vw;
+        // }
       }
     }
   }

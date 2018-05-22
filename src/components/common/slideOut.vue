@@ -132,7 +132,7 @@
       width: 100%;
       height: 7vh;
       // color: #ffffff;
-      font-size: 3.5vh;
+      font-size: 5vw;
       line-height: 7vh;
       display: flex;
       flex-direction: row;

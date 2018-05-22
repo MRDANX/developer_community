@@ -155,7 +155,11 @@ function getCollectionNumber(userID) {
 function base64ToImage(base64, publicPath) {
   return new Promise((resolve, reject) => {
     let regExp = /^data:image\/(\w+);base64,/,
-      suffix = base64.match(regExp)[1],
+      match = base64.match(regExp);
+    if (!match) {
+      resolve(base64);
+    }
+    let suffix = match[1],
       filePath = `${publicPath}/${Date.now()}.${suffix}`,
       imgData = base64.replace(regExp, '');
     let dataBuffer = new Buffer(imgData, 'base64');
@@ -166,7 +170,7 @@ function base64ToImage(base64, publicPath) {
         reject();
       } else {
         console.log('用户动态图片保存成功');
-        resolve(filePath)
+        resolve('/' + filePath)
       }
     })
   });
@@ -321,7 +325,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           if (result.length >= 1) {
             res.json({
               err: 'duplicated',
-              text: `该${chineseType}已被注册!`
+              text: `该${chineseType}已被使用!`
             });
           } else {
             res.json({
@@ -334,15 +338,27 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       });
 
       //router for registering user's information
-      app.post('/requestRegister', (req, res) => {
-        let registerSql = "INSERT INTO user(avatar,phone,email,userName,password) VALUE(?,?,?,?,?)",
-          data = req.body,
-          avatar = data.avatar,
-          phone = data.phone,
-          email = data.email,
-          userName = data.userName,
-          password = data.password,
-          inserts = [avatar, phone, email, userName, password];
+      app.post('/requestRegister', async (req, res) => {
+        let registerSql = "INSERT INTO user(avatar,phone,email,userName,password) VALUE(?,?,?,?,?)";
+        let {
+          avatar,
+          phone,
+          email,
+          userName,
+          password
+        } = req.body;
+        let publicPath = 'static/images/avatar';
+        await base64ToImage(avatar, publicPath).then(avatarPath => {
+          avatar = avatarPath;
+        }).catch(err => {
+          console.log(err);
+          res.json({
+            err: 'failed',
+            text: '注册失败,请重新尝试一次!'
+          });
+          return;
+        });
+        let inserts = [avatar, phone, email, userName, password];
         connection.query(registerSql, inserts, (err, result) => {
           if (err) throw err;
           if (result.affectedRows == 1) {
@@ -360,7 +376,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       });
 
       //router for modifying user's information
-      app.post('/modifyUserInfo', (req, res) => {
+      app.post('/modifyUserInfo', async (req, res) => {
         let modifySql,
           userID = req.body.userID,
           modifyType = req.body.modifyType,
@@ -392,6 +408,14 @@ const devWebpackConfig = merge(baseWebpackConfig, {
             modifyType = type.value;
           }
         });
+        if (modifyType == 'avatar') {
+          let publicPath = 'static/images/avatar';
+          await base64ToImage(modifiedText, publicPath).then(avatarPath => {
+            modifiedText = avatarPath;
+          }).catch(err => {
+            console.log(err);
+          })
+        }
         modifySql = `UPDATE user SET ${modifyType}=? WHERE userID=?`;
         let inserts = [modifiedText, userID];
         connection.query(modifySql, inserts, (err, result) => {
@@ -401,7 +425,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
                 errno: 1062,
                 text: '用户名已存在!'
               });
-              return
+              return;
             } else {
               throw err;
             }

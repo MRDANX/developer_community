@@ -55,7 +55,7 @@
 <style lang="less" scoped>
   .slide-down-enter-active {
     position: fixed;
-    top: 7vh;
+    top: 14vw;
     transition: all .5s;
   }
 
@@ -66,7 +66,7 @@
 
   .slide-down-leave-active {
     position: fixed;
-    top: 7vh;
+    top: 14vw;
     transition: all .5s;
     z-index: 98;
   }
@@ -77,7 +77,7 @@
 
   .slide-up-enter-active {
     position: fixed;
-    top: 7vh;
+    top: 14vw;
     transition: all .5s;
     z-index: 98;
   }
@@ -88,7 +88,7 @@
 
   .slide-up-leave-active {
     position: fixed;
-    top: 7vh;
+    top: 14vw;
     transition: all .5s;
     z-index: 97;
   }
@@ -103,10 +103,10 @@
     div.searchBar {
       width: 100vw;
       background-color: #0080FF;
-      height: 7vh;
+      height: 14vw;
       text-align: center;
       color: #FFFFFF;
-      line-height: 7vh;
+      line-height: 14vw;
       display: flex;
       align-items: center;
       justify-content: center;

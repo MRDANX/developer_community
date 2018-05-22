@@ -9,7 +9,8 @@
                 <i class="fa fa-angle-right" v-if="detailedSearchUsers.length>8"></i>
               </p>
               <ul>
-                <router-link v-for="(user,index) in detailedSearchUsers.slice(0,7)" :key="index" :to="{name:'userDetail',params:{userID:user.userID}}" tag="li">
+                <router-link v-for="(user,index) in detailedSearchUsers.slice(0,7)" :key="index" :to="{name:'userDetail',params:{userID:user.userID}}"
+                  tag="li">
                   <div class="avatar">
                     <img :src="user.avatar" />
                   </div>
@@ -38,7 +39,8 @@
             </ul>
           </div>
           <ul v-else class="simple-result">
-            <router-link v-for="(user,index) in simpleSearchUsers" :key="'user'+index" class="result-user" :to="{name:'userDetail',params:{userID:user.userID}}" tag="li">
+            <router-link v-for="(user,index) in simpleSearchUsers" :key="'user'+index" class="result-user" :to="{name:'userDetail',params:{userID:user.userID}}"
+              tag="li">
               <div class="result-user-left">
                 <div class="avatar">
                   <img :src="user.avatar" />
@@ -51,7 +53,8 @@
               <span class="result-user-right">作者</span>
             </router-link>
             <li v-for="(article,index) in simpleSearchArticles" :key="'article'+index" class="result-article">
-              <router-link class="title" v-html="highlightMatch(article.title)" :to="{name: 'articleDetail',params:{articleID:article.articleID}}" tag="span"></router-link>
+              <router-link class="title" v-html="highlightMatch(article.title)" :to="{name: 'articleDetail',params:{articleID:article.articleID}}"
+                tag="span"></router-link>
               <span class="pv">阅读 {{article.pv}}</span>
             </li>
           </ul>
@@ -59,11 +62,11 @@
         <div class="searching-recommend" v-else key="recommend">
           <div class="searching-hot">
             <div class="hot-header">
-              <div>
-                <i class="fa fa-free-code-camp"></i>
+              <div class="hot-left">
+                <i class="hot-icon"></i>
                 <span>热门搜索</span>
               </div>
-              <div @click="refreshHotList">
+              <div @click="refreshHotList" class="hot-right">
                 <i class="fa fa-refresh" :class="{refreshing:hotsRefreshing}"></i>
                 <span>换一批</span>
               </div>
@@ -80,7 +83,8 @@
                 <i class="fa fa-clock-o"></i>
                 <span @click="getResultDirectly(history)">{{history}}</span>
               </div>
-              <span class="item-clear" @click="removeClickedHistory(index)" ref="clearItem">X</span>
+              <span class="item-clear" @click="removeClickedHistory(index)" ref="clearItem"></span>
+
             </li>
             <li class="clear-all-history" @click="clearAllHistory" key="clearAllHistory" v-if="searchHistory.length!=0" ref="clearAll">清除全部搜索记录</li>
           </transition-group>
@@ -486,11 +490,23 @@
       box-sizing: border-box;
       .searching-hot {
         font-size: 4vw;
+        .hot-left{
+          display: flex;
+          align-items: center;
+        }
         .hot-header {
           display: flex;
           justify-content: space-between;
+          align-items: center;
           padding-bottom: 3vw;
           border-bottom: 1px solid #CCCCCC;
+          .hot-icon {
+            display: inline-block;
+            width: 5vw;
+            height: 5vw;
+            background-image: url("/static/images/common/hot.svg");
+            background-size: cover;
+          }
           i.refreshing {
             transition: transform 3s;
             color: #0080FF !important;
@@ -565,20 +581,17 @@
             color: #777777;
           }
           span.item-clear {
-            font-size: 3.5vw;
-            width: 5vw;
-            height: 5vw;
+            width: 6vw;
+            height: 6vw;
             text-align: center;
-            line-height: 5vw;
             border-radius: 50%;
-            background: #666666;
-            color: #FFFFFF;
-            font-family: cursive;
             margin-right: 3vw;
             transition: all .1s;
+            transform: scale(1);
+            background-image: url("/static/images/common/delete.svg");
+            background-size: cover;
             &.active {
-              font-size: 3vw;
-              transform: scale(0.8);
+              transform: scale(0.9);
             }
           }
         }

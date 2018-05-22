@@ -2,6 +2,12 @@
   <scroll ref="usersTrendScroll">
     <div class="users-trend">
       <ul v-if="userInfo.userID" class="users-trend-list">
+        <li v-if="userInfo.followee.length==0" class="none-followee">
+          <span>你还没有关注任何用户哦!</span>
+        </li>
+        <li v-if="trendList.length==0" class="none-trend">
+          <span>你关注的用户还没发表任何动态哦!</span>
+        </li>
         <trend v-for="(trend,index) in trendList" :key="index" :trend="trend" ref="trends" @updateCurrentTrend="updateSpecifiedTrend(index)"
           @showSharePanel="$emit('showSharePanel',$event)" />
       </ul>
@@ -83,7 +89,30 @@
 <style lang="less" scoped>
   .users-trend {
     width: 100vw;
-    .users-trend-list {}
+    .users-trend-list {
+      .none-followee,
+      .none-trend {
+        text-align: center;
+        margin-top: 10vh;
+        color: #999999;
+        width: 100vw;
+        height: 50vw;
+        font-size: 6vw;
+        background-image: url("/static/images/common/none-follow.svg");
+        background-size: 100% 100%;
+        position: relative;
+        span {
+          position: absolute;
+          bottom: 3vw;
+          left: 50%;
+          transform: translateX(-50%);
+          white-space: nowrap;
+        }
+      }
+      .none-trend {
+        background-image: url("/static/images/common/none-trend.svg");
+      }
+    }
     .ask-for-login {
       width: 100vw;
       height: 84vh;

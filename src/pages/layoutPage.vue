@@ -168,10 +168,6 @@
             &.active {
               transform: scale(0.9);
             }
-            &::before {
-              // background-color: #FFFFFF;
-              // border-radius: 50%;
-            }
           }
         }
         .create-trend {

@@ -270,6 +270,7 @@
     //   }
     // }
   }
+
 </script>
 
 <style lang="less" scoped>
@@ -325,12 +326,21 @@
       bottom: -10vw;
       font-size: 10vw;
       color: #666666;
-      background-color: #FFFFFF;
-      box-shadow: 0 0 5vw #FFFFFF;
       border-radius: 50%;
       transition: all .5s;
       z-index: -1;
-      ;
+      &::after {
+        content: '';
+        width: 80%;
+        height: 80%;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #FFFFFF;
+        z-index: -1;
+      }
       &.active {
         bottom: 10vw;
         z-index: 99;
@@ -341,4 +351,5 @@
       }
     }
   }
+
 </style>

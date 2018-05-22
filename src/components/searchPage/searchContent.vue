@@ -13,8 +13,8 @@
           <i class="fa fa-book"></i>
           <span>小册</span>
         </div>
-        <div>
-          <i class="fa fa-free-code-camp"></i>
+        <div class="hot-week">
+          <i class="hot-icon"></i>
           <span>本周最热</span>
         </div>
         <div>
@@ -46,7 +46,7 @@
               <span>{{article.date|timeFromNow}}</span>
             </p>
           </div>
-          <img :src="article.image" class="article-img" v-if="article.image">
+          <img :src="article.cover" class="article-img" v-if="article.cover">
         </li>
         <li v-if="articleList.length==0" class="article-loading" v-for="i in 3" :key="i">
           <div class="article-info">
@@ -172,11 +172,11 @@
       padding: 3vw 0;
       div {
         width: 25vw;
-        height: 100%;
+        height: 80%;
         text-align: center;
         display: flex;
         flex-direction: column;
-        justify-content: space-around;
+        justify-content: space-between;
         align-items: center;
         i {
           font-size: 7vw;
@@ -196,6 +196,13 @@
         }
         span {
           font-size: 4vw;
+        }
+        .hot-icon{
+          display: inline-block;
+          width: 7vw;
+          height: 7vw;
+          background-image: url("/static/images/common/hot-week.svg");
+          background-size: cover;
         }
       }
     }

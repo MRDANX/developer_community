@@ -18,9 +18,15 @@
                 <img :src="articleInfo.avatar" alt="">
               </router-link>
               <router-link :to="{name:'userDetail',params:{userID:articleInfo.userID}}" tag="span" class="author">{{articleInfo.author}}</router-link>
-              <div class="user-follow">
-                <i class="fa fa-plus"></i>
-                <span>关注</span>
+              <div class="user-follow" :class="{isFollowee}">
+                <div class="not-follow" @click="toggleFollow">
+                  <i class="fa fa-plus"></i>
+                  <span>关注</span>
+                </div>
+                <div class="has-follow" @click="toggleFollow">
+                  <i class="fa fa-check"></i>
+                  <span>已关注</span>
+                </div>
               </div>
             </div>
             <p class="article-info">{{articleInfo.date|dateFormat}} • 字数 {{wordCount}} • 阅读 {{articleInfo.pv}} •
@@ -104,7 +110,8 @@
         showLoading: false,
         loadingComment: false,
         hasMoreComments: true,
-        initialComments: false
+        initialComments: false,
+        followLock: false
       }
     },
     computed: {
@@ -130,6 +137,18 @@
           }
         }
         return false;
+      },
+      isFollowee() {
+        const followee = this.userInfo.followee,
+          userID = this.articleInfo.userID;
+        if (followee) {
+          for (let i = 0; i < followee.length; i++) {
+            if (userID == followee[i].userID) {
+              return true;
+            }
+          }
+        }
+        return false;
       }
     },
     created() {
@@ -147,17 +166,23 @@
       }
     },
     activated() {
-      this.getArticleInfo();
-      window.addEventListener('scroll', this.initializeComments);
-    },
-    deactivated() {
-      setTimeout(() => {
+      if (this.articleID != this.articleInfo.articleID) {
         this.articleInfo = {};
         this.comments = [];
         this.initialComments = false;
         this.hasMoreComments = true;
-      }, 500);
+        window.addEventListener('scroll', this.initializeComments);
+        this.getArticleInfo();
+      }
     },
+    // deactivated() {
+    //   setTimeout(() => {
+    //     this.articleInfo = {};
+    //     this.comments = [];
+    //     this.initialComments = false;
+    //     this.hasMoreComments = true;
+    //   }, 500);
+    // },
     methods: {
       getArticleInfo() {
         this.$axios({
@@ -280,6 +305,27 @@
             this.getArticleInfo();
             setTimeout(() => {
               this.favorLock = false;
+            }, 300);
+          }).catch(err => {
+            console.log(err);
+          });
+        }
+      },
+      toggleFollow() {
+        if (!this.userInfo.userID) {
+          this.hintText = '请先登录';
+          return;
+        }
+        const followeeUserID = this.articleInfo.userID,
+          wantFollow = !this.isFollowee;
+        if (!this.followLock) {
+          this.followLock = true;
+          this.$store.dispatch('user/toggleUserFollow', {
+            followeeUserID,
+            wantFollow
+          }).then(result => {
+            setTimeout(() => {
+              this.followLock = false;
             }, 300);
           }).catch(err => {
             console.log(err);
@@ -426,12 +472,33 @@
               margin-left: 3vw;
             }
             .user-follow {
-              padding: 1.5vw 3vw;
+              padding: 1vw 2vw;
               background-color: #0080FF;
               color: #FFFFFF;
               border-radius: 1vw;
-              height: 5vw;
-              line-height: 5vw;
+              height: 6vw;
+              line-height: 6vw;
+              width: 14vw;
+              text-align: center;
+              transition: all .5s;
+              overflow: hidden;
+              .not-follow {
+                display: block;
+              }
+              .has-follow {
+                display: none;
+                white-space: nowrap;
+              }
+              &.isFollowee {
+                background-color: #6A03F2;
+                width: 18vw;
+                .not-follow {
+                  display: none;
+                }
+                .has-follow {
+                  display: block;
+                }
+              }
             }
           }
           .article-info {

@@ -3,12 +3,12 @@
     <li class="user-info margin-top" ref="userInfo" @click="showSlideOut=true">
       <div>
         <div class="avatar">
-          <img :src="userInfo.avatar"/>
+          <img :src="userInfo.avatar" />
           <!-- <i class="fa fa-user-circle-o" v-else></i> -->
         </div>
         <div class="user-name">
           <span>{{userInfo.userName}}</span>
-          <span class="job-company">{{userInfo.job}} @ {{userInfo.company}}</span>
+          <span class="job-company">{{userInfo.job||'添加职业'}} @ {{userInfo.company||'添加公司'}}</span>
         </div>
       </div>
       <div class="follower-edit">
@@ -67,6 +67,7 @@
       personalSetting
     }
   }
+
 </script>
 
 <style lang="less" scoped>
@@ -78,11 +79,12 @@
       margin-top: 3vw;
     }
     li {
-      background-color: #FFFFFF;
+      background-color: #F6F6F6;
+      box-shadow: 0 0 5px #FFFFFF;
     }
     li:not(:first-of-type) {
       height: 12vw;
-      box-shadow: 0 0 1px #DDDDDD;
+      box-shadow: 0 0 1px #DDDDDD, 0 0 3px #FFFFFF;
       padding: 0 5vw;
       line-height: 12vw;
       font-size: 5vw;
@@ -112,8 +114,12 @@
           height: 20vw;
           overflow: hidden;
           border-radius: 50%;
+          position: relative;
           img {
             // width: 100%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
             height: 100%;
           }
         }
@@ -148,4 +154,5 @@
       }
     }
   }
+
 </style>

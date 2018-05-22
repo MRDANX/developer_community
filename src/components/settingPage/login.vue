@@ -113,16 +113,21 @@
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
-    justify-content: space-around;
-    // background-image: url("/static/images/login_bg.jpg");
+    justify-content: space-around; // background-image: url("/static/images/login_bg.jpg");
     // background-size: cover;
     .user-avatar {
+      min-width: 40vw;
+      min-height: 40vw;
       width: 40vw;
       height: 40vw;
       overflow: hidden;
       border-radius: 50%;
+      position: relative;
       img {
         // width: 100%;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
         height: 100%;
       }
     }

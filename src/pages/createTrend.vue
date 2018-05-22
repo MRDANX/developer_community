@@ -1,42 +1,46 @@
 <template>
-	<div class="create-trend">
-		<div class="top-nav">
-			<div class="mask"></div>
-			<div class="top-nav-content">
-				<i class="fa fa-chevron-left" @click="$router.go(-1)"></i>
-				<span class="nav-title">发动态</span>
-				<span class="send-trend" @click="publishTrend"><i class="fa fa-send"></i>发送</span>
-			</div>
-		</div>
-		<div class="trend-content">
-			<textarea v-model="content" class="content-text" placeholder="一起聊聊吧~" />
-			<div class="content-images">
-				<transition-group name="fluent" tag="div" class="images-wrapper">
-					<uploaded-image :src="src" v-for="(src,index) in images" :key="src" @deleteImage="images.splice(index,1)" class="uploaded-image"/>
-					<div class="upload-image" key="uploadImageButton" ref="uploadImageButton">
-						<span class="plus">+</span>
-						<input type="file" @change="uploadImage($event.target)" accept="image/jpeg,image/jpg,image/png" ref="fileUpload"/>
-					</div>
-				</transition-group>
-			</div>
-		</div>
-		<div class="bottom-nav">
-			<div class="mask"></div>
-			<div class="bottom-content">
-				<i class="fa fa-photo" @click="$refs.fileUpload.click()"></i>
-				<i class="fa">@</i>
-				<i class="fa fa-slack"></i>
-				<i class="fa fa-smile-o"></i>
-				<span class="length-left">剩余字数：{{contentLengthLeft}}</span>
-			</div>
-		</div>
-		<hint v-model="hintText" />
-    <loading v-if="showLoading" :verticalMove="5" color="#FFFFFF"/>
-	</div>
+  <div class="create-trend">
+    <div class="top-nav">
+      <div class="mask"></div>
+      <div class="top-nav-content">
+        <i class="fa fa-chevron-left" @click="$router.go(-1)"></i>
+        <span class="nav-title">发动态</span>
+        <span class="send-trend" @click="publishTrend">
+          <i class="fa fa-send"></i>发送</span>
+      </div>
+    </div>
+    <div class="trend-content">
+      <textarea v-model="content" class="content-text" placeholder="一起聊聊吧~" maxlength="200" />
+      <div class="content-images">
+        <transition-group name="fluent" tag="div" class="images-wrapper">
+          <uploaded-image :src="src" v-for="(src,index) in images" :key="src" @deleteImage="images.splice(index,1)" class="uploaded-image"
+          />
+          <div class="upload-image" key="uploadImageButton" ref="uploadImageButton">
+            <span class="plus">+</span>
+            <input type="file" @change="uploadImage($event.target)" accept="image/jpeg,image/jpg,image/png" ref="fileUpload" />
+          </div>
+        </transition-group>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="mask"></div>
+      <div class="bottom-content">
+        <i class="fa fa-photo" @click="$refs.fileUpload.click()"></i>
+        <i class="fa">@</i>
+        <i class="fa fa-slack"></i>
+        <i class="fa fa-smile-o"></i>
+        <span class="length-left">剩余字数：{{contentLengthLeft}}</span>
+      </div>
+    </div>
+    <hint v-model="hintText" />
+    <loading v-if="showLoading" :verticalMove="5" color="#FFFFFF" />
+  </div>
 </template>
 
 <script>
-  import { mapState } from "vuex";
+  import {
+    mapState
+  } from "vuex";
   import hint from '@/components/common/hint';
   import uploadedImage from '@/components/common/uploadedImage';
   import loading from '@/components/common/loading';
@@ -56,7 +60,9 @@
     mounted() {
       //check out whether user has login
       if (!this.userInfo.userID) {
-        this.$router.push({ path: '/setting' })
+        this.$router.push({
+          path: '/setting'
+        })
       }
       let uploadImageButton = this.$refs.uploadImageButton;
       if (uploadImageButton) {
@@ -131,12 +137,20 @@
         this.images = [];
       }
     },
+    watch: {
+      content() {
+        if (this.contentLengthLeft == 0) {
+          this.hintText = '已达文本输入上限!';
+        }
+      }
+    },
     components: {
       hint,
       uploadedImage,
       loading
     }
   }
+
 </script>
 
 <style lang="less" scoped>
@@ -293,4 +307,5 @@
       }
     }
   }
+
 </style>

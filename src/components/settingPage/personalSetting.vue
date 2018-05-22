@@ -4,8 +4,8 @@
       <li>
         <span>头像</span>
         <div class="avatar">
-          <img :src="userInfo.avatar" />
-          <input type="file" accept="image/jpeg,image/jpg,image/png" @change="avatarUpload($event.target)">
+          <img :src="userInfo.avatar" @click="$refs.uploadAvatar.click()" />
+          <input type="file" accept="image/jpeg,image/jpg,image/png" @change="avatarUpload($event.target)" ref="uploadAvatar">
           <!-- <i class="fa fa-user-circle-o" v-else></i> -->
         </div>
       </li>
@@ -42,7 +42,7 @@
       </div>
     </transition>
     <hint v-model="hintText" :delay="2500">{{hintText}}</hint>
-    <loading v-if="showLoading" :verticalMove="-6"/>
+    <loading v-if="showLoading" :verticalMove="-6" />
   </div>
 </template>
 
@@ -134,6 +134,7 @@
       loading
     }
   }
+
 </script>
 
 <style lang="less" scoped>
@@ -168,8 +169,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background-color: #FFFFFF;
-        box-shadow: 0 0 1px #CCCCCC;
+        background-color: #FDFDFD;
+        box-shadow: 0 0 1px #CCCCCC, 0 0 3px #FFFFFF;
         font-size: 5vw;
         &:active {
           background-color: #DDDDDD;
@@ -193,23 +194,15 @@
           border-radius: 50%;
           img {
             // width: 100%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
             height: 100%;
           }
           input[type='file'] {
-            position: absolute;
-            top: -50%;
-            left: 0;
-            width: 100%;
-            height: 150%;
-            outline: none;
-            background-color: transparent;
-          } // i.fa {
-          //   font-size: 14vw;
-          //   color: #666666;
-          //   position: absolute;
-          //   top: 50%;
-          //   transform: translateY(-50%);
-          // }
+            width: 0;
+            height: 0;
+          }
         }
       }
     }
@@ -267,4 +260,5 @@
       }
     }
   }
+
 </style>
