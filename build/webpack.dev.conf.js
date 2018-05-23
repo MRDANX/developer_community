@@ -560,6 +560,30 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         });
       });
 
+      //router for publishing comment of a trend
+      app.post('/publishTrendComment', (req, res) => {
+        let data = req.body,
+          userID = +data.userID,
+          trendID = +data.trendID,
+          commentText = data.commentText;
+        let publishSql = 'INSERT INTO trendComment(userID,trendID,content,date) VALUE(?,?,?,?)',
+          inserts = [userID, trendID, commentText, new Date()];
+        connection.query(publishSql, inserts, (err, result) => {
+          if (err) throw err;
+          if (result.affectedRows == 1) {
+            res.json({
+              errno: null,
+              text: '提交评论成功'
+            });
+          } else {
+            res.json({
+              errno: 1,
+              text: '提交评论失败'
+            });
+          }
+        });
+      });
+
       //router for publishing article
       app.post('/createUserArticle', async (req, res) => {
         let createArticleSql = 'INSERT INTO article(userID,title,date,content,subject,tags,cover) VALUE(?,?,?,?,?,?,?)',
@@ -697,6 +721,18 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         let getTrendSql = `SELECT * FROM trendList ORDER BY ${orderBy} DESC LIMIT ?,?`,
           inserts = [startIndex, number];
         connection.query(getTrendSql, inserts, (err, result) => {
+          if (err) throw err;
+          res.json(result);
+        });
+      });
+
+       //router for getting comments for trend
+       app.get('/getTrendComment', (req, res) => {
+        let query = req.query,
+          trendID = query.trendID;
+        let getCommentsSql = "SELECT a.*, u.userName, u.avatar FROM trendcomment a INNER JOIN user u ON a.userID = u.userID WHERE trendID=? ORDER BY date ",
+          inserts = [trendID];
+        connection.query(getCommentsSql, inserts, (err, result) => {
           if (err) throw err;
           res.json(result);
         });

@@ -3,8 +3,8 @@
     <div class="recommend-trend">
       <div class="slide-trend">
         <slider>
-          <router-link :to="{name:'trendDetail',params:{trendID:trend.trendID}}" tag="div" class="slide-trend-item" v-for="(trend,index) in slideTrend"
-            :key="index">
+          <router-link :to="{path:'/trendDetail',query:{
+        trendID:trend.trendID}}" tag="div" class="slide-trend-item" v-for="(trend,index) in slideTrend" :key="index">
             <div class="slide-trend-item-content">
               <div class="slide-trend-item-head">
                 <i class="fa fa-dot-circle-o"></i>
