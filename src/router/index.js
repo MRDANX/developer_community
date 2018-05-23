@@ -20,19 +20,21 @@ const searchPage = () =>
 const settingPage = () =>
   import ('@/pages/settingPage');
 const createArticle = () =>
-  import ('@/pages/createArticle');
-const createTrend = () =>
-  import ('@/pages/createTrend');
+  import ('@/pages/article/createArticle');
 const articleDetail = () =>
-  import ('@/pages/articleDetail');
-const trendDetail = () =>
-  import ('@/pages/trendDetail');
-const userDetail = () =>
-  import ('@/pages/userDetail');
+  import ('@/pages/article/articleDetail');
 const subjectDetail = () =>
-  import ('@/pages/subjectDetail');
+  import ('@/pages/article/subjectDetail');
+const originalArticle = () =>
+  import ('@/pages/article/originalArticle');
+const createTrend = () =>
+  import ('@/pages/trend/createTrend');
+const trendDetail = () =>
+  import ('@/pages/trend/trendDetail');
 const topicTrends = () =>
-  import ('@/pages/topicTrends');
+  import ('@/pages/trend/topicTrends');
+const userDetail = () =>
+  import ('@/pages/user/userDetail');
 
 Vue.use(Router);
 
@@ -142,10 +144,12 @@ export default new Router({
       props: true
     },
     {
-      path: '/subjectDetail/:subject',
+      path: '/subjectDetail',
       name: 'subjectDetail',
       component: subjectDetail,
-      props: true
+      props: route => ({
+        subject: route.query.subject
+      })
     },
     {
       path: '/topicTrend',
@@ -154,6 +158,11 @@ export default new Router({
       props: route => ({
         topic: route.query.topic
       })
+    },
+    {
+      path: '/originalArticle',
+      name: 'originalArticle',
+      component: originalArticle
     },
     {
       path: '(.*|notFound)',

@@ -26,28 +26,28 @@
             </li>
             <li>
               <i class="fa fa-heart" style="color:#6CBD45"></i>
-              <span class="text">我喜欢的</span>
+              <span class="text">我喜欢的文章</span>
               <span>{{userInfo.favoriteArticle&&userInfo.favoriteArticle.length||'0'}} 篇</span>
-            </li>
-            <li>
-              <i class="fa fa-list" style="color:#FF9900"></i>
-              <span class="text">收藏集</span>
-              <span>{{userInfo.collection&&userInfo.collection.length||'0'}} 个</span>
             </li>
             <li>
               <i class="fa fa-eye" style="color:#CC3333"></i>
               <span class="text">阅读过的文章</span>
               <span>0 篇</span>
             </li>
-            <li>
-              <i class="fa fa-thumbs-up" style="color:#0099FF"></i>
-              <span class="text">赞过的动态</span>
-              <span>0 篇</span>
+            <li @click="goto('/originalArticle')">
+              <i class="fa fa-file-text" style="color:#0080FF"></i>
+              <span class="text">原创文章管理</span>
+              <span>{{userInfo.originalArticle&&userInfo.originalArticle.length||0}} 篇</span>
             </li>
             <li>
-              <i class="fa fa-tags" style="color:#ffbd4c"></i>
-              <span class="text">标签管理</span>
-              <span>0 个</span>
+              <i class="fa fa-thumbs-up" style="color:#FF9900"></i>
+              <span class="text">赞过的动态</span>
+              <span>{{userInfo.favoriteTrend&&userInfo.favoriteTrend.length||0}} 个</span>
+            </li>
+            <li>
+              <i class="fa fa-list" style="color:#0099FF"></i>
+              <span class="text">收藏集</span>
+              <span>{{userInfo.collection&&userInfo.collection.length||'0'}} 个</span>
             </li>
           </ul>
         </li>
@@ -73,6 +73,7 @@
         <setting />
       </scroll>
     </slide-out>
+    <hint v-model="hintText"/>
   </div>
 </template>
 
@@ -81,6 +82,7 @@
     mapState
   } from "vuex";
   import scroll from "@/components/common/scroll";
+  import hint from "@/components/common/hint";
   import slideOut from "@/components/common/slideOut";
   import login from "@/components/settingPage/login";
   import userInfo from "@/components/settingPage/userInfo";
@@ -90,7 +92,8 @@
     data() {
       return {
         showUserOrLogin: false,
-        showOtherSetting: false
+        showOtherSetting: false,
+        hintText:''
       };
     },
     computed: {
@@ -109,7 +112,17 @@
       this.$activeFeedback(this.$refs.feedback);
       this.$activeFeedback(this.$refs.setting);
     },
+    methods: {
+      goto(path) {
+        if (!this.userInfo.userID) {
+          this.hintText = '请先登录';
+          return;
+        }
+        this.$router.push(path)
+      }
+    },
     components: {
+      hint,
       scroll,
       slideOut,
       login,
@@ -128,7 +141,7 @@
     div.nav {
       width: 100%;
       background-color: #0080ff;
-      height: 11vw;
+      height: 12vw;
       text-align: center;
       color: #ffffff;
       line-height: 11vw;

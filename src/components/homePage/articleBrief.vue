@@ -11,7 +11,7 @@
         </span>
       </router-link>
       <div>
-        <router-link :to="{name:'subjectDetail',params:{subject:articleInfo.subject}}" class="article-subject" tag="span">{{articleInfo.subject}}</router-link>
+        <router-link :to="{path:'/subjectDetail',query:{subject:articleInfo.subject}}" class="article-subject" tag="span">{{articleInfo.subject}}</router-link>
       </div>
     </div>
     <router-link :to="{name:'articleDetail',params:{articleID:articleInfo.articleID}}" class="article-content" tag="div">
@@ -27,7 +27,7 @@
         <img :src="articleInfo.cover">
       </div>
     </router-link>
-    <div class="article-action">
+    <div class="article-action" v-if="showAction">
       <p class="favor" :class="{isFavorite}" @click="toggleFavor">
         <i class="fa fa-heart"></i>
         <span>{{articleInfo.favors||'点赞'}}</span>
@@ -36,6 +36,10 @@
         <i class="fa fa-comment"></i>
         <span>{{articleInfo.commentNum||'评论'}}</span>
       </p>
+    </div>
+    <div class="edit-action" v-else>
+      <img src="/static/images/common/edit.svg" alt="">
+      <img src="/static/images/common/delete-red.svg" alt="">
     </div>
   </li>
 </template>
@@ -50,6 +54,10 @@
       articleInfo: {
         type: Object,
         default: () => {}
+      },
+      showAction: {
+        type: Boolean,
+        default: true
       }
     },
     data() {
@@ -143,10 +151,7 @@
       .article-title {
         margin: 3vw 0 1vw;
         h4 {
-          // white-space: nowrap;
-          // text-overflow: ellipsis;
-          // overflow: hidden;
-          display: -webkit-box; 
+          display: -webkit-box;
           -webkit-box-orient: vertical;
           -webkit-line-clamp: 2;
           overflow: hidden;
@@ -155,7 +160,7 @@
       }
       .article-abstrict {
         margin-bottom: 2vw;
-        display: -webkit-box; 
+        display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 3;
         overflow: hidden;
@@ -196,6 +201,25 @@
           animation: articleFavorite 1s forwards;
         }
         color: #0080FF;
+      }
+    }
+    .edit-action {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: 1.5vw;
+      padding: 2vw 0 0;
+      box-sizing: border-box;
+      height: 10vw;
+      border-top: 1px dashed #CCCCCC;
+      transition: all .1s;
+      transform: scale(1);
+      img{
+        height: 100%;
+        margin-right: 5vw;
+        &:active{
+          transform: scale(0.85);
+        }
       }
     }
   }

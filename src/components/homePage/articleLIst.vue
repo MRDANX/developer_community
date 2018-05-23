@@ -3,7 +3,7 @@
     :enableLoadMore="true" ref="articleList">
     <ul class="articleList">
       <hot-recommend :subject="subject" @askLogin="$refs.articleList.showHint('请先登录')" />
-      <article-brief v-for="(item,index) in articleList" :key="index" :articleInfo="item" @updateCurrentArticle="updateSpecifiedArticle(index)"
+      <article-brief v-for="(article,index) in articleList" :key="index" :articleInfo="article" @updateCurrentArticle="updateSpecifiedArticle(index)"
         @askLogin="$refs.articleList.showHint('请先登录')" />
     </ul>
   </scroll>
@@ -137,10 +137,8 @@
     justify-content: space-around;
     padding-top: 1vw;
     li {
-      color: white;
       background-color: #FFFFFF;
       margin: 1.5vw 0;
-      color: black;
       box-shadow: 0 1px 5px #CCCCCC;
     }
   }

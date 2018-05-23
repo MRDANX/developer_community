@@ -12,7 +12,7 @@
     data() {
       return {
         slideDirection: '',
-        slideRightList: ['createArticle', 'createTrend', 'articleDetail', 'userDetail', 'subjectDetail','trendDetail'],
+        slideRightList: ['createArticle', 'createTrend', 'articleDetail', 'userDetail', 'subjectDetail', 'trendDetail'],
         fromToList: [{
           from: 'topicTrends',
           to: 'trendPage'
@@ -36,9 +36,9 @@
         }
         for (let i = 0; i < this.fromToList.length; i++) {
           const route = this.fromToList[i];
-            if (from.name == route.from && to.name == route.to) {
-              this.slideDirection = 'outter-slide-right';
-            }
+          if (from.name == route.from && to.name == route.to) {
+            this.slideDirection = 'outter-slide-right';
+          }
         }
         if (from.path == '/') {
           this.slideDirection = '';
@@ -52,7 +52,8 @@
 <style>
   .outter-slide-left-enter-active {
     transition: all .5s;
-    position: absolute;
+    position: fixed;
+    top: 0;
     z-index: 99;
   }
 
@@ -62,7 +63,8 @@
 
   .outter-slide-left-leave-active {
     transition: all 0s .5s;
-    position: absolute;
+    /* position: fixed; */
+    /* top: 0; */
     z-index: -1;
   }
 
@@ -72,8 +74,8 @@
 
   .outter-slide-right-leave-active {
     transition: all .5s;
-    position: absolute;
-    /* top: 0; */
+    position: fixed;
+    top: 0;
     z-index: 100;
   }
 
@@ -83,7 +85,7 @@
 
   .outter-slide-right-enter-active {
     transition: all 0s;
-    position: absolute;
+    /* position: fixed; */
     /* top: 0; */
     z-index: -1;
   }

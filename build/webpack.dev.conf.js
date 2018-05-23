@@ -512,6 +512,16 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         })
       });
 
+      //router for getting users original articles
+      app.get('/getUserOriginalArticle', (req, res) => {
+        let userID = req.query.userID,
+          originalSql = 'SELECT * FROM articleDetail WHERE userID=? ORDER BY date DESC';
+        connection.query(originalSql, [userID], (err, result) => {
+          if (err) throw err;
+          res.json(result);
+        })
+      });
+
       //router for increasing PV of article
       app.post('/increaseArticlePV', (req, res) => {
         let increaseSql = 'UPDATE article SET pv=pv+1 WHERE articleID=?',
@@ -726,8 +736,8 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         });
       });
 
-       //router for getting comments for trend
-       app.get('/getTrendComment', (req, res) => {
+      //router for getting comments for trend
+      app.get('/getTrendComment', (req, res) => {
         let query = req.query,
           trendID = query.trendID;
         let getCommentsSql = "SELECT a.*, u.userName, u.avatar FROM trendcomment a INNER JOIN user u ON a.userID = u.userID WHERE trendID=? ORDER BY date ",
