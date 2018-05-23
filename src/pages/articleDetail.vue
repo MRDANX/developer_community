@@ -157,32 +157,28 @@
     mounted() {
       window.addEventListener('scroll', this.initializeComments);
       window.addEventListener('scroll', this.toggleHeadTitle);
+      this.initializeComments();
     },
-    updated() {
+    // updated() {
       //load comments if it's in the visible view and it's not yet been initialized
-      let comments = this.$refs.comments;
-      if (comments && !this.initialComments) {
-        this.initializeComments();
-      }
-    },
+      // let comments = this.$refs.comments;
+      // if (comments && !this.initialComments) {
+      //   this.initializeComments();
+      // }
+    // },
     activated() {
       if (this.articleID != this.articleInfo.articleID) {
         this.articleInfo = {};
         this.comments = [];
         this.initialComments = false;
         this.hasMoreComments = true;
+        setTimeout(() => {
+          this.initializeComments();
+        }, 200);
         window.addEventListener('scroll', this.initializeComments);
         this.getArticleInfo();
       }
     },
-    // deactivated() {
-    //   setTimeout(() => {
-    //     this.articleInfo = {};
-    //     this.comments = [];
-    //     this.initialComments = false;
-    //     this.hasMoreComments = true;
-    //   }, 500);
-    // },
     methods: {
       getArticleInfo() {
         this.$axios({
@@ -232,7 +228,7 @@
               articleID: this.articleID
             })
           }).then(result => {
-            // console.log(result);
+            // console.log('increase pv');
           });
         }
       },

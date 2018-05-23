@@ -561,7 +561,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       });
 
       //router for publishing article
-      app.post('/createUserArticle', (req, res) => {
+      app.post('/createUserArticle', async (req, res) => {
         let createArticleSql = 'INSERT INTO article(userID,title,date,content,subject,tags,cover) VALUE(?,?,?,?,?,?,?)',
           data = req.body,
           userID = data.userID,
@@ -569,7 +569,11 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           cover = data.cover,
           subject = data.subject,
           tags = data.tags,
-          content = data.content;
+          content = data.content,
+          publicPath = 'static/images/articleCover';
+        await base64ToImage(cover, publicPath).then(coverPath => {
+          cover = coverPath;
+        });
         let inserts = [userID, title, new Date(), content, subject, tags, cover];
         connection.query(createArticleSql, inserts, (err, result) => {
           if (err) throw err;

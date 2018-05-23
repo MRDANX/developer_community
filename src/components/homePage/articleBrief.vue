@@ -146,7 +146,7 @@
           // white-space: nowrap;
           // text-overflow: ellipsis;
           // overflow: hidden;
-          display: -webkit-box;
+          display: -webkit-box; 
           -webkit-box-orient: vertical;
           -webkit-line-clamp: 2;
           overflow: hidden;
@@ -155,7 +155,7 @@
       }
       .article-abstrict {
         margin-bottom: 2vw;
-        display: -webkit-box;
+        display: -webkit-box; 
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 3;
         overflow: hidden;
