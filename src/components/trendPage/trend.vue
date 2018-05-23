@@ -20,19 +20,25 @@
       </div>
     </div>
     <div class="trend-content" ref="trendContent">
-      <p class="trend-text" v-html="trend.content"></p>
-      <div class="trend-image-set" v-if="trend.images">
-        <img :src="image" v-for="(image,index) in trend.images.split(',')" :key="index">
-      </div>
+      <router-link :to="{path:'/trendDetail',query:{
+        trendID:trend.trendID}}" tag="div">
+        <p class="trend-text" v-html="trend.content"></p>
+        <div class="trend-image-set" v-if="trend.images">
+          <img :src="image" v-for="(image,index) in trend.images.split(',')" :key="index">
+        </div>
+      </router-link>
     </div>
-    <div class="trend-foot" ref="trendFoot">
+    <div class="trend-foot" ref="trendFoot" v-if="showFoot">
       <div class="trend-favor" :class="{isFavorite}" @click="toggleFavor">
         <i class="fa" :class="[isFavorite?'fa-thumbs-up':'fa-thumbs-o-up']"></i>
         <span>{{trend.favors||'赞'}}</span>
       </div>
       <div class="trend-comment">
-        <i class="fa fa-commenting-o"></i>
-        <span>{{trend.commentNum||'评论'}}</span>
+        <router-link :to="{path:'/trendDetail',query:{
+        trendID:trend.trendID}}" tag="div">
+          <i class="fa fa-commenting-o"></i>
+          <span>{{trend.commentNum||'评论'}}</span>
+        </router-link>
       </div>
       <div class="trend-share" @click="$emit('showSharePanel',trend.trendID)">
         <i class="fa fa-share-alt"></i>
@@ -51,6 +57,10 @@
       trend: {
         type: Object,
         default: () => {}
+      },
+      showFoot: {
+        type: Boolean,
+        default: true
       }
     },
     data() {

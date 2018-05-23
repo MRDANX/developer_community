@@ -160,11 +160,11 @@
       this.initializeComments();
     },
     // updated() {
-      //load comments if it's in the visible view and it's not yet been initialized
-      // let comments = this.$refs.comments;
-      // if (comments && !this.initialComments) {
-      //   this.initializeComments();
-      // }
+    //load comments if it's in the visible view and it's not yet been initialized
+    // let comments = this.$refs.comments;
+    // if (comments && !this.initialComments) {
+    //   this.initializeComments();
+    // }
     // },
     activated() {
       if (this.articleID != this.articleInfo.articleID) {
@@ -188,6 +188,10 @@
             articleID: this.articleID
           }
         }).then(result => {
+          if (!result.data[0]) {
+            this.$router.push('/notFound');
+            return;
+          }
           this.articleInfo = result.data[0];
         })
       },
@@ -219,7 +223,7 @@
         if (commentsTop < clientHeight && !this.initialComments) {
           this.initialComments = true;
           this.getArticleComment();
-          //increase pv of article when initialize it's comments
+          //increase pv of article when initialize its comments
           let qs = require('qs');
           this.$axios({
             method: 'post',

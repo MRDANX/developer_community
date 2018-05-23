@@ -1,32 +1,32 @@
 <template>
-	<scroll :enableLoadMore='true' :loadMore="loadMore" ref="recommendScroll">
-		<div class="recommend-trend">
-			<div class="slide-trend">
-				<slider>
-					<div class="slide-trend-item" v-for="(trend,index) in slideTrend" :key="index">
-						<div class="slide-trend-item-content">
-							<div class="slide-trend-item-head">
-								<i class="fa fa-dot-circle-o"></i>
-								<span>热门动态</span>
-							</div>
-							<div class="slide-trend-text">
-								{{trend.content}}
-							</div>
-						</div>
-						<div class="slide-trend-image" v-if="trend.images">
-								<img :src="trend.images.split(',')[0]"/>
-							</div>
-					</div>
-				</slider>
-			</div>
-			<ul class="trend-list">
-				<trend v-for="(trend,index) in trendList" :key="index" :trend="trend" @askLogin="$refs.recommendScroll.showHint('请先登录')"
-        @updateCurrentTrend="updateSpecifiedTrend(index)"
-        @showSharePanel="$emit('showSharePanel',$event)"/>
-			</ul>
-      <loading v-if="showLoading"/>
-		</div>
-	</scroll>
+  <scroll :enableLoadMore='true' :loadMore="loadMore" ref="recommendScroll">
+    <div class="recommend-trend">
+      <div class="slide-trend">
+        <slider>
+          <router-link :to="{name:'trendDetail',params:{trendID:trend.trendID}}" tag="div" class="slide-trend-item" v-for="(trend,index) in slideTrend"
+            :key="index">
+            <div class="slide-trend-item-content">
+              <div class="slide-trend-item-head">
+                <i class="fa fa-dot-circle-o"></i>
+                <span>热门动态</span>
+              </div>
+              <div class="slide-trend-text">
+                {{trend.content}}
+              </div>
+            </div>
+            <div class="slide-trend-image" v-if="trend.images">
+              <img :src="trend.images.split(',')[0]" />
+            </div>
+          </router-link>
+        </slider>
+      </div>
+      <ul class="trend-list">
+        <trend v-for="(trend,index) in trendList" :key="index" :trend="trend" @askLogin="$refs.recommendScroll.showHint('请先登录')"
+          @updateCurrentTrend="updateSpecifiedTrend(index)" @showSharePanel="$emit('showSharePanel',$event)" />
+      </ul>
+      <loading v-if="showLoading" />
+    </div>
+  </scroll>
 </template>
 
 <script>
@@ -112,6 +112,7 @@
       loading
     }
   }
+
 </script>
 
 <style lang="less" scoped>
@@ -175,4 +176,5 @@
       overflow: hidden;
     }
   }
+
 </style>

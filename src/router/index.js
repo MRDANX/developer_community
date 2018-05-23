@@ -25,6 +25,8 @@ const createTrend = () =>
   import ('@/pages/createTrend');
 const articleDetail = () =>
   import ('@/pages/articleDetail');
+const trendDetail = () =>
+  import ('@/pages/trendDetail');
 const userDetail = () =>
   import ('@/pages/userDetail');
 const subjectDetail = () =>
@@ -126,6 +128,14 @@ export default new Router({
       props: true
     },
     {
+      path: '/trendDetail',
+      name: 'trendDetail',
+      component: trendDetail,
+      props: route => ({
+        trendID: route.query.trendID
+      })
+    },
+    {
       path: '/userDetail/:userID',
       name: 'userDetail',
       component: userDetail,
@@ -141,7 +151,9 @@ export default new Router({
       path: '/topicTrend',
       name: 'topicTrends',
       component: topicTrends,
-      props: route=>({topic:route.query.topic})
+      props: route => ({
+        topic: route.query.topic
+      })
     },
     {
       path: '(.*|notFound)',

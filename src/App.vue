@@ -12,7 +12,7 @@
     data() {
       return {
         slideDirection: '',
-        slideRightList: ['createArticle', 'createTrend', 'articleDetail', 'userDetail', 'subjectDetail'],
+        slideRightList: ['createArticle', 'createTrend', 'articleDetail', 'userDetail', 'subjectDetail','trendDetail'],
         fromToList: [{
           from: 'topicTrends',
           to: 'trendPage'
