@@ -12,10 +12,16 @@
     data() {
       return {
         slideDirection: '',
-        slideRightList: ['createArticle', 'createTrend', 'articleDetail', 'userDetail', 'subjectDetail', 'trendDetail'],
-        fromToList: [{
+        slideRightList: ['createArticle', 'createTrend', 'originalArticle', 'articleDetail', 'userDetail',
+          'subjectDetail', 'trendDetail'
+        ],
+        rightFromToList: [{
           from: 'topicTrends',
           to: 'trendPage'
+        }],
+        leftFromToList: [{
+          from: 'originalArticle',
+          to: 'articleDetail'
         }]
       }
     },
@@ -34,10 +40,16 @@
         if (this.slideRightList.indexOf(from.name) != -1) {
           this.slideDirection = 'outter-slide-right';
         }
-        for (let i = 0; i < this.fromToList.length; i++) {
-          const route = this.fromToList[i];
+        for (let i = 0; i < this.rightFromToList.length; i++) {
+          const route = this.rightFromToList[i];
           if (from.name == route.from && to.name == route.to) {
             this.slideDirection = 'outter-slide-right';
+          }
+        }
+        for (let i = 0; i < this.leftFromToList.length; i++) {
+          const route = this.leftFromToList[i];
+          if (from.name == route.from && to.name == route.to) {
+            this.slideDirection = 'outter-slide-left';
           }
         }
         if (from.path == '/') {

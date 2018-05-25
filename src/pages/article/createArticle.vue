@@ -229,6 +229,7 @@
           this.showLoading = false;
           if (!result.data.errno) {
             this.hintText = result.data.text;
+            this.$store.dispatch('user/retrieveUserInfo');
             setTimeout(() => {
               this.$router.go(-1);
             }, 1500);

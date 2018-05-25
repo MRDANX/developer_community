@@ -38,8 +38,16 @@
       </p>
     </div>
     <div class="edit-action" v-else>
-      <img src="/static/images/common/edit.svg" alt="">
-      <img src="/static/images/common/delete-red.svg" alt="">
+      <div class="action">
+        <img src="/static/images/common/edit.svg" alt="">
+      </div>
+      <div class="action">
+        <div class="delete" :class="{'delete-confirm':showDeleteConfirm}">
+          <img src="/static/images/common/cancel.svg" alt="" @click="showDeleteConfirm=false">
+          <img src="/static/images/common/confirm.svg" alt="" @click="confirmDelete">
+        </div>
+        <img src="/static/images/common/delete-red.svg" alt="" @click="showDeleteConfirm=!showDeleteConfirm">
+      </div>
     </div>
   </li>
 </template>
@@ -62,7 +70,8 @@
     },
     data() {
       return {
-        favorLock: false
+        favorLock: false,
+        showDeleteConfirm: false
       }
     },
     computed: {
@@ -103,6 +112,10 @@
             console.log(err);
           });
         }
+      },
+      confirmDelete() {
+        this.showDeleteConfirm = false;
+        this.$emit('deleteArticle');
       }
     },
     filters: {
@@ -212,13 +225,33 @@
       box-sizing: border-box;
       height: 10vw;
       border-top: 1px dashed #CCCCCC;
-      transition: all .1s;
-      transform: scale(1);
-      img{
+      .action {
         height: 100%;
+        position: relative;
         margin-right: 5vw;
-        &:active{
-          transform: scale(0.85);
+        .delete {
+          width: 200%;
+          height: 80%;
+          position: absolute;
+          top: -90%;
+          left: -50%;
+          display: flex;
+          justify-content: space-between;
+          transition: all .3s;
+          transform: scale(0);
+          &.delete-confirm {
+            transform: scale(1);
+          }
+          img {
+            height: 100%;
+            margin: 0;
+          }
+        }
+        img {
+          height: 100%;
+          &:active {
+            transform: scale(0.85);
+          }
         }
       }
     }

@@ -570,6 +570,45 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         });
       });
 
+      //router for deleting users article
+      app.post('/deleteArticle', (req, res) => {
+        let {
+          articleID,
+          userID,
+          password
+        } = req.body;
+        let validateSql = 'SELECT COUNT(*) AS exist FROM user WHERE userID=? AND password=?',
+          validateInserts = [userID, password],
+          deleteSql = 'DELETE FROM article WHERE articleID=?',
+          deleteInserts = [articleID];
+        new Promise((resolve, reject) => {
+          connection.query(validateSql, validateInserts, (err, result) => {
+            if (err) reject(err);
+            resolve(result[0]);
+          })
+        }).then(result => {
+          if (result.exist) {
+            connection.query(deleteSql, deleteInserts, (err, result) => {
+              if (err) throw err;
+              if (result.affectedRows == 1) {
+                res.json({
+                  err: null,
+                  text: '删除文章成功'
+                });
+              } else {
+                res.json({
+                  err: 1,
+                  text: '删除文章失败'
+                });
+              }
+            })
+          }
+        }).catch(err => {
+          console.log(err);
+
+        })
+      });
+
       //router for publishing comment of a trend
       app.post('/publishTrendComment', (req, res) => {
         let data = req.body,
