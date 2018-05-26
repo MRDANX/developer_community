@@ -1,75 +1,87 @@
 <template>
-	<div class="create-article">
-		<transition name="switch-header" mode="out-in">
-			<div class="article-header" v-if="headerIndex==0" @click="switchHeader($event)" key="header">
-				<i class="fa fa-chevron-left" @click="$router.go(-1)" ref="goBack"></i>
-				<span>编写文章</span>
-				<div class="submit" ref="submit" @click="publishArticle">发布</div>
+  <div class="create-article">
+    <transition name="switch-header" mode="out-in">
+      <div class="article-header" v-if="headerIndex==0" @click="switchHeader($event)" key="header">
+        <i class="fa fa-chevron-left" @click="$router.go(-1)" ref="goBack"></i>
+        <span>编写文章</span>
+        <div class="submit" ref="submit" @click="publishArticle">发布</div>
         <span class="action-hint" v-if="!clickTime">双击切换至状态栏</span>
-			</div>
-			<div class="article-status" v-else-if="headerIndex==1" @click="switchHeader" key="status">
-				<span class="show-title">{{title||'请输入文章标题'}}</span>
+      </div>
+      <div class="article-status" v-else-if="headerIndex==1" @click="switchHeader" key="status">
+        <span class="show-title">{{title||'请输入文章标题'}}</span>
         <span class="show-inputed">当前已输入字数：{{contentLength}}</span>
-			</div>
-			<div class="pulldown-bar" v-else-if="headerIndex==2" @click="headerIndex=0" key="pulldownBar">
-				<i class="fa fa-bullseye" ref="pulldown"></i>
-			</div>
-		</transition>
-		<form class="article-form" :class="{'clear-margin-top':headerIndex==2,'clear-half-margin-top':headerIndex==1}">
-			<div class="article-title">
-				<input type="text" placeholder="请输入文章标题" v-model="title" onfocus="this.placeholder=''" onblur="this.placeholder='请输入文章标题'" />
-			</div>
+      </div>
+      <div class="pulldown-bar" v-else-if="headerIndex==2" @click="headerIndex=0" key="pulldownBar">
+        <i class="fa fa-bullseye" ref="pulldown"></i>
+      </div>
+    </transition>
+    <form class="article-form" :class="{'clear-margin-top':headerIndex==2,'clear-half-margin-top':headerIndex==1}">
+      <div class="article-title">
+        <input type="text" placeholder="请输入文章标题" v-model="title" onfocus="this.placeholder=''" onblur="this.placeholder='请输入文章标题'"
+        />
+      </div>
       <div class="article-cover">
         <div class="cover-upload">
           <span>封面(可选):</span>
-          <i class="fa fa-picture-o" ></i>
-          <input type="file" ref="coverUpload" @change="uploadCover($event.target)" accept="image/jpeg,image/jpg,image/png"/>
+          <i class="fa fa-picture-o"></i>
+          <input type="file" ref="coverUpload" @change="uploadCover($event.target)" accept="image/jpeg,image/jpg,image/png" />
         </div>
         <div class="cover-show" v-if="cover">
           <img :src="cover" alt="">
           <i class="fa fa-close" @click="cover=''"></i>
         </div>
       </div>
-			<div class="article-subject">
+      <div class="article-subject">
         <div class="subject-head" @click="showSubjectList=!showSubjectList">
-				  <span class="select-hint">选择分类: </span>
+          <span class="select-hint">选择分类: </span>
           <span class="selected-subject">{{selectedSubject}}</span>
           <i class="fa" v-if="selectedSubject" :class="[showSubjectList?'fa-caret-up':'fa-caret-down']"></i>
         </div>
-				<div class="subject-group" :class="{selected:selectedSubject!='',reselect:showSubjectList}">
+        <div class="subject-group" :class="{selected:selectedSubject!='',reselect:showSubjectList}">
           <label class="subject" v-for="(subject,index) in subjectList" :key="index" @click="selectCurrentSubject(subject)" :class="{checked:selectedSubject==subject}">{{subject}}</label>
         </div>
-			</div>
-			<div class="article-tags">
+      </div>
+      <div class="article-tags">
         <div class="tags-show">
-				  <span>标签:</span>
+          <span>标签:</span>
           <div class="add-tag" :class="{'adding-tag':addingTag}" key="addingTag">
             <input type="text" @focus="addingTag=true" @blur="addTag" v-model="addingTagText" @keyup.enter="addTag" ref="addingTag">
             <i class="fa fa-plus"></i>
           </div>
         </div>
         <transition-group name="fluent" tag="div" class="tags-wrapper">
-          <tag v-for="(tag,index) in tags" :key="tag" :tagText="tag" @deleteTag="tags.splice(index,1)" :deletable="true" :focusable="true" />
+          <tag v-for="(tag,index) in tags" :key="tag" :tagText="tag" @deleteTag="tags.splice(index,1)" :deletable="true" :focusable="true"
+          />
         </transition-group>
-			</div>
-			<quill-editor v-model="content" :options="editorOptions" class="article-editor" ref="quillEditor"/>
-		</form>
+      </div>
+      <quill-editor v-model="content" :options="editorOptions" class="article-editor" ref="quillEditor" />
+    </form>
     <hint v-model="hintText" />
-    <loading v-if="showLoading" :verticalMove="5"/>
-	</div>
+    <loading v-if="showLoading" :verticalMove="5" />
+  </div>
 </template>
 
 <script>
   import 'quill/dist/quill.core.css';
   import 'quill/dist/quill.snow.css';
   import 'quill/dist/quill.bubble.css';
-  import { quillEditor } from 'vue-quill-editor';
-  import { mapState } from "vuex";
+  import {
+    quillEditor
+  } from 'vue-quill-editor';
+  import {
+    mapState
+  } from "vuex";
   import tag from '@/components/common/tag';
   import hint from '@/components/common/hint';
   import loading from '@/components/common/loading';
   export default {
     name: 'createArticle',
+    props: {
+      edit: {
+        type: String,
+        default: false
+      }
+    },
     data() {
       return {
         editorOptions: {
@@ -77,14 +89,38 @@
           modules: {
             toolbar: [
               ['bold', 'italic', 'underline', 'strike'],
-              [{ 'header': 1 }, { 'header': 2 }],
+              [{
+                'header': 1
+              }, {
+                'header': 2
+              }],
               ['blockquote', 'code-block'],
-              [{ 'color': [] }, 'image'],
+              [{
+                'color': []
+              }, 'image'],
               ['clean'],
-              [{ 'align': '' }, { 'align': 'right' }, { 'align': 'center' }, { 'align': 'justify' }],
-              [{ 'indent': '-1' }, { 'indent': '+1' }],
-              [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-              [{ 'size': ['small', false, 'large', 'huge'] }],
+              [{
+                'align': ''
+              }, {
+                'align': 'right'
+              }, {
+                'align': 'center'
+              }, {
+                'align': 'justify'
+              }],
+              [{
+                'indent': '-1'
+              }, {
+                'indent': '+1'
+              }],
+              [{
+                'list': 'ordered'
+              }, {
+                'list': 'bullet'
+              }],
+              [{
+                'size': ['small', false, 'large', 'huge']
+              }],
             ]
           }
         },
@@ -105,13 +141,18 @@
     },
     created() {
       this.$store.dispatch('user/checkUserInfo');
+      if (new Boolean(this.edit) === true) {
+        console.log('edit');
+      }
     },
     mounted() {
       let submitButton = this.$refs.submit;
       this.$activeFeedback(submitButton);
       //check out whether user has login
       if (!this.userInfo.userID) {
-        this.$router.push({ path: '/setting' })
+        this.$router.push({
+          path: '/setting'
+        })
       }
     },
     updated() {
@@ -260,6 +301,7 @@
       quillEditor
     }
   }
+
 </script>
 
 <style lang="less" scoped>
@@ -593,4 +635,5 @@
       opacity: 0;
     }
   }
+
 </style>

@@ -39,7 +39,7 @@
     </div>
     <div class="edit-action" v-else>
       <div class="action">
-        <img src="/static/images/common/edit.svg" alt="">
+        <img src="/static/images/common/edit.svg" alt="" @click="goEdit">
       </div>
       <div class="action">
         <div class="delete" :class="{'delete-confirm':showDeleteConfirm}">
@@ -116,6 +116,9 @@
       confirmDelete() {
         this.showDeleteConfirm = false;
         this.$emit('deleteArticle');
+      },
+      goEdit(){
+        this.$router.push({path:'/createArticle',query:{edit:true}})
       }
     },
     filters: {
@@ -237,10 +240,11 @@
           left: -50%;
           display: flex;
           justify-content: space-between;
-          transition: all .3s;
-          transform: scale(0);
+          transition: all .5s;
+          transform-origin: 50% 180%;
+          transform: rotate(180deg) scale(0);
           &.delete-confirm {
-            transform: scale(1);
+            transform: rotate(0deg) scale(1);
           }
           img {
             height: 100%;

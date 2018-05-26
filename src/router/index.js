@@ -116,7 +116,10 @@ export default new Router({
     {
       path: '/createArticle',
       name: 'createArticle',
-      component: createArticle
+      component: createArticle,
+      props: route => ({
+        edit: route.query.edit
+      })
     },
     {
       path: '/createTrend',
