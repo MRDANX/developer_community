@@ -117,8 +117,14 @@
         this.showDeleteConfirm = false;
         this.$emit('deleteArticle');
       },
-      goEdit(){
-        this.$router.push({path:'/createArticle',query:{edit:true}})
+      goEdit() {
+        this.$router.push({
+          path: '/createArticle',
+          query: {
+            edit: true,
+            articleID: this.articleInfo.articleID
+          }
+        })
       }
     },
     filters: {

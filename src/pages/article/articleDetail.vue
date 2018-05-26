@@ -6,8 +6,8 @@
       <i class="fa fa-ellipsis-v"></i>
     </div>
     <transition name="fade-in">
-      <div class="content-wrapper" v-if="articleInfo.articleID" key="article">
-        <div class="main-body-wrapper">
+      <div class="content-wrapper" v-if="articleInfo.articleID" key="article" ref="contentWrapper">
+        <div class="main-body-wrapper" ref="mainBody">
           <div class="cover" v-if="articleInfo.cover">
             <img :src="articleInfo.cover" alt="">
           </div>
@@ -79,7 +79,7 @@
       </div>
       <p class="meta">
         <span>喜欢 {{articleInfo.favors}}</span> •
-        <span>评论 {{articleInfo.commentNum}}</span>
+        <span @click="scrollToComment">评论 {{articleInfo.commentNum}}</span>
       </p>
     </div>
     <hint v-model="hintText" />
@@ -183,7 +183,7 @@
       getArticleInfo() {
         this.$axios({
           method: 'get',
-          url: '/getSpecifiedArticle',
+          url: '/api/getSpecifiedArticle',
           params: {
             articleID: this.articleID
           }
@@ -199,7 +199,7 @@
         this.loadingComment = true;
         this.$axios({
           method: 'get',
-          url: '/getArticleComment',
+          url: '/api/getArticleComment',
           params: {
             articleID: this.articleID,
             startIndex: this.comments.length,
@@ -227,7 +227,7 @@
           let qs = require('qs');
           this.$axios({
             method: 'post',
-            url: '/increaseArticlePV',
+            url: '/api/increaseArticlePV',
             data: qs.stringify({
               articleID: this.articleID
             })
@@ -271,7 +271,7 @@
         //post a publish comment request
         this.$axios({
           method: 'post',
-          url: '/publishComment',
+          url: '/api/publishComment',
           data: qs.stringify({
             userID,
             articleID,
@@ -280,7 +280,8 @@
         }).then(result => {
           if (!result.data.errno) {
             this.getArticleComment();
-            this.getArticleInfo();
+            this.scrollToBottom();
+            // this.getArticleInfo();
           } else {
             console.log(result.data);
           }
@@ -345,6 +346,32 @@
             clearInterval(toTopTimer);
           }
         }, 20)
+      },
+      scrollToBottom() {
+        let scrollTop = document.documentElement.scrollTop || document.body.scrollTop,
+          contentWrapper = this.$refs.contentWrapper,
+          bottom = contentWrapper.scrollHeight;
+        console.log(scrollTop, bottom);
+        let toBottomTimer = setInterval(() => {
+          scrollTop += 50;
+          window.scrollTo(0, scrollTop);
+          if (scrollTop >= bottom) {
+            clearInterval(toBottomTimer);
+          }
+        }, 20);
+      },
+      scrollToComment() {
+        let scrollTop = document.documentElement.scrollTop || document.body.scrollTop,
+          comments = this.$refs.comments,
+          bottom = comments.offsetTop;
+        console.log(scrollTop, bottom);
+        let toCommentTimer = setInterval(() => {
+          scrollTop += 50;
+          window.scrollTo(0, scrollTop);
+          if (scrollTop >= bottom-100) {
+            clearInterval(toCommentTimer);
+          }
+        }, 20);
       }
     },
     filters: {

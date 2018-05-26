@@ -110,7 +110,7 @@
         if (this.trendID) {
           this.$axios({
             method: 'get',
-            url: '/getSpecifiedTrend',
+            url: '/api/getSpecifiedTrend',
             params: {
               trendID: this.trendID
             }
@@ -124,7 +124,7 @@
           this.loadingComment = true;
           this.$axios({
             method: 'get',
-            url: '/getTrendComment',
+            url: '/api/getTrendComment',
             params: {
               trendID: this.trendID
             }
@@ -178,7 +178,7 @@
         //post a publish comment request
         this.$axios({
           method: 'post',
-          url: '/publishTrendComment',
+          url: '/api/publishTrendComment',
           data: qs.stringify({
             userID,
             trendID,

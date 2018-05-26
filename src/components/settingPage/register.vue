@@ -90,7 +90,7 @@
           this.registerLock = true;
           this.$axios({
             method: 'post',
-            url: '/requestRegister',
+            url: '/api/requestRegister',
             data: qs.stringify({
               avatar,
               phone,
@@ -145,7 +145,7 @@
         }
         this.$axios({
           method: 'get',
-          url: '/checkUserInfoDuplicate',
+          url: '/api/checkUserInfoDuplicate',
           params: {
             type,
             field

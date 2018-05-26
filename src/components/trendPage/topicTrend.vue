@@ -50,7 +50,7 @@
       getTopicList() {
         this.$axios({
           method: 'get',
-          url: '/getTrendTopic'
+          url: '/api/getTrendTopic'
         }).then(result => {
           this.topics = result.data;
         })

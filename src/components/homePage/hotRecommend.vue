@@ -61,7 +61,7 @@
     methods: {
       getRecommendArticles() {
         return new Promise((resolve, reject) => {
-          this.$axios.get('/getArticleList', {
+          this.$axios.get('/api/getArticleList', {
             params: {
               subject: this.subject,
               startIndex: this.recommendArticles.length,
@@ -132,7 +132,7 @@
         const articleID = this.recommendArticles[index].articleID;
         this.$axios({
           method: 'get',
-          url: '/getSpecifiedArticle',
+          url: '/api/getSpecifiedArticle',
           params: {
             articleID
           }

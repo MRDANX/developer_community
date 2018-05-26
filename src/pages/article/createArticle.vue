@@ -3,13 +3,13 @@
     <transition name="switch-header" mode="out-in">
       <div class="article-header" v-if="headerIndex==0" @click="switchHeader($event)" key="header">
         <i class="fa fa-chevron-left" @click="$router.go(-1)" ref="goBack"></i>
-        <span>编写文章</span>
+        <span>{{this.edit?'编辑文章':'编写文章'}}</span>
         <div class="submit" ref="submit" @click="publishArticle">发布</div>
         <span class="action-hint" v-if="!clickTime">双击切换至状态栏</span>
       </div>
       <div class="article-status" v-else-if="headerIndex==1" @click="switchHeader" key="status">
         <span class="show-title">{{title||'请输入文章标题'}}</span>
-        <span class="show-inputed">当前已输入字数：{{contentLength}}</span>
+        <span class="show-inputed">已输入字数：{{contentLength}}</span>
       </div>
       <div class="pulldown-bar" v-else-if="headerIndex==2" @click="headerIndex=0" key="pulldownBar">
         <i class="fa fa-bullseye" ref="pulldown"></i>
@@ -64,7 +64,7 @@
 <script>
   import 'quill/dist/quill.core.css';
   import 'quill/dist/quill.snow.css';
-  import 'quill/dist/quill.bubble.css';
+  // import 'quill/dist/quill.bubble.css';
   import {
     quillEditor
   } from 'vue-quill-editor';
@@ -78,7 +78,11 @@
     name: 'createArticle',
     props: {
       edit: {
-        type: String,
+        type: Boolean,
+        default: false
+      },
+      articleID: {
+        type: Number,
         default: false
       }
     },
@@ -136,13 +140,66 @@
         subjectList: ['前端', 'Android', '人工智能', 'iOS', '产品', '设计', '工具资源', '阅读', '后端'],
         showSubjectList: false,
         addingTag: false,
-        addingTagText: ''
+        addingTagText: '',
+        editingArticleInfo: {}
       }
     },
     created() {
       this.$store.dispatch('user/checkUserInfo');
-      if (new Boolean(this.edit) === true) {
-        console.log('edit');
+    },
+    async activated() {
+      let authorID;
+      if (this.edit === true) {
+        this.showLoading = true;
+        await this.$axios({
+          method: 'get',
+          url: "/api/getArticleAuthorID",
+          params: {
+            articleID: this.articleID
+          }
+        }).then(result => {
+          let response = result.data;
+          this.showLoading = false;
+          if (response.status == 200) {
+            authorID = response.authorID;
+          } else if (response.status == 404) {
+            this.hintText = '未找到该文章，请再次确认!';
+            console.log(response.text);
+          } else {
+            this.hintText = '服务器内部出错，请联系管理员!';
+            console.log('something went wrong when got data from server');
+          }
+        });
+        //check whether the current logged in user is the author of the editing article
+        if (authorID != this.userInfo.userID) {
+          console.log('this is not your article');
+          return this.$router.replace('/subject');
+        }
+        this.showLoading = true;
+        this.$axios({
+          method: 'get',
+          url: '/api/editArticle',
+          params: {
+            articleID: this.articleID
+          }
+        }).then(result => {
+          this.showLoading = false;
+          let response = result.data;
+          if (response.status == 200) {
+            let articleInfo = response.articleInfo;
+            this.title = articleInfo.title;
+            this.content = articleInfo.content;
+            this.cover = articleInfo.cover;
+            this.tags = articleInfo.tags.split(',');
+            this.selectedSubject = articleInfo.subject;
+          } else if (response.status == 404) {
+            this.hintText = '未找到该文章，请再次确认!';
+            console.log(response.text);
+          } else {
+            this.hintText = '服务器内部出错，请联系管理员!';
+            console.log('something went wrong when got data from server');
+          }
+        })
       }
     },
     mounted() {
@@ -192,7 +249,7 @@
     },
     deactivated() {
       setTimeout(() => {
-        this.resetInput();
+        this.resetData();
       }, 500);
     },
     methods: {
@@ -255,31 +312,64 @@
         }
         let qs = require('qs');
         this.showLoading = true;
-        this.$axios({
-          method: 'post',
-          url: '/createUserArticle',
-          data: qs.stringify({
-            userID: this.userInfo.userID,
-            title: this.title,
-            cover: this.cover,
-            subject: this.selectedSubject,
-            tags: this.tags.toString(),
-            content: this.content
-          })
-        }).then(result => {
-          this.showLoading = false;
-          if (!result.data.errno) {
-            this.hintText = result.data.text;
-            this.$store.dispatch('user/retrieveUserInfo');
-            setTimeout(() => {
-              this.$router.go(-1);
-            }, 1500);
-          } else if (result.data.errno == 1) {
-            this.hintText = result.data.text;
-          }
-        })
+        if (this.edit) {
+          //post edited article
+          this.$axios({
+            method: 'post',
+            url: '/api/editArticle',
+            data: qs.stringify({
+              articleID: this.articleID,
+              title: this.title,
+              cover: this.cover,
+              subject: this.selectedSubject,
+              tags: this.tags.toString(),
+              content: this.content
+            })
+          }).then(result => {
+            let response = result.data;
+            this.showLoading = false;
+            if (response.status == 200) {
+              this.hintText = response.text;
+              setTimeout(() => {
+                this.$router.go(-1);
+              }, 1500);
+            } else if (response.status == 500) {
+              this.hintText = '修改文章失败，请重新尝试!';
+              console.log(response.text);
+            } else {
+              this.hintText = '服务器内部出错，请联系管理员!';
+              console.log('something went wrong when got data from server');
+            }
+          });
+        } else {
+          //post original article
+          this.$axios({
+            method: 'post',
+            url: '/api/createUserArticle',
+            data: qs.stringify({
+              userID: this.userInfo.userID,
+              title: this.title,
+              cover: this.cover,
+              subject: this.selectedSubject,
+              tags: this.tags.toString(),
+              content: this.content
+            })
+          }).then(result => {
+            this.showLoading = false;
+            if (!result.data.errno) {
+              this.hintText = result.data.text;
+              this.$store.dispatch('user/retrieveUserInfo');
+              setTimeout(() => {
+                this.$router.go(-1);
+              }, 1500);
+            } else if (result.data.errno == 1) {
+              this.hintText = result.data.text;
+            }
+          });
+        }
+
       },
-      resetInput() {
+      resetData() {
         this.title = '';
         this.cover = '';
         this.content = '';
@@ -404,7 +494,7 @@
       font-size: 4vw;
       .show-title {
         flex-grow: 1;
-        max-width: 50vw;
+        max-width: 60vw;
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;

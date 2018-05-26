@@ -69,7 +69,7 @@
         //request login
         this.$axios({
           method: 'post',
-          url: '/requestLogin',
+          url: '/api/requestLogin',
           data: qs.stringify({
             tokenType,
             userToken,

@@ -5,7 +5,7 @@
         <li v-if="userInfo.followee.length==0" class="none-followee">
           <span>你还没有关注任何用户哦!</span>
         </li>
-        <li v-if="trendList.length==0" class="none-trend">
+        <li v-else class="none-trend">
           <span>你关注的用户还没发表任何动态哦!</span>
         </li>
         <trend v-for="(trend,index) in trendList" :key="index" :trend="trend" ref="trends" @updateCurrentTrend="updateSpecifiedTrend(index)"
@@ -48,7 +48,7 @@
       this.showLoading = true;
       this.$axios({
         method: 'get',
-        url: '/getUsersTrend',
+        url: '/api/getUsersTrend',
         params: {
           followerUserID: this.userInfo.userID
         }
@@ -66,7 +66,7 @@
         const trendID = this.trendList[index].trendID;
         this.$axios({
           method: 'get',
-          url: '/getSpecifiedTrend',
+          url: '/api/getSpecifiedTrend',
           params: {
             trendID
           }
@@ -110,7 +110,7 @@
         }
       }
       .none-trend {
-        background-image: url("/static/images/common/none-trend.svg");
+        background-image: url("/static/images/common/none-data.svg");
       }
     }
     .ask-for-login {

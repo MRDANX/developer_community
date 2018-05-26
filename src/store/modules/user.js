@@ -48,7 +48,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       axios({
         method: 'post',
-        url: '/modifyUserInfo',
+        url: '/api/modifyUserInfo',
         data: qs.stringify({
           userID: state.userInfo.userID,
           modifyType,
@@ -72,7 +72,7 @@ const actions = {
         password = userInfo.password;
       axios({
         method: 'post',
-        url: '/requestLogin',
+        url: '/api/requestLogin',
         data: qs.stringify({
           tokenType: 'phone',
           userToken,
@@ -101,7 +101,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       axios({
         method: 'post',
-        url: '/toggleArticleFavor',
+        url: '/api/toggleArticleFavor',
         data: qs.stringify({
           userID,
           articleID,
@@ -124,7 +124,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       axios({
         method: 'post',
-        url: '/toggleTrendFavor',
+        url: '/api/toggleTrendFavor',
         data: qs.stringify({
           userID,
           trendID,
@@ -146,7 +146,7 @@ const actions = {
     return new Promise((resolve,reject)=>{
       axios({
         method: 'post',
-        url: '/toggleUserFollow',
+        url: '/api/toggleUserFollow',
         data: qs.stringify({
           userID,
           followeeUserID,

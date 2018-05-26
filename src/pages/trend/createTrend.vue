@@ -116,7 +116,7 @@
         this.showLoading = true;
         this.$axios({
           method: 'post',
-          url: '/createUserTrend',
+          url: '/api/createUserTrend',
           data: qs.stringify({
             userID,
             content,

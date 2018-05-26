@@ -47,7 +47,7 @@
       this.showLoading = true;
       this.$axios({
         method: 'get',
-        url: '/getTrendList',
+        url: '/api/getTrendList',
         params: {
           startIndex: 0,
           number: 5
@@ -58,7 +58,7 @@
       });
       this.$axios({
         method: 'get',
-        url: '/getTrendList',
+        url: '/api/getTrendList',
         params: {
           startIndex: this.slideTrend.length,
           number: 5,
@@ -73,7 +73,7 @@
         return new Promise((resolve, reject) => {
           this.$axios({
             method: 'get',
-            url: '/getTrendList',
+            url: '/api/getTrendList',
             params: {
               startIndex: this.trendList.length,
               number: 5
@@ -94,7 +94,7 @@
         const trendID = this.trendList[index].trendID;
         this.$axios({
           method: 'get',
-          url: '/getSpecifiedTrend',
+          url: '/api/getSpecifiedTrend',
           params: {
             trendID
           }

@@ -39,7 +39,7 @@
       getTrendList() {
         this.$axios({
           method: 'get',
-          url: '/getTrendByTopic',
+          url: '/api/getTrendByTopic',
           params: {
             topic: this.topic
           }
@@ -51,7 +51,7 @@
         const trendID = this.trendList[index].trendID;
         this.$axios({
           method: 'get',
-          url: '/getSpecifiedTrend',
+          url: '/api/getSpecifiedTrend',
           params: {
             trendID
           }

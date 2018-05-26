@@ -37,7 +37,7 @@
       //return a promise which excute asychronized action to refresh data
       refresh() {
         return new Promise((resolve, reject) => {
-          this.$axios.get('/getArticleList', {
+          this.$axios.get('/api/getArticleList', {
             params: {
               subject: this.subject,
               startIndex: 0,
@@ -78,7 +78,7 @@
       //return a promise which excute asychronized action to load more data
       loadMore() {
         return new Promise((resolve, reject) => {
-          this.$axios.get('/getArticleList', {
+          this.$axios.get('/api/getArticleList', {
             params: {
               subject: this.subject,
               startIndex: this.articleList.length,
@@ -110,7 +110,7 @@
         const articleID = this.articleList[index].articleID;
         this.$axios({
           method: 'get',
-          url: '/getSpecifiedArticle',
+          url: '/api/getSpecifiedArticle',
           params: {
             articleID
           }

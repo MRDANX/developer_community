@@ -76,7 +76,7 @@
     },
     beforeMount() {
       // setTimeout(() => {
-      this.$axios.get('/getArticleList', {
+      this.$axios.get('/api/getArticleList', {
         params: {
           subject: 'index',
           startIndex: this.articleList.length,
@@ -117,7 +117,7 @@
     methods: {
       loadMore() {
         return new Promise((resolve, reject) => {
-          this.$axios.get('/getArticleList', {
+          this.$axios.get('/api/getArticleList', {
             params: {
               subject: 'index',
               startIndex: this.articleList.length,

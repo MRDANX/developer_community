@@ -229,7 +229,7 @@
         this.showLoading = true;
         this.$axios({
           method: 'get',
-          url: '/searchForSimple',
+          url: '/api/searchForSimple',
           params: {
             searchText: this.searchText
           }
@@ -243,7 +243,7 @@
         this.showLoading = true;
         this.$axios({
           method: 'get',
-          url: '/searchForDetailed',
+          url: '/api/searchForDetailed',
           params: {
             searchText: this.searchText,
             articleOrderBy: this.currentOrderBy
@@ -258,7 +258,7 @@
         return new Promise((resolve, reject) => {
           this.$axios({
             method: 'get',
-            url: '/searchForMoreDetailedArticle',
+            url: '/api/searchForMoreDetailedArticle',
             params: {
               searchText: this.searchText,
               articleOrderBy: this.currentOrderBy,

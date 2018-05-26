@@ -118,7 +118,8 @@ export default new Router({
       name: 'createArticle',
       component: createArticle,
       props: route => ({
-        edit: route.query.edit
+        edit: route.query.edit && JSON.parse(route.query.edit),
+        articleID: route.query.articleID && +route.query.articleID || NaN
       })
     },
     {

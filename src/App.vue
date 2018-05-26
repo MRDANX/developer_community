@@ -22,6 +22,9 @@
         leftFromToList: [{
           from: 'originalArticle',
           to: 'articleDetail'
+        },{
+          from:'originalArticle',
+          to:'createArticle'
         }]
       }
     },
