@@ -3,15 +3,15 @@
     <div class="searchBar" :class="{searching:isSearching}">
       <i class="fa fa-angle-left" ref="goBack" @click="goBack"></i>
       <div class="search-box">
-        <input type="text" @focus="isSearching=true" v-model="searchText" @keyup.enter="searchButtonPressed=true"/>
+        <input type="text" @focus="isSearching=true" v-model="searchText" @keyup.enter="searchButtonPressed=true" />
         <i class="fa fa-search" ref="searchButton" @click="searchButtonPressed=true"></i>
       </div>
     </div>
     <div class="content" :class="{searching:isSearching}">
-      <transition :name="isSearching?'slide-down':'slide-up'" >
-        <keep-alive exclude="searchingContent">
-          <component :is="isSearching?'searchingContent':'searchContent'" v-model="searchText" :searchButtonPressed="searchButtonPressed" @setSearchButton="searchButtonPressed=$event" 
-          @focusSearch="isSearching=true"/>
+      <transition :name="isSearching?'slide-down':'slide-up'">
+        <keep-alive>
+          <component :is="isSearching?'searchingContent':'searchContent'" v-model="searchText" :searchButtonPressed="searchButtonPressed"
+            @setSearchButton="searchButtonPressed=$event" @focusSearch="isSearching=true" />
         </keep-alive>
       </transition>
     </div>
@@ -27,22 +27,24 @@
       return {
         searchText: '',
         isSearching: false,
-        searchButtonPressed:false,
+        searchButtonPressed: false,
         slideDirection: 'slide-down'
       }
     },
     deactivated() {
-      this.searchText='';
-      this.isSearching = false;
+      // this.searchText='';
+      // this.isSearching = false;
     },
     mounted() {
       this.$activeFeedback(this.$refs.goBack);
       this.$activeFeedback(this.$refs.searchButton);
     },
-    methods:{
-      goBack(){
-        this.isSearching = false;
-        this.searchText='';
+    methods: {
+      goBack() {
+        this.searchText = '';
+        this.$nextTick(() => {
+          this.isSearching = false;
+        });
       }
     },
     components: {
@@ -50,6 +52,7 @@
       searchingContent
     }
   }
+
 </script>
 
 <style lang="less" scoped>
@@ -188,4 +191,5 @@
       position: relative;
     }
   }
+
 </style>

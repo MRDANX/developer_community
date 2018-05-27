@@ -4,7 +4,7 @@
     <transition :name="slideToDirection" class="wrapper">
       <div :class="['slide-out',slideToDirection]" v-if="value" key="content">
         <div :class="['slide-out-header',slideToDirection]" v-if="title">
-          <i :class="['fa',directionIcon]" @touchstart="touchstart" @touchend="touchend" ref="goBackButton"></i>
+          <i :class="['fa',directionIcon]" @touchstart="touchstart" @touchend="touchend" ref="goBackButton" @click="$emit('input',false);"></i>
           <span v-if="title">{{title}}</span>
         </div>
         <slot></slot>
