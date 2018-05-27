@@ -22,8 +22,6 @@
 <script>
   import register from "@/components/settingPage/register";
   import textInput from "@/components/common/textInput";
-  import hint from "@/components/common/hint";
-  import loading from "@/components/common/loading";
   import slideOut from "@/components/common/slideOut";
   import scroll from "@/components/common/scroll";
   export default {
@@ -95,12 +93,10 @@
       }
     },
     components: {
-      hint,
       scroll,
       slideOut,
       register,
       textInput,
-      loading
     }
   }
 

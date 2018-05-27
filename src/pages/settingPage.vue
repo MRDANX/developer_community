@@ -24,7 +24,7 @@
               <i class="fa fa-bell" style="color:#0076FE"></i>
               <span class="text">消息中心</span>
             </li>
-            <li>
+            <li @click="goto('/myFavoriteArticle')">
               <i class="fa fa-heart" style="color:#6CBD45"></i>
               <span class="text">我喜欢的文章</span>
               <span>{{userInfo.favoriteArticle&&userInfo.favoriteArticle.length||'0'}} 篇</span>
@@ -54,7 +54,7 @@
         <li class="others">
           <ul>
             <li ref="feedback">
-              <i class="fa fa-telegram"></i>
+              <i class="fa  service"></i>
               <span>意见反馈</span>
             </li>
             <li ref="setting" @click="showOtherSetting=true">
@@ -73,7 +73,7 @@
         <setting />
       </scroll>
     </slide-out>
-    <hint v-model="hintText"/>
+    <hint v-model="hintText" />
   </div>
 </template>
 
@@ -82,7 +82,6 @@
     mapState
   } from "vuex";
   import scroll from "@/components/common/scroll";
-  import hint from "@/components/common/hint";
   import slideOut from "@/components/common/slideOut";
   import login from "@/components/settingPage/login";
   import userInfo from "@/components/settingPage/userInfo";
@@ -93,7 +92,7 @@
       return {
         showUserOrLogin: false,
         showOtherSetting: false,
-        hintText:''
+        hintText: ''
       };
     },
     computed: {
@@ -118,11 +117,10 @@
           this.hintText = '请先登录';
           return;
         }
-        this.$router.push(path)
+        this.$router.push(path);
       }
     },
     components: {
-      hint,
       scroll,
       slideOut,
       login,
@@ -218,6 +216,11 @@
             font-size: 6vw;
             width: 6vw;
             margin-right: 5vw;
+            &.service {
+              background-image: url('/static/images/common/service.svg');
+              background-size: 100% 100%;
+              height: 6vw;
+            }
           }
           span {
             font-size: 4.5vw;

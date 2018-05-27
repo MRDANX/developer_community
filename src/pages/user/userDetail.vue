@@ -62,7 +62,6 @@
   import {
     mapState
   } from "vuex";
-  import hint from '@/components/common/hint';
   export default {
     name: 'userDetail',
     props: ['userID'],
@@ -91,7 +90,7 @@
     created() {
       this.$axios({
         method: 'get',
-        url: '/getUserDetail',
+        url: '/api/getUserDetail',
         params: {
           userID: this.userID
         }
@@ -121,9 +120,6 @@
           });
         }
       }
-    },
-    components:{
-      hint
     }
   }
 

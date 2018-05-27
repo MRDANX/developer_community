@@ -29,7 +29,7 @@
     </router-link>
     <div class="article-action" v-if="showAction">
       <p class="favor" :class="{isFavorite}" @click="toggleFavor">
-        <i class="fa fa-heart"></i>
+        <i class="fa fa-heart" :class="{favorite:isFavorite}" ref="favoriteIcon"></i>
         <span>{{articleInfo.favors||'点赞'}}</span>
       </p>
       <p class="comment">
@@ -131,6 +131,14 @@
       abstractContent(content) {
         return content.replace(/<\/?[^>]+>/g, '').slice(0, 100);;
       }
+    },
+    mounted() {
+      let favoriteIcon = this.$refs.favoriteIcon;
+      if (favoriteIcon) {
+        favoriteIcon.addEventListener('animationend', function () {
+          this.classList.remove('favorite');
+        })
+      }
     }
   };
 
@@ -141,7 +149,9 @@
   .article {
     width: 100%;
     padding: 3vw;
+    margin: 3vw 0;
     box-sizing: border-box;
+    background-color: #FFFFFF;
     .article-meta {
       display: flex;
       justify-content: space-between;
@@ -219,7 +229,7 @@
         }
       }
       .favor.isFavorite {
-        i.fa {
+        i.fa.favorite {
           animation: articleFavorite 1s forwards;
         }
         color: #0080FF;

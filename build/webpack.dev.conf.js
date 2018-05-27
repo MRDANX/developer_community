@@ -526,21 +526,19 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         let editingArticleSql = 'SELECT articleID,userID,title,cover,subject,tags,content FROM article WHERE articleID=?';
         let articleID = +req.query.articleID,
           inserts = [articleID];
-          console.log(articleID);
-          
         connection.query(editingArticleSql, inserts, (err, result) => {
           if (err) throw err;
           if (result.length == 1) {
             res.json({
               status: 200,
-              text:'Article Found',
+              text: 'Article Found',
               articleInfo: result[0]
             })
           } else {
             res.json({
-              status:404,
-              text:'Article Not Found',
-              articleInfo:null
+              status: 404,
+              text: 'Article Not Found',
+              articleInfo: null
             });
           }
         })
@@ -580,7 +578,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       //router for getting the specified article info
       app.get('/api/getSpecifiedArticle', (req, res) => {
         let getSpecifiedArticleSql = 'SELECT * FROM articleDetail WHERE articleID=?';
-        let articleID = req.query.articleID,
+        let articleID = +req.query.articleID,
           inserts = [articleID];
         connection.query(getSpecifiedArticleSql, inserts, (err, result) => {
           if (err) throw err;
@@ -588,13 +586,53 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         })
       });
 
+      //router for getting users favorite articles
+      app.get('/api/getMyFavoriteArticle', (req, res) => {
+        let getSql = 'SELECT * FROM articleDetail WHERE articleID IN (?) ORDER BY date DESC LIMIT ?,?',
+          articleIDList = JSON.parse(req.query.articleIDList),
+          startIndex = +req.query.startIndex || 0,
+          number = +req.query.number || 5,
+          inserts = [articleIDList, startIndex, number];
+        connection.query(getSql, inserts, (err, result) => {
+          if (err) throw err;
+          if (result.length >= 0) {
+            res.json({
+              status: 200,
+              text: 'Get Article List successful.',
+              articleList: result
+            });
+          } else {
+            res.json({
+              status: 500,
+              text: 'Internal server encounted.',
+              articleList: null
+            })
+          }
+        })
+      });
+
       //router for getting users original articles
       app.get('/api/getUserOriginalArticle', (req, res) => {
-        let userID = req.query.userID,
-          originalSql = 'SELECT * FROM articleDetail WHERE userID=? ORDER BY date DESC';
-        connection.query(originalSql, [userID], (err, result) => {
+        let userID = +req.query.userID,
+          startIndex = +req.query.startIndex || 0,
+          number = +req.query.number || 5,
+          originalSql = 'SELECT * FROM articleDetail WHERE userID=? ORDER BY date DESC LIMIT ?,?',
+          inserts = [userID, startIndex, number];
+        connection.query(originalSql, inserts, (err, result) => {
           if (err) throw err;
-          res.json(result);
+          if (result.length >= 0) {
+            res.json({
+              status: 200,
+              text: 'Get Original Article successful.',
+              articleList: result
+            });
+          } else {
+            res.json({
+              status: 500,
+              text: 'Internal server encounted.',
+              articleList: null
+            })
+          }
         })
       });
 
@@ -947,12 +985,12 @@ const devWebpackConfig = merge(baseWebpackConfig, {
             res.json({
               errno: null,
               text: '更新动态点赞表成功'
-            })
+            });
           } else {
             res.json({
               errno: 1,
               text: '更新动态点赞表失败'
-            })
+            });
           }
         });
       });

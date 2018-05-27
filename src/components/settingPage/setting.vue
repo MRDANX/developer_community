@@ -45,8 +45,6 @@
   import {
     mapState
   } from "vuex";
-  import hint from "@/components/common/hint";
-  import loading from "@/components/common/loading";
   export default {
     name: 'setting',
     data() {
@@ -73,10 +71,6 @@
           this.showLoading = false;
         }, 1000);
       }
-    },
-    components: {
-      hint,
-      loading
     }
   }
 </script>

@@ -27,6 +27,8 @@ const subjectDetail = () =>
   import ('@/pages/article/subjectDetail');
 const originalArticle = () =>
   import ('@/pages/article/originalArticle');
+const myFavoriteArticle = () =>
+  import ('@/pages/article/myFavoriteArticle');
 const createTrend = () =>
   import ('@/pages/trend/createTrend');
 const trendDetail = () =>
@@ -35,7 +37,7 @@ const topicTrends = () =>
   import ('@/pages/trend/topicTrends');
 const userDetail = () =>
   import ('@/pages/user/userDetail');
-
+  
 Vue.use(Router);
 
 let fromSubject = 'index';
@@ -162,6 +164,11 @@ export default new Router({
       props: route => ({
         topic: route.query.topic
       })
+    },
+    {
+      path: '/myFavoriteArticle',
+      name: 'myFavoriteArticle',
+      component: myFavoriteArticle
     },
     {
       path: '/originalArticle',

@@ -12,6 +12,7 @@
       <span>你还没发布过任何文章喔!</span>
     </div>
     <loading v-if="showLoading" />
+    <hint v-model="hintText" />
   </div>
 </template>
 
@@ -20,13 +21,18 @@
     mapState
   } from "vuex";
   import articleBrief from '@/components/homePage/articleBrief';
-  import loading from "@/components/common/loading";
+  import {
+    throttle,
+    differenceBy
+  } from "lodash";
   export default {
     name: 'originalArticle',
     data() {
       return {
         articleList: [],
-        showLoading: false
+        showLoading: false,
+        hasMore: true,
+        hintText: ''
       }
     },
     computed: {
@@ -37,21 +43,40 @@
         this.$router.replace('/');
         return;
       }
-      this.getOriginalArticle();
+      window.addEventListener('scroll', throttle(this.checkScrollToBottom, 200));
+      // this.getOriginalArticle();
     },
     activated() {
-      this.getOriginalArticle();
+      this.getOriginalArticle(0, true);
     },
     methods: {
-      getOriginalArticle() {
+      getOriginalArticle(startIndex, init) {
+        this.showLoading = true;
         this.$axios({
           method: 'get',
           url: '/api/getUserOriginalArticle',
           params: {
-            userID: this.userInfo.userID
+            userID: this.userInfo.userID,
+            startIndex: startIndex || 0,
+            number: 5
           }
         }).then(result => {
-          this.articleList = result.data;
+          let response = result.data;
+          if (response.articleList.length < 5) {
+            this.hasMore = false;
+          }
+          if (response.status == 200) {
+            let tmp = differenceBy(response.articleList, this.articleList, 'articleID');
+            // console.log('response:', response.articleList);
+            // console.log('this:', this.articleList);
+            // console.log('tmp:', tmp);
+            if (init) {
+              this.articleList = tmp.concat(this.articleList);
+            } else {
+              this.articleList = this.articleList.concat(tmp);
+            }
+          }
+          this.showLoading = false;
         });
       },
       deleteArticle(index) {
@@ -75,14 +100,25 @@
             return;
           }
           this.showLoading = false;
-          // this.articleList.splice(index, 1);
-          this.getOriginalArticle();
+          this.articleList.splice(index, 1);
           this.$store.dispatch('user/retrieveUserInfo');
+          // this.getOriginalArticle(0, this.articleList.length);
         });
+      },
+      checkScrollToBottom() {
+        let scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+        let scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+        let innerHeight = window.innerHeight;
+        if (scrollTop + innerHeight >= scrollHeight - 20) {
+          if (this.hasMore) {
+            this.getOriginalArticle(this.articleList.length);
+          } else {
+            this.hintText = '没有更多了~';
+          }
+        }
       }
     },
     components: {
-      loading,
       articleBrief
     }
   }
@@ -96,8 +132,16 @@
   }
 
   .article-deleted-leave-to {
-    // transform-origin: right bottom;
     transform: translateX(100%) scale(0.5);
+    opacity: 0;
+  }
+
+  .article-deleted-enter-active {
+    transition: all .6s .2s !important;
+  }
+
+  .article-deleted-enter {
+    transform: translateY(-50%) scale(0.5);
     opacity: 0;
   }
 
@@ -108,6 +152,7 @@
   .original-article {
     background-color: #F5F6FA;
     width: 100vw;
+    height: fit-content;
     min-height: 100vh;
     .article-head {
       width: 100vw;

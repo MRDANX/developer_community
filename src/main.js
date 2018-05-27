@@ -8,21 +8,26 @@ import axios from 'axios';
 import 'es6-promise/auto';
 import 'font-awesome/css/font-awesome.min.css';
 
+//import common components
+import hint from '@/components/common/hint';
+import loading from '@/components/common/loading';
+
 Vue.config.productionTip = false;
 
 Vue.prototype.$axios = axios;
 
 //method that add listener for toggling active class to the passing element
 function activeFeedback(el) {
-  el.addEventListener("touchstart", function() {
+  el.addEventListener("touchstart", function () {
     this.classList.add("active");
   });
-  el.addEventListener("touchend", function() {
+  el.addEventListener("touchend", function () {
     this.classList.remove("active");
   });
 }
 
-Vue.filter('timeFromNow', function(time) {
+//register global filter to format datetime
+Vue.filter('timeFromNow', function (time) {
   let dayMilli, days, hoursMilli, hours, minutesMilli, minutes, secondMill, seconds;
   dayMilli = Date.now() - new Date(time).getTime();
   days = Math.floor(dayMilli / (24 * 3600 * 1000));
@@ -45,7 +50,13 @@ Vue.filter('timeFromNow', function(time) {
   }
 });
 
+
+//register global method for instance
 Vue.prototype.$activeFeedback = activeFeedback;
+
+//register global component
+Vue.component('hint', hint);
+Vue.component('loading', loading);
 
 /* eslint-disable no-new */
 new Vue({

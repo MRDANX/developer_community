@@ -16,7 +16,7 @@
         <router-link :to="{name:'articleDetail',params:{articleID:article.articleID}}" tag="h4">{{article.title}}</router-link>
         <div>
           <div @click="toggleFavor(index)" :class="{isFavorite:isFavorite(index)}">
-            <i class="fa fa-heart"></i>
+            <i class="fa fa-heart" :class="{favorite:isFavorite(index)}" ref="favoriteIcons"></i>
             <span>{{article.favors||'点赞'}}</span>
           </div>
           <router-link :to="{name:'userDetail',params:{userID:article.userID}}" tag="div">
@@ -57,6 +57,17 @@
     },
     created() {
       this.getRecommendArticles();
+    },
+    updated() {
+      let favoriteIcons = this.$refs.favoriteIcons;
+      if (favoriteIcons) {
+        for (let i = 0; i < favoriteIcons.length; i++) {
+          const icon = favoriteIcons[i];
+          icon.addEventListener('animationend', function () {
+            this.classList.remove('favorite');
+          })
+        }
+      }
     },
     methods: {
       getRecommendArticles() {
@@ -155,9 +166,8 @@
     margin: 1vw 0 3vw;
     box-shadow: 0 1px 5px #CCCCCC;
     transition: all .4s;
-    opacity: 1;
-    // overflow: hidden;
-    &.close{
+    opacity: 1; // overflow: hidden;
+    &.close {
       min-height: 0;
       margin: 0;
       height: 0;
@@ -200,7 +210,7 @@
         }
         .isFavorite {
           color: #0080FF;
-          i.fa {
+          i.fa.favorite {
             animation: articleFavorite 1s forwards;
           }
         }

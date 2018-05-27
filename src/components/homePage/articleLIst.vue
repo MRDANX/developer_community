@@ -66,8 +66,10 @@
             resolve();
           }).catch(err => {
             if (err.response) {
+              this.hintText = err.response;
               console.log('error.response: ', err.response);
             } else if (err.request.readyState == 4 && err.request.status == 0) {
+              this.hintText = '请求超时';
               console.warn('Request timeout!');
             } else {
               console.error(err);

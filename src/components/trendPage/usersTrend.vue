@@ -5,7 +5,7 @@
         <li v-if="userInfo.followee.length==0" class="none-followee">
           <span>你还没有关注任何用户哦!</span>
         </li>
-        <li v-else class="none-trend">
+        <li v-else-if="trendList.length==0" class="none-trend">
           <span>你关注的用户还没发表任何动态哦!</span>
         </li>
         <trend v-for="(trend,index) in trendList" :key="index" :trend="trend" ref="trends" @updateCurrentTrend="updateSpecifiedTrend(index)"

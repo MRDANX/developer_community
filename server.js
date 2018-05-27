@@ -3,7 +3,6 @@ var bodyParser = require('body-parser');
 // var cookieParser = require('cookie-parser');
 // var multer = require('multer');
 var fs = require('fs');
-// var mysql = require('mysql');
 var app = express();
 var path = require('path')
 var history = require('connect-history-api-fallback')
@@ -153,9 +152,10 @@ function base64ToImage(base64, publicPath) {
       imgData = base64.replace(regExp, '');
     let dataBuffer = new Buffer(imgData, 'base64');
     let fs = require('fs');
-    fs.writeFile(filePath, dataBuffer, err => {
+    fs.writeFile('dist/'+filePath, dataBuffer, err => {
       if (err) {
         console.log('save image failed at function base64ToImage');
+        console.error(err);
         reject();
       } else {
         console.log('用户动态图片保存成功');
@@ -165,18 +165,19 @@ function base64ToImage(base64, publicPath) {
   });
 }
 
+// connection.connect();
 app.use(history());
+//serve the static resource
 app.use(express.static('dist'));
 
-
-//use body-parser for parsing parameters passed from client
-app.use(bodyParser.urlencoded({
+ //use body-parser for parsing parameters passed from client
+ app.use(bodyParser.urlencoded({
   limit: '50mb',
   extended: false
 }));
 
 //router for requesting login
-app.post('/requestLogin', (req, res) => {
+app.post('/api/requestLogin', (req, res) => {
   let tokenType = req.body.tokenType,
     userToken = req.body.userToken,
     password = req.body.password,
@@ -230,7 +231,7 @@ app.post('/requestLogin', (req, res) => {
 });
 
 //router for user's detail info
-app.get('/getUserDetail', (req, res) => {
+app.get('/api/getUserDetail', (req, res) => {
   let userID = +req.query.userID,
     querySql = 'SELECT * FROM user where userID=?';
   let inserts = [userID];
@@ -274,7 +275,7 @@ app.get('/getUserDetail', (req, res) => {
 });
 
 //router for check whether field is duplicated
-app.get('/checkUserInfoDuplicate', (req, res) => {
+app.get('/api/checkUserInfoDuplicate', (req, res) => {
   let type = req.query.type,
     field = req.query.field,
     checkSql = `SELECT * FROM user WHERE ${type}=?`,
@@ -312,7 +313,7 @@ app.get('/checkUserInfoDuplicate', (req, res) => {
 });
 
 //router for registering user's information
-app.post('/requestRegister', async (req, res) => {
+app.post('/api/requestRegister', async (req, res) => {
   let registerSql = "INSERT INTO user(avatar,phone,email,userName,password) VALUE(?,?,?,?,?)";
   let {
     avatar,
@@ -350,7 +351,7 @@ app.post('/requestRegister', async (req, res) => {
 });
 
 //router for modifying user's information
-app.post('/modifyUserInfo', async (req, res) => {
+app.post('/api/modifyUserInfo', async (req, res) => {
   let modifySql,
     userID = req.body.userID,
     modifyType = req.body.modifyType,
@@ -416,7 +417,7 @@ app.post('/modifyUserInfo', async (req, res) => {
 });
 
 //router for getting articleList
-app.get('/getArticleList', (req, res) => {
+app.get('/api/getArticleList', (req, res) => {
   let query = req.query,
     subject = query.subject,
     orderBy = query.orderBy || 'date',
@@ -475,10 +476,84 @@ app.get('/getArticleList', (req, res) => {
   });
 });
 
-//router for getting the specified article info
-app.get('/getSpecifiedArticle', (req, res) => {
-  let getSpecifiedArticleSql = 'SELECT * FROM articleDetail WHERE articleID=?';
+//router for getting info of the article that propose to edit
+app.get('/api/getArticleAuthorID', (req, res) => {
   let articleID = req.query.articleID,
+    sql = 'SELECT userID FROM article WHERE articleID=?';
+  connection.query(sql, [articleID], (err, result) => {
+    if (err) throw err;
+    if (result.length == 1) {
+      res.json({
+        status: 200,
+        authorID: result[0].userID
+      });
+    } else {
+      res.json({
+        status: 404,
+        text: 'Article Not Found!'
+      });
+    }
+  });
+});
+
+//router for getting info of the article that propose to edit
+app.get('/api/editArticle', (req, res) => {
+  let editingArticleSql = 'SELECT articleID,userID,title,cover,subject,tags,content FROM article WHERE articleID=?';
+  let articleID = +req.query.articleID,
+    inserts = [articleID];
+  connection.query(editingArticleSql, inserts, (err, result) => {
+    if (err) throw err;
+    if (result.length == 1) {
+      res.json({
+        status: 200,
+        text: 'Article Found',
+        articleInfo: result[0]
+      })
+    } else {
+      res.json({
+        status: 404,
+        text: 'Article Not Found',
+        articleInfo: null
+      });
+    }
+  })
+});
+
+//router for update edited article
+app.post('/api/editArticle', async (req, res) => {
+  let editArticleSql = 'UPDATE article SET title=?,content=?,subject=?,tags=?,cover=? WHERE articleID=?',
+    data = req.body,
+    articleID = data.articleID,
+    title = data.title,
+    cover = data.cover,
+    subject = data.subject,
+    tags = data.tags,
+    content = data.content,
+    publicPath = 'static/images/articleCover';
+  await base64ToImage(cover, publicPath).then(coverPath => {
+    cover = coverPath;
+  });
+  let inserts = [title, content, subject, tags, cover, articleID];
+  connection.query(editArticleSql, inserts, (err, result) => {
+    if (err) throw err;
+    if (result.affectedRows == 1) {
+      res.json({
+        status: 200,
+        text: '修改文章成功'
+      });
+    } else {
+      res.json({
+        status: 500,
+        text: '修改文章失败'
+      });
+    }
+  });
+});
+
+//router for getting the specified article info
+app.get('/api/getSpecifiedArticle', (req, res) => {
+  let getSpecifiedArticleSql = 'SELECT * FROM articleDetail WHERE articleID=?';
+  let articleID = +req.query.articleID,
     inserts = [articleID];
   connection.query(getSpecifiedArticleSql, inserts, (err, result) => {
     if (err) throw err;
@@ -486,8 +561,58 @@ app.get('/getSpecifiedArticle', (req, res) => {
   })
 });
 
+//router for getting users favorite articles
+app.get('/api/getMyFavoriteArticle', (req, res) => {
+  let getSql = 'SELECT * FROM articleDetail WHERE articleID IN (?) ORDER BY date DESC LIMIT ?,?',
+    articleIDList = JSON.parse(req.query.articleIDList),
+    startIndex = +req.query.startIndex || 0,
+    number = +req.query.number || 5,
+    inserts = [articleIDList, startIndex, number];
+  connection.query(getSql, inserts, (err, result) => {
+    if (err) throw err;
+    if (result.length >= 0) {
+      res.json({
+        status: 200,
+        text: 'Get Article List successful.',
+        articleList: result
+      });
+    } else {
+      res.json({
+        status: 500,
+        text: 'Internal server encounted.',
+        articleList: null
+      })
+    }
+  })
+});
+
+//router for getting users original articles
+app.get('/api/getUserOriginalArticle', (req, res) => {
+  let userID = +req.query.userID,
+    startIndex = +req.query.startIndex || 0,
+    number = +req.query.number || 5,
+    originalSql = 'SELECT * FROM articleDetail WHERE userID=? ORDER BY date DESC LIMIT ?,?',
+    inserts = [userID, startIndex, number];
+  connection.query(originalSql, inserts, (err, result) => {
+    if (err) throw err;
+    if (result.length >= 0) {
+      res.json({
+        status: 200,
+        text: 'Get Original Article successful.',
+        articleList: result
+      });
+    } else {
+      res.json({
+        status: 500,
+        text: 'Internal server encounted.',
+        articleList: null
+      })
+    }
+  })
+});
+
 //router for increasing PV of article
-app.post('/increaseArticlePV', (req, res) => {
+app.post('/api/increaseArticlePV', (req, res) => {
   let increaseSql = 'UPDATE article SET pv=pv+1 WHERE articleID=?',
     articleID = req.body.articleID;
   connection.query(increaseSql, [articleID], (err, result) => {
@@ -497,7 +622,7 @@ app.post('/increaseArticlePV', (req, res) => {
 });
 
 //router for getting comments for article
-app.get('/getArticleComment', (req, res) => {
+app.get('/api/getArticleComment', (req, res) => {
   let query = req.query,
     articleID = query.articleID,
     startIndex = +query.startIndex || 0,
@@ -511,7 +636,7 @@ app.get('/getArticleComment', (req, res) => {
 });
 
 //router for publishing comment of an article
-app.post('/publishComment', (req, res) => {
+app.post('/api/publishComment', (req, res) => {
   let data = req.body,
     userID = +data.userID,
     articleID = +data.articleID,
@@ -534,8 +659,71 @@ app.post('/publishComment', (req, res) => {
   });
 });
 
+//router for deleting users article
+app.post('/api/deleteArticle', (req, res) => {
+  let {
+    articleID,
+    userID,
+    password
+  } = req.body;
+  let validateSql = 'SELECT COUNT(*) AS exist FROM user WHERE userID=? AND password=?',
+    validateInserts = [userID, password],
+    deleteSql = 'DELETE FROM article WHERE articleID=?',
+    deleteInserts = [articleID];
+  new Promise((resolve, reject) => {
+    connection.query(validateSql, validateInserts, (err, result) => {
+      if (err) reject(err);
+      resolve(result[0]);
+    })
+  }).then(result => {
+    if (result.exist) {
+      connection.query(deleteSql, deleteInserts, (err, result) => {
+        if (err) throw err;
+        if (result.affectedRows == 1) {
+          res.json({
+            err: null,
+            text: '删除文章成功'
+          });
+        } else {
+          res.json({
+            err: 1,
+            text: '删除文章失败'
+          });
+        }
+      })
+    }
+  }).catch(err => {
+    console.log(err);
+
+  })
+});
+
+//router for publishing comment of a trend
+app.post('/api/publishTrendComment', (req, res) => {
+  let data = req.body,
+    userID = +data.userID,
+    trendID = +data.trendID,
+    commentText = data.commentText;
+  let publishSql = 'INSERT INTO trendComment(userID,trendID,content,date) VALUE(?,?,?,?)',
+    inserts = [userID, trendID, commentText, new Date()];
+  connection.query(publishSql, inserts, (err, result) => {
+    if (err) throw err;
+    if (result.affectedRows == 1) {
+      res.json({
+        errno: null,
+        text: '提交评论成功'
+      });
+    } else {
+      res.json({
+        errno: 1,
+        text: '提交评论失败'
+      });
+    }
+  });
+});
+
 //router for publishing article
-app.post('/createUserArticle', (req, res) => {
+app.post('/api/createUserArticle', async (req, res) => {
   let createArticleSql = 'INSERT INTO article(userID,title,date,content,subject,tags,cover) VALUE(?,?,?,?,?,?,?)',
     data = req.body,
     userID = data.userID,
@@ -543,7 +731,11 @@ app.post('/createUserArticle', (req, res) => {
     cover = data.cover,
     subject = data.subject,
     tags = data.tags,
-    content = data.content;
+    content = data.content,
+    publicPath = 'static/images/articleCover';
+  await base64ToImage(cover, publicPath).then(coverPath => {
+    cover = coverPath;
+  });
   let inserts = [userID, title, new Date(), content, subject, tags, cover];
   connection.query(createArticleSql, inserts, (err, result) => {
     if (err) throw err;
@@ -562,7 +754,7 @@ app.post('/createUserArticle', (req, res) => {
 });
 
 //router for toggle user's favor of article
-app.post('/toggleArticleFavor', (req, res) => {
+app.post('/api/toggleArticleFavor', (req, res) => {
   let data = req.body,
     userID = +data.userID,
     articleID = +data.articleID,
@@ -591,7 +783,7 @@ app.post('/toggleArticleFavor', (req, res) => {
 });
 
 //router for searching for simple article and user
-app.get('/searchForSimple', (req, res) => {
+app.get('/api/searchForSimple', (req, res) => {
   let searchText = req.query.searchText;
   let getUsersSql = `SELECT u.userID,avatar,userName,COUNT(followerUserID) as followers FROM user u LEFT JOIN follower f ON u.userID=f.userID WHERE userName like '%${searchText}%' GROUP BY u.userID LIMIT 3`,
     getArticlesSql = `SELECT articleID,title,pv FROM article WHERE title like '%${searchText}%' LIMIT 5`;
@@ -617,7 +809,7 @@ app.get('/searchForSimple', (req, res) => {
 });
 
 //router for searching for detailed article and user
-app.get('/searchForDetailed', (req, res) => {
+app.get('/api/searchForDetailed', (req, res) => {
   let searchText = req.query.searchText,
     articleOrderBy = req.query.articleOrderBy;
   let getUsersSql = `SELECT userID,avatar,userName FROM user WHERE userName like '%${searchText}%' LIMIT 10`,
@@ -644,7 +836,7 @@ app.get('/searchForDetailed', (req, res) => {
 });
 
 //router for getting more detailed searched article 
-app.get('/searchForMoreDetailedArticle', (req, res) => {
+app.get('/api/searchForMoreDetailedArticle', (req, res) => {
   let searchText = req.query.searchText,
     articleOrderBy = req.query.articleOrderBy,
     startIndex = +req.query.startIndex,
@@ -660,7 +852,7 @@ app.get('/searchForMoreDetailedArticle', (req, res) => {
 });
 
 //router for getting trend list
-app.get('/getTrendList', (req, res) => {
+app.get('/api/getTrendList', (req, res) => {
   let startIndex = +req.query.startIndex,
     number = +req.query.number,
     orderBy = req.query.orderBy || 'date';
@@ -672,8 +864,20 @@ app.get('/getTrendList', (req, res) => {
   });
 });
 
+//router for getting comments for trend
+app.get('/api/getTrendComment', (req, res) => {
+  let query = req.query,
+    trendID = query.trendID;
+  let getCommentsSql = "SELECT a.*, u.userName, u.avatar FROM trendcomment a INNER JOIN user u ON a.userID = u.userID WHERE trendID=? ORDER BY date ",
+    inserts = [trendID];
+  connection.query(getCommentsSql, inserts, (err, result) => {
+    if (err) throw err;
+    res.json(result);
+  });
+});
+
 //router for gettin trend by topic
-app.get('/getTrendTopic', (req, res) => {
+app.get('/api/getTrendTopic', (req, res) => {
   let trendTopicSql = 'SELECT * FROM trendTopic';
   connection.query(trendTopicSql, (err, result) => {
     if (err) throw err;
@@ -682,7 +886,7 @@ app.get('/getTrendTopic', (req, res) => {
 });
 
 //router for gettin trend topics
-app.get('/getTrendByTopic', (req, res) => {
+app.get('/api/getTrendByTopic', (req, res) => {
   let trendTopicSql = 'SELECT * FROM trendList WHERE topic=?',
     topic = req.query.topic;
   connection.query(trendTopicSql, [topic], (err, result) => {
@@ -692,7 +896,7 @@ app.get('/getTrendByTopic', (req, res) => {
 });
 
 //router for getting the specified trend info
-app.get('/getSpecifiedTrend', (req, res) => {
+app.get('/api/getSpecifiedTrend', (req, res) => {
   let getSpecifiedTrendSql = 'SELECT * FROM trendList WHERE trendID = ?';
   let trendID = +req.query.trendID,
     inserts = [trendID];
@@ -703,7 +907,7 @@ app.get('/getSpecifiedTrend', (req, res) => {
 });
 
 //router for getting trend for logged user
-app.get('/getUsersTrend', (req, res) => {
+app.get('/api/getUsersTrend', (req, res) => {
   let getUsersTrendSql = 'SELECT * FROM trendList WHERE userID IN ( SELECT userID FROM follower WHERE followerUserID = ? ) ORDER BY date DESC',
     followerUserID = +req.query.followerUserID;
   connection.query(getUsersTrendSql, [followerUserID], (err, result) => {
@@ -713,7 +917,7 @@ app.get('/getUsersTrend', (req, res) => {
 });
 
 //router for publishing trend
-app.post('/createUserTrend', (req, res) => {
+app.post('/api/createUserTrend', (req, res) => {
   let createTrendSql = 'INSERT INTO trend(userID,content,date,images,topic) VALUE(?,?,?,?,?)',
     data = req.body,
     userID = data.userID,
@@ -738,7 +942,7 @@ app.post('/createUserTrend', (req, res) => {
 });
 
 //router for toggle user's favor of trend
-app.post('/toggleTrendFavor', (req, res) => {
+app.post('/api/toggleTrendFavor', (req, res) => {
   let data = req.body,
     userID = +data.userID,
     trendID = +data.trendID,
@@ -767,7 +971,7 @@ app.post('/toggleTrendFavor', (req, res) => {
 });
 
 //router for toggle user's follow
-app.post('/toggleUserFollow', (req, res) => {
+app.post('/api/toggleUserFollow', (req, res) => {
   let data = req.body,
     userID = +data.userID,
     followeeUserID = +data.followeeUserID,
@@ -794,8 +998,7 @@ app.post('/toggleUserFollow', (req, res) => {
     }
   });
 });
-
-var server = app.listen(3000, () => {
+var server = app.listen(80, () => {
   var hostname = server.address().address;
   var port = server.address().port;
   console.log(`Server listening on ${hostname}:${port}...`);

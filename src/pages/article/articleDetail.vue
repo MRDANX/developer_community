@@ -89,8 +89,6 @@
 
 <script>
   import tag from "@/components/common/tag";
-  import hint from "@/components/common/hint";
-  import loading from "@/components/common/loading";
   import slideOut from "@/components/common/slideOut";
   import articleComment from "@/components/articleDetail/articleComment";
   import {
@@ -338,40 +336,27 @@
         this.showCommentPanel = true;
       },
       scrollToTop() {
-        let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-        let toTopTimer = setInterval(() => {
-          scrollTop -= 50;
-          window.scrollTo(0, scrollTop);
-          if (scrollTop < 0) {
-            clearInterval(toTopTimer);
-          }
-        }, 20)
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
       },
       scrollToBottom() {
-        let scrollTop = document.documentElement.scrollTop || document.body.scrollTop,
-          contentWrapper = this.$refs.contentWrapper,
+        let contentWrapper = this.$refs.contentWrapper,
           bottom = contentWrapper.scrollHeight;
-        console.log(scrollTop, bottom);
-        let toBottomTimer = setInterval(() => {
-          scrollTop += 50;
-          window.scrollTo(0, scrollTop);
-          if (scrollTop >= bottom) {
-            clearInterval(toBottomTimer);
-          }
-        }, 20);
+        window.scrollTo({
+          top: bottom,
+          behavior: 'smooth'
+        });
       },
       scrollToComment() {
-        let scrollTop = document.documentElement.scrollTop || document.body.scrollTop,
-          comments = this.$refs.comments,
-          bottom = comments.offsetTop;
-        console.log(scrollTop, bottom);
-        let toCommentTimer = setInterval(() => {
-          scrollTop += 50;
-          window.scrollTo(0, scrollTop);
-          if (scrollTop >= bottom-100) {
-            clearInterval(toCommentTimer);
-          }
-        }, 20);
+        let comments = this.$refs.comments,
+          offsetTop = comments.offsetTop;
+        window.scrollTo({
+          top: offsetTop,
+          behavior: 'smooth'
+        });
+
       }
     },
     filters: {
@@ -394,8 +379,6 @@
     },
     components: {
       tag,
-      hint,
-      loading,
       slideOut,
       articleComment
     }
@@ -423,7 +406,7 @@
   .article-detail {
     width: 100vw;
     font-size: 4vw;
-    min-height: 100vh;
+    height: 100vh;
     background-color: #FFFFFF;
     .header {
       width: 100vw;
@@ -458,7 +441,8 @@
     .content-wrapper {
       padding: 12vw 0;
       width: 100vw;
-      overflow: hidden;
+      box-sizing: border-box;
+      overflow-x: hidden;
       .main-body-wrapper {
         background-color: #FFFFFF;
         overflow: hidden;

@@ -41,7 +41,7 @@
         </div>
       </div>
     </transition>
-    <hint v-model="hintText" :delay="2500">{{hintText}}</hint>
+    <hint v-model="hintText" :delay="2500"/>
     <loading v-if="showLoading" :verticalMove="-6" />
   </div>
 </template>
@@ -50,8 +50,6 @@
   import {
     mapState
   } from "vuex";
-  import hint from "@/components/common/hint";
-  import loading from "@/components/common/loading";
   export default {
     name: 'personalSetting',
     data() {
@@ -128,10 +126,6 @@
     },
     computed: {
       ...mapState('user', ['userInfo'])
-    },
-    components: {
-      hint,
-      loading
     }
   }
 

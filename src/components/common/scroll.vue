@@ -26,12 +26,8 @@
 
 <script>
   import BScroll from 'better-scroll'
-  import hint from "@/components/common/hint";
   export default {
     name: 'scroll',
-    components: {
-      hint
-    },
     props: {
       loadMore: {
         type: Function,

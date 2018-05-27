@@ -5,7 +5,7 @@
       <div class="top-nav-content">
         <i class="fa fa-chevron-left" @click="$router.go(-1)"></i>
         <span class="nav-title">发动态</span>
-        <span class="send-trend" @click="publishTrend">
+        <span class="send-trend" @click="publishTrend" ref="send">
           <i class="fa fa-send"></i>发送</span>
       </div>
     </div>
@@ -41,9 +41,7 @@
   import {
     mapState
   } from "vuex";
-  import hint from '@/components/common/hint';
   import uploadedImage from '@/components/common/uploadedImage';
-  import loading from '@/components/common/loading';
   export default {
     name: 'createTrend',
     data() {
@@ -68,6 +66,7 @@
       if (uploadImageButton) {
         this.$activeFeedback(uploadImageButton);
       }
+      this.$activeFeedback(this.$refs.send);
     },
     deactivated() {
       setTimeout(() => {
@@ -145,9 +144,7 @@
       }
     },
     components: {
-      hint,
-      uploadedImage,
-      loading
+      uploadedImage
     }
   }
 
@@ -207,6 +204,9 @@
         color: #FFFFFF;
         .nav-title {
           flex-grow: 0.8;
+        }
+        .send-trend.active{
+          color: #009CFF;
         }
         .send-trend i.fa {
           margin-right: 2vw;

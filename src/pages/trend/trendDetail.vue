@@ -55,9 +55,7 @@
   } from "vuex";
   import trend from '@/components/trendPage/trend';
   import articleComment from "@/components/articleDetail/articleComment";
-  import hint from "@/components/common/hint";
   import slideOut from "@/components/common/slideOut";
-  import loading from "@/components/common/loading";
   import sharePanel from "@/components/common/sharePanel";
   export default {
     name: 'trendDetail',
@@ -210,9 +208,7 @@
       }
     },
     components: {
-      hint,
       trend,
-      loading,
       slideOut,
       sharePanel,
       articleComment

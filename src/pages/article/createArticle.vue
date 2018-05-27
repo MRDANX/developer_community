@@ -4,7 +4,7 @@
       <div class="article-header" v-if="headerIndex==0" @click="switchHeader($event)" key="header">
         <i class="fa fa-chevron-left" @click="$router.go(-1)" ref="goBack"></i>
         <span>{{this.edit?'编辑文章':'编写文章'}}</span>
-        <div class="submit" ref="submit" @click="publishArticle">发布</div>
+        <div class="submit" ref="submit" @click="publishArticle">{{this.edit?'修改':'发布'}}</div>
         <span class="action-hint" v-if="!clickTime">双击切换至状态栏</span>
       </div>
       <div class="article-status" v-else-if="headerIndex==1" @click="switchHeader" key="status">
@@ -72,8 +72,6 @@
     mapState
   } from "vuex";
   import tag from '@/components/common/tag';
-  import hint from '@/components/common/hint';
-  import loading from '@/components/common/loading';
   export default {
     name: 'createArticle',
     props: {
@@ -141,7 +139,8 @@
         showSubjectList: false,
         addingTag: false,
         addingTagText: '',
-        editingArticleInfo: {}
+        editingArticleInfo: {},
+        publishLock: false
       }
     },
     created() {
@@ -310,62 +309,67 @@
           this.hintText = '请输入文章内容!';
           return;
         }
-        let qs = require('qs');
-        this.showLoading = true;
-        if (this.edit) {
-          //post edited article
-          this.$axios({
-            method: 'post',
-            url: '/api/editArticle',
-            data: qs.stringify({
-              articleID: this.articleID,
-              title: this.title,
-              cover: this.cover,
-              subject: this.selectedSubject,
-              tags: this.tags.toString(),
-              content: this.content
-            })
-          }).then(result => {
-            let response = result.data;
-            this.showLoading = false;
-            if (response.status == 200) {
-              this.hintText = response.text;
-              setTimeout(() => {
-                this.$router.go(-1);
-              }, 1500);
-            } else if (response.status == 500) {
-              this.hintText = '修改文章失败，请重新尝试!';
-              console.log(response.text);
-            } else {
-              this.hintText = '服务器内部出错，请联系管理员!';
-              console.log('something went wrong when got data from server');
-            }
-          });
-        } else {
-          //post original article
-          this.$axios({
-            method: 'post',
-            url: '/api/createUserArticle',
-            data: qs.stringify({
-              userID: this.userInfo.userID,
-              title: this.title,
-              cover: this.cover,
-              subject: this.selectedSubject,
-              tags: this.tags.toString(),
-              content: this.content
-            })
-          }).then(result => {
-            this.showLoading = false;
-            if (!result.data.errno) {
-              this.hintText = result.data.text;
-              this.$store.dispatch('user/retrieveUserInfo');
-              setTimeout(() => {
-                this.$router.go(-1);
-              }, 1500);
-            } else if (result.data.errno == 1) {
-              this.hintText = result.data.text;
-            }
-          });
+        if (!this.publishLock) {
+          let qs = require('qs');
+          this.showLoading = true;
+          this.publishLock = true;
+          if (this.edit) {
+            //post edited article
+            this.$axios({
+              method: 'post',
+              url: '/api/editArticle',
+              data: qs.stringify({
+                articleID: this.articleID,
+                title: this.title,
+                cover: this.cover,
+                subject: this.selectedSubject,
+                tags: this.tags.toString(),
+                content: this.content
+              })
+            }).then(result => {
+              let response = result.data;
+              this.showLoading = false;
+              if (response.status == 200) {
+                this.hintText = response.text;
+                setTimeout(() => {
+                  this.$router.go(-1);
+                }, 1500);
+              } else if (response.status == 500) {
+                this.hintText = '修改文章失败，请重新尝试!';
+                this.publishLock = false;
+                console.log(response.text);
+              } else {
+                this.hintText = '服务器内部出错，请联系管理员!';
+                console.log('something went wrong when got data from server');
+              }
+            });
+          } else {
+            //post original article
+            this.$axios({
+              method: 'post',
+              url: '/api/createUserArticle',
+              data: qs.stringify({
+                userID: this.userInfo.userID,
+                title: this.title,
+                cover: this.cover,
+                subject: this.selectedSubject,
+                tags: this.tags.toString(),
+                content: this.content
+              })
+            }).then(result => {
+              this.showLoading = false;
+              if (!result.data.errno) {
+                this.hintText = result.data.text;
+                this.$store.dispatch('user/retrieveUserInfo');
+                setTimeout(() => {
+                  this.$router.go(-1);
+                }, 1500);
+              } else if (result.data.errno == 1) {
+                this.hintText = result.data.text;
+                this.publishLock = false;
+              }
+            });
+          }
         }
 
       },
@@ -376,6 +380,7 @@
         this.selectedSubject = '';
         this.tags = [];
         this.headerIndex = 0;
+        this.publishLock = false;
       }
     },
     computed: {
@@ -386,8 +391,6 @@
     },
     components: {
       tag,
-      hint,
-      loading,
       quillEditor
     }
   }
@@ -467,8 +470,8 @@
       }
       .submit {
         padding: 1vw 2vw;
-        border: 1px solid #FFFFFF;
-        border-radius: 1vw;
+        border: 1px dashed #FFFFFF;
+        border-radius: 2vw;
         color: #FFFFFF;
         user-select: none;
         background-color: #007FFF;

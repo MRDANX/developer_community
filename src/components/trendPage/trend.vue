@@ -30,7 +30,7 @@
     </div>
     <div class="trend-foot" ref="trendFoot" v-if="showFoot">
       <div class="trend-favor" :class="{isFavorite}" @click="toggleFavor">
-        <i class="fa" :class="[isFavorite?'fa-thumbs-up':'fa-thumbs-o-up']"></i>
+        <i class="fa" :class="[isFavorite?'fa-thumbs-up':'fa-thumbs-o-up',isFavorite?'favorite':'']" ref="favoriteIcon"></i>
         <span>{{trend.favors||'赞'}}</span>
       </div>
       <div class="trend-comment">
@@ -80,6 +80,12 @@
           const element = trendFoot.children[i];
           this.$activeFeedback(element)
         }
+      }
+      let favoriteIcon = this.$refs.favoriteIcon;
+      if (favoriteIcon) {
+        favoriteIcon.addEventListener('animationend', function () {
+          this.classList.remove('favorite');
+        })
       }
     },
     computed: {
@@ -271,7 +277,7 @@
       }
       .trend-favor.isFavorite {
         color: #0080FF;
-        .fa {
+        .fa.favorite {
           transform-origin: left bottom;
           animation: trendFavorite 1s;
         }

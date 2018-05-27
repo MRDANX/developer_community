@@ -32,7 +32,6 @@
   import {
     mapState
   } from "vuex";
-  import hint from '@/components/common/hint';
   export default {
     name: "layoutPage",
     data() {
@@ -62,9 +61,6 @@
           name
         });
       }
-    },
-    components: {
-      hint
     }
   };
 

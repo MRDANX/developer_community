@@ -23,8 +23,6 @@
 
 <script>
   import textInput from "@/components/common/textInput";
-  import hint from "@/components/common/hint";
-  import loading from "@/components/common/loading";
   export default {
     name: 'register',
     data() {
@@ -226,8 +224,6 @@
       this.$activeFeedback(this.$refs.registerButton);
     },
     components: {
-      hint,
-      loading,
       textInput
     }
   }
