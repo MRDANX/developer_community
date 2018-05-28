@@ -13,7 +13,7 @@
     </div>
     <ul class="content">
       <li v-for="(article,index) in recommendArticles" :key="index" tag="li">
-        <router-link :to="{name:'articleDetail',params:{articleID:article.articleID}}" tag="h4">{{article.title}}</router-link>
+        <router-link :to="{path:'/articleDetail',query:{articleID:article.articleID}}" tag="h4">{{article.title}}</router-link>
         <div>
           <div @click="toggleFavor(index)" :class="{isFavorite:isFavorite(index)}">
             <i class="fa fa-heart" :class="{favorite:isFavorite(index)}" ref="favoriteIcons"></i>

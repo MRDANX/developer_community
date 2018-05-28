@@ -25,6 +25,9 @@
         },{
           from:'originalArticle',
           to:'createArticle'
+        },{
+          from:'trendDetail',
+          to:'userDetail'
         }]
       }
     },

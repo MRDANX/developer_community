@@ -14,7 +14,7 @@
         <router-link :to="{path:'/subjectDetail',query:{subject:articleInfo.subject}}" class="article-subject" tag="span">{{articleInfo.subject}}</router-link>
       </div>
     </div>
-    <router-link :to="{name:'articleDetail',params:{articleID:articleInfo.articleID}}" class="article-content" tag="div">
+    <router-link :to="{path:'/articleDetail',query:{articleID:articleInfo.articleID}}" class="article-content" tag="div">
       <div class="article-info">
         <div class="article-title">
           <h4>{{articleInfo.title}}</h4>

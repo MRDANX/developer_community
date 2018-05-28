@@ -118,7 +118,7 @@
       //   return document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
       // },
       tags() {
-        return this.articleInfo.tags.split(',');
+        return this.articleInfo.tags && this.articleInfo.tags.split(',');
       },
       wordCount() {
         return this.articleInfo.content.replace(/<\/?[^>]>/g, '').length;

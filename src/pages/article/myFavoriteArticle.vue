@@ -4,9 +4,13 @@
       <i class="fa fa-arrow-left" @click="$router.go(-1)"></i>
       <span>我喜欢的文章</span>
     </div>
-    <transition-group name="animate" class="article-list" tag="ul">
-      <article-brief v-for="(article,index) in articleList" :key="index" :articleInfo="article" />
+    <transition-group name="animate" class="article-list" tag="ul" v-if="articleList.length!=0">
+      <article-brief v-for="(article,index) in articleList" :key="index" :articleInfo="article" @updateCurrentArticle="updateSpecifiedArticle(index)"
+      />
     </transition-group>
+    <div v-else class="none-article">
+      <span>你还没有喜欢的文章喔!</span>
+    </div>
     <loading v-if="showLoading" />
     <hint v-model="hintText" />
   </div>
@@ -44,28 +48,32 @@
         let tmpList = this.userInfo.favoriteArticle,
           favoriteList = [];
         for (let i = 0; i < tmpList.length; i++) {
-          favoriteList.push(tmpList[i].articleID);
+          favoriteList.unshift(tmpList[i].articleID);
         }
-        this.showLoading = true;
-        this.$axios({
-          method: 'get',
-          url: '/api/getMyFavoriteArticle',
-          params: {
-            articleIDList: JSON.stringify(favoriteList),
-            startIndex: this.articleList.length,
-            number: 5
-          }
-        }).then(result => {
-          let response = result.data;
-          if (response.articleList.length < 5) {
-            this.hasMore = false;
-          }
-          if (response.status == 200) {
-            this.articleList = this.articleList.concat(response.articleList);
-          }
-          this.showLoading = false;
-        });
+        if (favoriteList.length > 0) {
+          this.showLoading = true;
+          this.$axios({
+            method: 'get',
+            url: '/api/getMyFavoriteArticle',
+            params: {
+              articleIDList: JSON.stringify(favoriteList),
+              startIndex: this.articleList.length,
+              number: 5
+            }
+          }).then(result => {
+            let response = result.data;
+            if (response.articleList.length < 5) {
+              this.hasMore = false;
+            }
+            if (response.status == 200) {
+              this.articleList = this.articleList.concat(response.articleList);
+            }
+            this.showLoading = false;
+          });
+        }
+
       },
+
       checkScrollToBottom() {
         let scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
         let scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
@@ -77,6 +85,21 @@
             this.hintText = '没有更多了~';
           }
         }
+      },
+      //update the specified article form server
+      updateSpecifiedArticle(index) {
+        const articleID = this.articleList[index].articleID;
+        this.$axios({
+          method: 'get',
+          url: '/api/getSpecifiedArticle',
+          params: {
+            articleID
+          }
+        }).then(result => {
+          if (result.data) {
+            this.articleList.splice(index, 1, result.data[0]);
+          }
+        })
       }
     },
     components: {
@@ -125,6 +148,25 @@
     .article-list {
       margin-top: 15vw;
 
+    }
+  }
+
+  .none-article {
+    text-align: center;
+    margin-top: 12vw;
+    color: #999999;
+    width: 100vw;
+    height: 50vw;
+    font-size: 6vw;
+    background-image: url("/static/images/common/none-data.svg");
+    background-size: 100% 100%;
+    position: relative;
+    span {
+      position: absolute;
+      bottom: 3vw;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
     }
   }
 

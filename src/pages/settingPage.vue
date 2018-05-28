@@ -39,7 +39,7 @@
               <span class="text">原创文章管理</span>
               <span>{{userInfo.originalArticle&&userInfo.originalArticle.length||0}} 篇</span>
             </li>
-            <li>
+            <li @click="goto('/myFavoriteTrend')">
               <i class="fa fa-thumbs-up" style="color:#FF9900"></i>
               <span class="text">赞过的动态</span>
               <span>{{userInfo.favoriteTrend&&userInfo.favoriteTrend.length||0}} 个</span>
@@ -244,11 +244,12 @@
     .hide-login-panel,
     .login-background {
       /deep/ .slide-out {
+        background-color: #F5F6FF;
         background-image: url("/static/images/login_bg.jpg");
         background-size: cover;
       }
       /deep/ .slide-out-header {
-        color: #FFFFFF;
+        color: #D0D0D0;
         i.active::after {
           background-color: rgba(255, 255, 255, 0.5);
         }

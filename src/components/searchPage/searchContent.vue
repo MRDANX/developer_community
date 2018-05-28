@@ -217,6 +217,7 @@
         font-size: 4.6vw;
         box-shadow: 1px 0 1px #CCCCCC;
         justify-content: space-between;
+
         i {
           margin-right: 1vw;
         }
@@ -230,7 +231,7 @@
       }
       .article {
         height: 20vw;
-        padding: 3vw;
+        padding: 0.5vw 3vw;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -246,7 +247,7 @@
             margin: 1vw 0;
             display: -webkit-box;
             -webkit-box-orient: vertical;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 1;
             overflow: hidden;
           }
           p {
@@ -258,7 +259,7 @@
         }
         .article-img {
           max-width: 30vw;
-          height: 100%;
+          height: 85%;
         }
       }
       .article-loading {

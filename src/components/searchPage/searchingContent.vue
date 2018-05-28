@@ -29,13 +29,14 @@
                   <i class="fa fa-angle-down"></i>
                 </div>
               </li>
-              <li class="related-article-content" v-for="(article,index) in detailedSearchArticles" :key="index">
-                <router-link :to="{name: 'articleDetail',params:{articleID:article.articleID}}" tag="h4" class="title" v-html="highlightMatch(article.title)"></router-link>
+              <router-link :to="{path:'/articleDetail',query:{articleID:article.articleID}}" tag="li" class="related-article-content" v-for="(article,index) in detailedSearchArticles"
+                :key="index">
+                <h4 class="title" v-html="highlightMatch(article.title)"></h4>
                 <p class="content" v-html="highlightMatch(tagFilter(article.content))"></p>
                 <p class="meta">
                   <span>{{article.favors}} 人喜欢 • {{article.author}} • {{article.date|timeFromNow}}</span>
                 </p>
-              </li>
+              </router-link>
             </ul>
           </div>
           <ul v-else class="simple-result">
@@ -53,7 +54,7 @@
               <span class="result-user-right">作者</span>
             </router-link>
             <li v-for="(article,index) in simpleSearchArticles" :key="'article'+index" class="result-article">
-              <router-link class="title" v-html="highlightMatch(article.title)" :to="{name: 'articleDetail',params:{articleID:article.articleID}}"
+              <router-link class="title" v-html="highlightMatch(article.title)" :to="{path:'/articleDetail',query:{articleID:article.articleID}}"
                 tag="span"></router-link>
               <span class="pv">阅读 {{article.pv}}</span>
             </li>
@@ -279,7 +280,7 @@
       },
       highlightMatch(text) {
         let regExp = new RegExp(this.searchText, 'ig');
-        text = text.replace(/<script>(.*?)<\/script>/ig, '<ｓｃｒｉｐｔ>$1<／ｓｃｒｉｐｔ>');
+        text = text.replace(/<script>(.*?)<\/script>/ig, '&lt;script&gt;$1&lt;/script&gt;');
         return text.replace(regExp, '<strong style="color:#0080FF">$&</strong>');
       },
       tagFilter(text) {
@@ -290,6 +291,7 @@
       searchText(n) {
         this.getResult = false;
         if (n == '') {
+          this.$refs.searchingScroll.reenableLoadMore();
           this.$refs.searchingScroll.disableLoadMore();
           this.$emit('setSearchButton', false);
         } else {
@@ -608,7 +610,9 @@
             transition: all .3s;
             font-size: 4vw;
           }
-          &.clear-history-leave-to {
+
+          &.clear-history-leave-to,
+          &.clear-history-leave {
             display: none;
           }
         }
