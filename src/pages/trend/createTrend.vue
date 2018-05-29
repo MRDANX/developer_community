@@ -53,15 +53,13 @@
       }
     },
     created() {
+      if (!this.userInfo.userID) {
+        this.$router.replace('/setting');
+        return;
+      }
       this.$store.dispatch('user/checkUserInfo');
     },
     mounted() {
-      //check out whether user has login
-      if (!this.userInfo.userID) {
-        this.$router.push({
-          path: '/setting'
-        })
-      }
       let uploadImageButton = this.$refs.uploadImageButton;
       if (uploadImageButton) {
         this.$activeFeedback(uploadImageButton);
@@ -113,10 +111,12 @@
           return;
         }
         this.showLoading = true;
+        let token = this.userInfo.token;
         this.$axios({
           method: 'post',
           url: '/api/createUserTrend',
           data: qs.stringify({
+            token,
             userID,
             content,
             images,
@@ -125,6 +125,10 @@
         }).then(result => {
           console.log(result);
           this.showLoading = false;
+          if (result.data.errno) {
+            this.hintText = result.data.text;
+            return;
+          }
           this.hintText = '发送成功!';
           setTimeout(() => {
             this.$router.go(-1);
@@ -205,7 +209,7 @@
         .nav-title {
           flex-grow: 0.8;
         }
-        .send-trend.active{
+        .send-trend.active {
           color: #009CFF;
         }
         .send-trend i.fa {

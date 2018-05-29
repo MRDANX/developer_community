@@ -20,7 +20,7 @@
         </li>
         <li class="user-action">
           <ul ref="actions">
-            <li>
+            <li  @click="goto('/constructing')">
               <i class="fa fa-bell" style="color:#0076FE"></i>
               <span class="text">消息中心</span>
             </li>
@@ -29,7 +29,7 @@
               <span class="text">我喜欢的文章</span>
               <span>{{userInfo.favoriteArticle&&userInfo.favoriteArticle.length||'0'}} 篇</span>
             </li>
-            <li>
+            <li @click="goto('/constructing')">
               <i class="fa fa-eye" style="color:#CC3333"></i>
               <span class="text">阅读过的文章</span>
               <span>0 篇</span>
@@ -44,7 +44,7 @@
               <span class="text">赞过的动态</span>
               <span>{{userInfo.favoriteTrend&&userInfo.favoriteTrend.length||0}} 个</span>
             </li>
-            <li>
+            <li @click="goto('/constructing')">
               <i class="fa fa-list" style="color:#0099FF"></i>
               <span class="text">收藏集</span>
               <span>{{userInfo.collection&&userInfo.collection.length||'0'}} 个</span>
@@ -53,7 +53,7 @@
         </li>
         <li class="others">
           <ul>
-            <li ref="feedback">
+            <li ref="feedback"  @click="goto('/constructing')">
               <i class="fa  service"></i>
               <span>意见反馈</span>
             </li>

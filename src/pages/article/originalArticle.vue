@@ -83,6 +83,7 @@
         let articleID = this.articleList[index].articleID,
           userID = this.userInfo.userID,
           password = this.userInfo.password,
+          token = this.userInfo.token,
           qs = require('qs');
         this.showLoading = true;
         this.$axios({
@@ -90,16 +91,22 @@
           url: '/api/deleteArticle',
           data: qs.stringify({
             articleID,
-            userID,
-            password
+            token
           })
         }).then(result => {
-          if (result.data.err) {
-            this.hintText = result.data.text;
+          let response = result.data;
+          if (response.errno) {
+            this.hintText = response.text;
+            this.showLoading = false;
+            return;
+          }
+          if (!response.success) {
+            this.hintText = response.text;
             this.showLoading = false;
             return;
           }
           this.showLoading = false;
+          this.hintText = response.text;
           this.articleList.splice(index, 1);
           this.$store.dispatch('user/retrieveUserInfo');
           // this.getOriginalArticle(0, this.articleList.length);

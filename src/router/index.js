@@ -39,6 +39,8 @@ const topicTrends = () =>
   import ('@/pages/trend/topicTrends');
 const userDetail = () =>
   import ('@/pages/user/userDetail');
+const constructing = () =>
+  import ('@/pages/constructing');
 
 Vue.use(Router);
 
@@ -183,6 +185,11 @@ export default new Router({
       path: '/originalArticle',
       name: 'originalArticle',
       component: originalArticle
+    },
+    {
+      path: '/constructing',
+      name: 'constructing',
+      component: constructing
     },
     {
       path: '(.*|notFound)',

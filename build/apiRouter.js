@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const base64 = require('js-base64').Base64;
 
 const secretKey = 'developer_community';
-const expireTime = 7 * 24 * 60 * 60;
+const expireTime = 7*24*60*60;
 
 function getOriginalArticle(userID, simplification) {
   return new Promise((resolve, reject) => {
@@ -153,6 +153,7 @@ function base64ToImage(base64, publicPath) {
   });
 }
 
+//middleware for verifing user's login info
 function verifyUser(req, res, next) {
   let token = req.body.token;
   let decoded = jwt.verify(token, secretKey, (err, decoded) => {
@@ -161,7 +162,7 @@ function verifyUser(req, res, next) {
         inserts = [decoded.userToken, decoded.password];
       connection.query(sql, inserts, (err, result) => {
         if (err) {
-          console.log(err);
+          // console.log(err);
           res.json({
             errno: 500,
             text: '服务器错误，请联系管理员!'
@@ -170,7 +171,7 @@ function verifyUser(req, res, next) {
         }
         if (result[0].count > 0) {
           next();
-        }else{
+        } else {
           res.json({
             errno: 500,
             text: 'something wrong at function verifyUser!'
@@ -249,6 +250,7 @@ function initApiRouter(app) {
       Promise.all([getOriginalArticlePromise, getTrendNumberPromise, getFavoritelArticlePromise, getFavoritelTrendPromise, getFollowerPromise, getFolloweePromise, getCollectionPromise]).then(result => {
         //use es6 grammar to deconstruct result into corresponding variable
         let [originalArticle, trendNum, favoriteArticle, favoriteTrend, follower, followee, collection] = result;
+        delete userInfo.password;
         Object.assign(userInfo, {
           originalArticle,
           trendNum,
@@ -561,7 +563,7 @@ function initApiRouter(app) {
   });
 
   //router for update edited article
-  app.post('/api/editArticle', async (req, res) => {
+  app.post('/api/editArticle',verifyUser, async (req, res) => {
     let editArticleSql = 'UPDATE article SET title=?,content=?,subject=?,tags=?,cover=? WHERE articleID=?',
       data = req.body,
       articleID = data.articleID,
@@ -701,42 +703,24 @@ function initApiRouter(app) {
   });
 
   //router for deleting users article
-  app.post('/api/deleteArticle', (req, res) => {
-    let {
-      articleID,
-      userID,
-      password
-    } = req.body;
-    let validateSql = 'SELECT COUNT(*) AS exist FROM user WHERE userID=? AND password=?',
-      validateInserts = [userID, password],
+  app.post('/api/deleteArticle', verifyUser, (req, res) => {
+    let articleID = req.body.articleID,
       deleteSql = 'DELETE FROM article WHERE articleID=?',
       deleteInserts = [articleID];
-    new Promise((resolve, reject) => {
-      connection.query(validateSql, validateInserts, (err, result) => {
-        if (err) reject(err);
-        resolve(result[0]);
-      })
-    }).then(result => {
-      if (result.exist) {
-        connection.query(deleteSql, deleteInserts, (err, result) => {
-          if (err) throw err;
-          if (result.affectedRows == 1) {
-            res.json({
-              err: null,
-              text: '删除文章成功'
-            });
-          } else {
-            res.json({
-              err: 1,
-              text: '删除文章失败'
-            });
-          }
-        })
+    connection.query(deleteSql, deleteInserts, (err, result) => {
+      if (err) throw err;
+      if (result.affectedRows == 1) {
+        res.json({
+          success: 1,
+          text: '删除文章成功'
+        });
+      } else {
+        res.json({
+          success: 0,
+          text: '删除文章失败'
+        });
       }
-    }).catch(err => {
-      console.log(err);
-
-    })
+    });
   });
 
   //router for publishing comment of a trend
@@ -782,12 +766,12 @@ function initApiRouter(app) {
       if (err) throw err;
       if (result.affectedRows == 1) {
         res.json({
-          errno: null,
+          success: 1,
           text: '发布文章成功'
         });
       } else {
         res.json({
-          errno: 1,
+          success: 0,
           text: '发布文章失败'
         });
       }
@@ -982,7 +966,7 @@ function initApiRouter(app) {
   });
 
   //router for publishing trend
-  app.post('/api/createUserTrend', (req, res) => {
+  app.post('/api/createUserTrend',verifyUser, (req, res) => {
     let createTrendSql = 'INSERT INTO trend(userID,content,date,images,topic) VALUE(?,?,?,?,?)',
       data = req.body,
       userID = data.userID,

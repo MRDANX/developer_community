@@ -144,9 +144,14 @@
       }
     },
     created() {
+      if (!this.userInfo.userID) {
+        this.$router.replace('/setting');
+        return;
+      }
       this.$store.dispatch('user/checkUserInfo');
     },
     async activated() {
+
       let authorID;
       if (this.edit === true) {
         this.showLoading = true;
@@ -189,7 +194,7 @@
             this.title = articleInfo.title;
             this.content = articleInfo.content;
             this.cover = articleInfo.cover;
-            this.tags = articleInfo.tags.split(',');
+            this.tags = articleInfo.tags && articleInfo.tags.split(',');
             this.selectedSubject = articleInfo.subject;
           } else if (response.status == 404) {
             this.hintText = '未找到该文章，请再次确认!';
@@ -204,12 +209,6 @@
     mounted() {
       let submitButton = this.$refs.submit;
       this.$activeFeedback(submitButton);
-      //check out whether user has login
-      if (!this.userInfo.userID) {
-        this.$router.push({
-          path: '/setting'
-        })
-      }
     },
     updated() {
       setTimeout(() => {
@@ -311,6 +310,7 @@
         }
         if (!this.publishLock) {
           let qs = require('qs');
+          let token = this.userInfo.token;
           this.showLoading = true;
           this.publishLock = true;
           if (this.edit) {
@@ -323,12 +323,17 @@
                 title: this.title,
                 cover: this.cover,
                 subject: this.selectedSubject,
-                tags: this.tags.toString(),
-                content: this.content
+                tags: this.tags && this.tags.toString(),
+                content: this.content,
+                token
               })
             }).then(result => {
               let response = result.data;
               this.showLoading = false;
+              if (response.errno) {
+                this.hintText = response.text;
+                return;
+              }
               if (response.status == 200) {
                 this.hintText = response.text;
                 setTimeout(() => {
@@ -344,6 +349,7 @@
               }
             });
           } else {
+            let token = this.userInfo.token;
             //post original article
             this.$axios({
               method: 'post',
@@ -358,13 +364,18 @@
               })
             }).then(result => {
               this.showLoading = false;
-              if (!result.data.errno) {
+              let response = result.data;
+              if (response.errno) {
+                this.hintText = response.text;
+                return;
+              }
+              if (result.data.success) {
                 this.hintText = result.data.text;
                 this.$store.dispatch('user/retrieveUserInfo');
                 setTimeout(() => {
                   this.$router.go(-1);
                 }, 1500);
-              } else if (result.data.errno == 1) {
+              } else {
                 this.hintText = result.data.text;
                 this.publishLock = false;
               }
