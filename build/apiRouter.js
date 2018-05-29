@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const base64 = require('js-base64').Base64;
 
 const secretKey = 'developer_community';
-const expireTime = 7*24*60*60;
+const expireTime = 7 * 24 * 60 * 60;
 
 function getOriginalArticle(userID, simplification) {
   return new Promise((resolve, reject) => {
@@ -361,8 +361,11 @@ function initApiRouter(app) {
       phone,
       email,
       userName,
-      password
+      encodedPassword
     } = req.body;
+
+    let decoded = jwt.decode(encodedPassword, secretKey);
+    let password = decoded && decoded.password;
     let publicPath = 'static/images/avatar';
     await base64ToImage(avatar, publicPath).then(avatarPath => {
       avatar = avatarPath;
@@ -563,7 +566,7 @@ function initApiRouter(app) {
   });
 
   //router for update edited article
-  app.post('/api/editArticle',verifyUser, async (req, res) => {
+  app.post('/api/editArticle', verifyUser, async (req, res) => {
     let editArticleSql = 'UPDATE article SET title=?,content=?,subject=?,tags=?,cover=? WHERE articleID=?',
       data = req.body,
       articleID = data.articleID,
@@ -966,7 +969,7 @@ function initApiRouter(app) {
   });
 
   //router for publishing trend
-  app.post('/api/createUserTrend',verifyUser, (req, res) => {
+  app.post('/api/createUserTrend', verifyUser, (req, res) => {
     let createTrendSql = 'INSERT INTO trend(userID,content,date,images,topic) VALUE(?,?,?,?,?)',
       data = req.body,
       userID = data.userID,

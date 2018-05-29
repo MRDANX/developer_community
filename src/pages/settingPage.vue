@@ -53,7 +53,7 @@
         </li>
         <li class="others">
           <ul>
-            <li ref="feedback"  @click="goto('/constructing')">
+            <li ref="feedback" @click="goto('/constructing')">
               <i class="fa  service"></i>
               <span>意见反馈</span>
             </li>

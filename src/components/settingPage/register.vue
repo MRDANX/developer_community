@@ -75,17 +75,21 @@
           phone = this.phone,
           email = this.email,
           userName = this.userName,
-          password = this.password,
-          qs = require('qs');
+          password = this.password;
         //remind user and return if the format of phone number or email is wrong 
         if (!this.phoneReg.test(phone) || !this.emailReg.test(email)) {
           this.hintText = '手机号或邮箱格式有误,请重新核对后再输入!';
           return;
         }
+        let qs = require('qs'),
+          jwt = require('jsonwebtoken');
         //post a request to register user's information
         if (this.allowRegister && !this.registerLock) {
           this.showLoading = true;
           this.registerLock = true;
+          let encodedPassword=jwt.sign({
+            password
+          },'developer_community');
           this.$axios({
             method: 'post',
             url: '/api/requestRegister',
@@ -94,7 +98,7 @@
               phone,
               email,
               userName,
-              password
+              encodedPassword
             })
           }).then(result => {
             //set a timer to simulate delay of server's response
