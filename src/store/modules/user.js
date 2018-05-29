@@ -16,6 +16,8 @@ const mutations = {
     let userInfo = localStorage.getItem('userInfo');
     if (userInfo) {
       state.userInfo = JSON.parse(userInfo);
+    } else {
+      state.userInfo = {};
     }
   },
   unregisterUserInfo(state) {
@@ -27,7 +29,11 @@ const mutations = {
 
 const actions = {
   //check or update user information according to expire time
-  checkUserInfo({ state, commit, dispatch }) {
+  checkUserInfo({
+    state,
+    commit,
+    dispatch
+  }) {
     let expire = +localStorage.getItem('userInfoExpire');
     if (expire) {
       let clearExpire = 7 * 24 * 3600 * 1000;
@@ -44,47 +50,65 @@ const actions = {
       }
     }
   },
-  modifyUserInfo({ state, commit, dispatch }, { modifyType, modifiedText }) {
+  modifyUserInfo({
+    state,
+    commit,
+    dispatch
+  }, {
+    modifyType,
+    modifiedText
+  }) {
     return new Promise((resolve, reject) => {
       axios({
         method: 'post',
         url: '/api/modifyUserInfo',
         data: qs.stringify({
           userID: state.userInfo.userID,
+          token: state.userInfo.token,
           modifyType,
           modifiedText
         })
       }).then(result => {
+        let response = result.data;
         setTimeout(() => {
-          if (!result.data.errno) {
-            dispatch('retrieveUserInfo');
-          }
-          resolve(result);
-        }, 500);
+        dispatch('retrieveUserInfo');
+        resolve(result);
+        }, 200);
       });
     });
   },
   //request server to update localStrage relative to user's informattion
-  retrieveUserInfo({ state, commit }) {
+  retrieveUserInfo({
+    state,
+    commit
+  }) {
     let userInfo = JSON.parse(localStorage.getItem('userInfo'));
     if (userInfo) {
-      let userToken = userInfo.phone,
-        password = userInfo.password;
+      // let userToken = userInfo.phone,
+      //   password = userInfo.password;
+      // let jwt = require('jsonwebtoken');
+      // let encoded = jwt.sign({
+      //   userToken,
+      //   password
+      // }, 'danxiong');
+      let token = userInfo.token;
       axios({
         method: 'post',
         url: '/api/requestLogin',
         data: qs.stringify({
           tokenType: 'phone',
-          userToken,
-          password
+          encoded: token
         })
       }).then(result => {
         let data = result.data;
         //force logout if user's password has been modified
-        if (data.errno && data.errno == 404) {
+        if (data.errno && data.errno == 401) {
           localStorage.removeItem('userInfoExpire');
           localStorage.removeItem('userInfo');
           console.log('手机/邮箱或密码错误!');
+          setTimeout(() => {
+            commit('initializeUserInfo');
+          }, 1000);
           return;
         }
         //reset localStorage of userInfo
@@ -96,7 +120,13 @@ const actions = {
     }
   },
   //request server to toggle user's favor of the current article
-  toggleArticleFavor({ state, dispatch }, { articleID, isFavorite }) {
+  toggleArticleFavor({
+    state,
+    dispatch
+  }, {
+    articleID,
+    isFavorite
+  }) {
     const userID = state.userInfo.userID;
     return new Promise((resolve, reject) => {
       axios({
@@ -119,7 +149,13 @@ const actions = {
     });
   },
   //request server to toggle user's favor of the current trend
-  toggleTrendFavor({ state, dispatch }, { trendID, isFavorite }) {
+  toggleTrendFavor({
+    state,
+    dispatch
+  }, {
+    trendID,
+    isFavorite
+  }) {
     const userID = state.userInfo.userID;
     return new Promise((resolve, reject) => {
       axios({
@@ -141,9 +177,15 @@ const actions = {
       });
     });
   },
-  toggleUserFollow({state,dispatch},{followeeUserID,wantFollow}){
-    const userID=state.userInfo.userID;
-    return new Promise((resolve,reject)=>{
+  toggleUserFollow({
+    state,
+    dispatch
+  }, {
+    followeeUserID,
+    wantFollow
+  }) {
+    const userID = state.userInfo.userID;
+    return new Promise((resolve, reject) => {
       axios({
         method: 'post',
         url: '/api/toggleUserFollow',

@@ -31,16 +31,9 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     //server code
     before(app) {
 
-      //use body-parser for parsing parameters passed from client
-      app.use(bodyParser.urlencoded({
-        limit: '50mb',
-        extended: false
-      }));
-
       initApiRouter(app);
 
     },
-
     clientLogLevel: 'warning',
     historyApiFallback: {
       rewrites: [{

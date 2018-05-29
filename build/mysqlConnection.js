@@ -26,6 +26,9 @@ function handleDisconnection() {
       throw err;
     }
   });
+  setInterval(() => {
+    connection.query('SELECT 1');
+  }, 60000);
   return connection;
 }
 module.exports = handleDisconnection();

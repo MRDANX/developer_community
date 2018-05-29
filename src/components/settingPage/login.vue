@@ -62,20 +62,24 @@
           this.hintText = '手机或邮箱格式有误!';
           return;
         }
-        let qs = require('qs');
         this.showLoading = true;
+        let qs = require('qs');
+        let jwt = require('jsonwebtoken');
+        let encoded = jwt.sign({
+          userToken,
+          password
+        }, 'developer_community');
         //request login
         this.$axios({
           method: 'post',
           url: '/api/requestLogin',
           data: qs.stringify({
             tokenType,
-            userToken,
-            password
+            encoded
           })
         }).then(result => {
           let data = result.data;
-          if (data.errno && data.errno == 404) {
+          if (data.errno && data.errno == 401) {
             this.hintText = data.text;
             this.showLoading = false;
             return;

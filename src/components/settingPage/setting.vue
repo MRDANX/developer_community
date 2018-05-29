@@ -1,6 +1,6 @@
 <template>
   <div class="setting">
-    <ul v-if="userInfo.userID" class="setting-list">
+    <ul v-if="userInfo.userID" class="setting-list" ref="list1">
       <li>
         <span>邮箱</span>
         <span>{{userInfo.email||''}}</span>
@@ -9,11 +9,11 @@
         <span>手机号</span>
         <span>{{userInfo.phone||''}}</span>
       </li>
-      <li>
+      <li >
         <span>修改账号密码</span>
       </li>
     </ul>
-    <ul class="setting-list">
+    <ul class="setting-list" ref="list2">
       <li>
         <span>清除缓存</span>
         <span>330 KB</span>
@@ -34,10 +34,14 @@
         <span>关于</span>
       </li>
     </ul>
-    <div class="logout" ref="logout" v-if="userInfo.userID" @click="logout"><i class="fa fa-sign-out"></i>退出登录</div>
+    <div class="logout" ref="logout" v-if="userInfo.userID" @click="logout">
+      <i class="fa fa-sign-out"></i>退出登录</div>
     <div class="product">开发者社区1.0 • 程丹雄</div>
-		<hint v-model="hintText"/>
-    <loading v-if="showLoading" :verticalMove="-20"/>
+    <div class="modify-password">
+
+    </div>
+    <hint v-model="hintText" />
+    <loading v-if="showLoading" :verticalMove="-20" />
   </div>
 </template>
 
@@ -61,6 +65,14 @@
       if (logout) {
         this.$activeFeedback(logout);
       }
+      let list1 = this.$refs.list1.children;
+      for (let i = 0; i < list1.length; i++) {
+        this.$activeFeedback(list1[i]);
+      }
+      let list2 = this.$refs.list2.children;
+      for (let i = 0; i < list2.length; i++) {
+        this.$activeFeedback(list2[i]);
+      }
     },
     methods: {
       logout() {
@@ -73,6 +85,7 @@
       }
     }
   }
+
 </script>
 
 <style lang="less" scoped>
@@ -96,8 +109,8 @@
         &.margin-top {
           margin-top: 5vw;
         }
-        &:active {
-          background-color: #CCCCCC;
+        &.active {
+          background-color: #DDDDDD;
         }
       }
     }
@@ -112,7 +125,7 @@
       color: #0080FF;
       border: 1px solid #0080FF;
       background-color: transparent;
-      i.fa{
+      i.fa {
         margin-right: 3vw;
       }
       &.active {
@@ -127,4 +140,5 @@
       color: #666666;
     }
   }
+
 </style>

@@ -1,6 +1,10 @@
 const connection = require('./mysqlConnection');
 const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
+const base64 = require('js-base64').Base64;
 
+const secretKey = 'developer_community';
+const expireTime = 7 * 24 * 60 * 60;
 
 function getOriginalArticle(userID, simplification) {
   return new Promise((resolve, reject) => {
@@ -149,15 +153,64 @@ function base64ToImage(base64, publicPath) {
   });
 }
 
+function verifyUser(req, res, next) {
+  let token = req.body.token;
+  let decoded = jwt.verify(token, secretKey, (err, decoded) => {
+    if (!err) {
+      let sql = 'SELECT COUNT(*) AS count FROM user WHERE phone=? AND password=?',
+        inserts = [decoded.userToken, decoded.password];
+      connection.query(sql, inserts, (err, result) => {
+        if (err) {
+          console.log(err);
+          res.json({
+            errno: 500,
+            text: '服务器错误，请联系管理员!'
+          });
+          return;
+        }
+        if (result[0].count > 0) {
+          next();
+        }else{
+          res.json({
+            errno: 500,
+            text: 'something wrong at function verifyUser!'
+          });
+        }
+      })
+    } else {
+      console.error('Error when decoding token: ', err);
+      res.json({
+        errno: 401,
+        text: '用户信息已过期，请重新登录!'
+      });
+      return;
+    }
+  })
+}
+
 function initApiRouter(app) {
 
+  //use body-parser for parsing parameters passed from client
+  app.use(bodyParser.urlencoded({
+    limit: '50mb',
+    extended: false
+  }));
 
   //router for requesting login
   app.post('/api/requestLogin', (req, res) => {
     let tokenType = req.body.tokenType,
-      userToken = req.body.userToken,
-      password = req.body.password,
+      encoded = req.body.encoded,
+      userToken,
+      password,
       querySql;
+    jwt.verify(encoded, secretKey, (err, decoded) => {
+      if (!err) {
+        userToken = decoded.userToken;
+        password = decoded.password;
+      } else {
+        console.error('Error when decoding login info');
+      }
+    });
     if (tokenType == 'phone') {
       querySql = 'SELECT * FROM user where phone=? AND password=?';
     } else {
@@ -171,13 +224,21 @@ function initApiRouter(app) {
           resolve(result[0]);
         } else {
           reject({
-            errno: 404,
+            errno: 401,
             text: '手机号/邮箱或密码错误!'
           });
         }
       });
     }).then(userInfo => {
       let userID = userInfo.userID;
+      let phone = userInfo.phone;
+      let password = userInfo.password;
+      let token = jwt.sign({
+        userToken: phone,
+        password
+      }, secretKey, {
+        expiresIn: expireTime
+      });
       let getOriginalArticlePromise = getOriginalArticle(userID, true);
       let getTrendNumberPromise = getTrendNumber(userID);
       let getFavoritelArticlePromise = getFavoritelArticle(userID);
@@ -195,11 +256,13 @@ function initApiRouter(app) {
           favoriteTrend,
           follower,
           followee,
-          collection
+          collection,
+          token
         });
         res.json(userInfo);
       }).catch(err => {
         res.end('something went wrong when querying database');
+        console.error(err);
       });
     }).catch(err => {
       res.json(err);
@@ -327,7 +390,7 @@ function initApiRouter(app) {
   });
 
   //router for modifying user's information
-  app.post('/api/modifyUserInfo', async (req, res) => {
+  app.post('/api/modifyUserInfo', verifyUser, async (req, res) => {
     let modifySql,
       userID = req.body.userID,
       modifyType = req.body.modifyType,
@@ -390,11 +453,12 @@ function initApiRouter(app) {
         console.log('failed to update user\'s information');
       }
     });
+
   });
 
   //router for getting articleList
   app.get('/api/getArticleList', (req, res) => {
-	  
+
     let query = req.query,
       subject = query.subject,
       orderBy = query.orderBy || 'date',

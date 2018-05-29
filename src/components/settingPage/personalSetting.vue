@@ -41,7 +41,7 @@
         </div>
       </div>
     </transition>
-    <hint v-model="hintText" :delay="2500"/>
+    <hint v-model="hintText" :delay="2500" />
     <loading v-if="showLoading" :verticalMove="-6" />
   </div>
 </template>
@@ -86,7 +86,9 @@
           if (result.status == 200 && result.data.errno == 1062) {
             this.hintText = result.data.text;
           } else if (result.status == 200 && !result.data.errno) {
-            this.hintText = result.data.text
+            this.hintText = result.data.text;
+          } else {
+            this.hintText = result.data.text;
           }
           this.showLoading = false;
           this.showPopup = false;
@@ -163,7 +165,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background-color: rgba(255,255,255,0.9);
+        background-color: rgba(255, 255, 255, 0.9);
         box-shadow: 0 0 5px #CCCCCC;
         font-size: 5vw;
         &:active {
