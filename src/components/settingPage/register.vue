@@ -50,7 +50,7 @@
     },
     computed: {
       allowRegister() {
-        return this.allowPhone && this.allowEmail && this.allowUserName & this.allowPassword;
+        return this.allowPhone && this.allowEmail && this.allowUserName && this.allowPassword;
       }
     },
     methods: {

@@ -1,11 +1,12 @@
 <template>
   <scroll :refresh="refresh" :loadMore="loadMore" :enableScrollToTopButton="true" :nowScrollToTop="nowScrollToTop" :enableRefresh="true"
     :enableLoadMore="true" ref="articleList">
-    <ul class="articleList">
-      <hot-recommend :subject="subject" @askLogin="$refs.articleList.showHint('请先登录')" />
-      <article-brief v-for="(article,index) in articleList" :key="index" :articleInfo="article" @updateCurrentArticle="updateSpecifiedArticle(index)"
+    <transition-group name="show" class="articleList" tag="ul">
+      <hot-recommend :subject="subject" @askLogin="$refs.articleList.showHint('请先登录')" key="hotRecommend" @showHint="$refs.articleList.showHint($event)"
+      />
+      <article-brief v-for="(article,index) in articleList" :key="'articleBrief'+article.articleID" :articleInfo="article" @updateCurrentArticle="updateSpecifiedArticle(index)"
         @askLogin="$refs.articleList.showHint('请先登录')" />
-    </ul>
+    </transition-group>
   </scroll>
 </template>
 
@@ -13,6 +14,9 @@
   import scroll from "@/components/common/scroll";
   import articleBrief from "@/components/homePage/articleBrief";
   import hotRecommend from "@/components/homePage/hotRecommend";
+  import {
+    differenceBy
+  } from 'lodash';
   export default {
     name: 'articleList',
     props: {
@@ -28,11 +32,6 @@
         hintText: ''
       }
     },
-    computed: {
-      recommendArticles() {
-        return this.articleList.slice(0, 3);
-      }
-    },
     methods: {
       //return a promise which excute asychronized action to refresh data
       refresh() {
@@ -45,25 +44,23 @@
             },
             timeout: 20000
           }).then(result => {
-            // if (result.data.length == 0) {
-            //   reject({
-            //     errno: 0,
-            //     text: '已经是最新的了!'
-            //   });
-            // }
-            let filteredData = result.data.filter(newArticle => {
-              return !this.articleList.some(existArticle => {
-                return newArticle.articleID == existArticle.articleID;
-              })
-            });
-            if (filteredData.length == 0) {
-              reject({
-                errno: 0,
-                text: '已经是最新的了!'
-              });
-            }
-            this.articleList = filteredData.concat(this.articleList);
-            resolve();
+            let filteredData = differenceBy(result.data, this.articleList, 'articleID');
+            // let filteredData = result.data.filter(newArticle => {
+            //   return !this.articleList.some(existArticle => {
+            //     return newArticle.articleID == existArticle.articleID;
+            //   })
+            // });
+            setTimeout(() => {
+              if (filteredData.length == 0) {
+                reject({
+                  errno: 0,
+                  text: '已经是最新的了!'
+                });
+              }
+              this.articleList = result.data;
+              resolve();
+            }, 500);
+
           }).catch(err => {
             if (err.response) {
               this.hintText = err.response;
@@ -133,14 +130,39 @@
 </script>
 
 <style lang="less" scoped>
+  .show-enter-active {
+    transition: all .5s;
+  }
+
+  .show-enter {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+
+  .show-leave-active {
+    position: absolute !important;
+    transition: all .5s;
+  }
+
+  .show-leave-to {
+    transform-origin: center top;
+    transform: scale(0.1);
+    opacity: 0;
+  }
+
+  .show-move {
+    transition: all .5s;
+  }
+
   ul.articleList {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
+    // display: flex;
+    // flex-direction: column;
+    // justify-content: space-around;
     padding-top: 1vw;
+    position: relative;
     li {
       background-color: #FFFFFF;
-      margin: 1.5vw 0;
+      margin: 3vw 0;
       box-shadow: 0 1px 5px #CCCCCC;
     }
   }

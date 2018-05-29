@@ -37,6 +37,9 @@
   import {
     mapState
   } from "vuex";
+  import {
+    differenceBy
+  } from 'lodash';
   export default {
     name: 'hotRecommend',
     props: {
@@ -49,7 +52,8 @@
       return {
         isShow: true,
         favorLock: false,
-        recommendArticles: []
+        recommendArticles: [],
+        refreshLock: false
       }
     },
     computed: {
@@ -75,19 +79,20 @@
           this.$axios.get('/api/getArticleList', {
             params: {
               subject: this.subject,
-              startIndex: this.recommendArticles.length,
+              startIndex: 0,
               number: 3,
               orderBy: 'favors'
             },
             timeout: 20000
           }).then(result => {
-            if (result.data.length == 0) {
+            let filteredData = differenceBy(result.data, this.recommendArticles, 'articleID');
+            if (filteredData.length == 0) {
               reject({
-                errno: 0,
+                newest: 1,
                 text: '已经是最新的了!'
               });
             }
-            this.recommendArticles = result.data.concat(this.recommendArticles);
+            this.recommendArticles = result.data;
             resolve();
           }).catch(err => {
             if (err.response) {
@@ -101,7 +106,20 @@
         })
       },
       refresh() {
-        this.$refs.refresh.classList.add('refreshing');
+        if (!this.refreshLock) {
+          this.refreshLock = true;
+          this.$refs.refresh.classList.add('refreshing');
+          setTimeout(() => {
+            this.$refs.refresh.classList.remove('refreshing');
+            this.refreshLock = false;
+          }, 3000);
+          this.getRecommendArticles().catch(result => {
+            if (result.newest) {
+              this.$emit('showHint', result.text);
+            }
+          })
+        }
+
       },
       isFavorite(index) {
         const favoriteArticle = this.userInfo.favoriteArticle,
@@ -166,7 +184,7 @@
     margin: 1vw 0 3vw;
     box-shadow: 0 1px 5px #CCCCCC;
     transition: all .4s;
-    opacity: 1; // overflow: hidden;
+    opacity: 1;
     &.close {
       min-height: 0;
       margin: 0;
@@ -190,8 +208,8 @@
         color: #777777;
         span {
           margin-left: 5vw;
-          transition: transform 3s;
           &.refreshing {
+            transition: transform 3s;
             color: #0080BB;
             transform: rotate(360deg);
           }
