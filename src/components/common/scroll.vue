@@ -93,6 +93,11 @@
     activated() {
       this._refresh();
     },
+    updated() {
+      if (this.nowScrollToTop) {
+        this._scrollToTop();
+      }
+    },
     methods: {
       _initScroll() {
         //return directively if the wrapper element isn't existed
@@ -219,7 +224,7 @@
           }).catch(err => {
             if (err.errno == 0) {
               console.log(err.text);
-              this._refresh();
+              // this._refresh();
               let loadMoreTips = this.$refs.loadMoreTips;
               loadMoreTips.setAttribute('class', '');
               loadMoreTips.style.fontSize = '6vw';
@@ -229,7 +234,12 @@
               //disable action of load more data
               this._enableLoadMore = false;
             } else {
+              this.hintText = err;
               console.log(err);
+              this._refresh();
+              this._enable();
+              //disable action of load more data
+              this._enableLoadMore = false;
             }
           });
         }
@@ -252,19 +262,7 @@
       showHint(text) {
         this.hintText = text;
       }
-    },
-    updated() {
-      if (this.nowScrollToTop) {
-        this._scrollToTop();
-      }
     }
-    // watch: {
-    //   nowScrollToTop(toTop) {
-    //     if (toTop) {
-    //       this._scrollToTop();
-    //     }
-    //   }
-    // }
   }
 
 </script>
@@ -310,11 +308,16 @@
       }
     }
     .bottom-load {
-      height: 10vw;
+      height: 15vw;
       line-height: 10vw;
       text-align: center;
       font-size: 8vw;
       color: #999999;
+      // span{
+      //   position: relative;
+      //   right: 5%;
+      // }
+      
     }
     .scrollToTop {
       position: absolute;

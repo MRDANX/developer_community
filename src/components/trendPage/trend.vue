@@ -170,8 +170,8 @@
   .trend-item {
     margin: 3vw 0;
     background-color: #FFFFFF;
-    border-top: 1px solid #F1F1F1;
-    border-bottom: 1px solid #F1F1F1;
+    border-top: 1px solid #E1E1E1;
+    border-bottom: 1px solid #E1E1E1;
     .trend-head {
       padding: 3vw;
       display: flex;

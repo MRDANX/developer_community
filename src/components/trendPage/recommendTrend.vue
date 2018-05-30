@@ -1,5 +1,5 @@
 <template>
-  <scroll :enableLoadMore='true' :loadMore="loadMore" ref="recommendScroll">
+  <scroll :enableLoadMore='true' :enableRefresh="true" :refresh="refresh" :loadMore="loadMore" ref="recommendScroll">
     <div class="recommend-trend">
       <div class="slide-trend">
         <slider>
@@ -20,10 +20,10 @@
           </router-link>
         </slider>
       </div>
-      <ul class="trend-list">
-        <trend v-for="(trend,index) in trendList" :key="index" :trend="trend" @askLogin="$refs.recommendScroll.showHint('请先登录')"
+      <transition-group name="show" class="trend-list" tag="ul">
+        <trend v-for="(trend,index) in trendList" :key="'trend'+trend.trendID" :trend="trend" @askLogin="$refs.recommendScroll.showHint('请先登录')"
           @updateCurrentTrend="updateSpecifiedTrend(index)" @showSharePanel="$emit('showSharePanel',$event)" />
-      </ul>
+      </transition-group>
       <loading v-if="showLoading" />
     </div>
   </scroll>
@@ -34,6 +34,9 @@
   import loading from "@/components/common/loading";
   import slider from "@/components/trendPage/slider";
   import trend from "@/components/trendPage/trend";
+  import {
+    differenceBy
+  } from 'lodash';
   export default {
     name: 'recommendTrend',
     data() {
@@ -44,18 +47,18 @@
       }
     },
     mounted() {
-      this.showLoading = true;
-      this.$axios({
-        method: 'get',
-        url: '/api/getTrendList',
-        params: {
-          startIndex: 0,
-          number: 5
-        }
-      }).then(result => {
-        this.trendList = result.data;
-        this.showLoading = false;
-      });
+      // this.showLoading = true;
+      // this.$axios({
+      //   method: 'get',
+      //   url: '/api/getTrendList',
+      //   params: {
+      //     startIndex: 0,
+      //     number: 5
+      //   }
+      // }).then(result => {
+      //   this.trendList = result.data;
+      //   this.showLoading = false;
+      // });
       this.$axios({
         method: 'get',
         url: '/api/getTrendList',
@@ -69,6 +72,41 @@
       });
     },
     methods: {
+      //return a promise which excute asychronized action to refresh data
+      refresh() {
+        return new Promise((resolve, reject) => {
+          this.$axios.get('/api/getTrendList', {
+            params: {
+              startIndex: 0,
+              number: 5
+            },
+            timeout: 20000
+          }).then(result => {
+            let filteredData = differenceBy(result.data, this.trendList, 'trendID');
+            setTimeout(() => {
+              if (filteredData.length == 0) {
+                reject({
+                  errno: 0,
+                  text: '已经是最新的了!'
+                });
+              }
+              this.trendList = result.data;
+              resolve();
+            }, 500);
+
+          }).catch(err => {
+            if (err.response) {
+              this.hintText = err.response;
+              console.log('error.response: ', err.response);
+            } else if (err.request.readyState == 4 && err.request.status == 0) {
+              this.hintText = '请求超时';
+              console.warn('Request timeout!');
+            } else {
+              console.error(err);
+            }
+          });
+        })
+      },
       loadMore() {
         return new Promise((resolve, reject) => {
           this.$axios({
@@ -116,6 +154,30 @@
 </script>
 
 <style lang="less" scoped>
+  .show-enter-active {
+    transition: all .5s;
+  }
+
+  .show-enter {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  .show-leave-active {
+    position: absolute !important;
+    transition: all .5s;
+  }
+
+  .show-leave-to {
+    transform-origin: center top;
+    transform: scale(0.1);
+    opacity: 0;
+  }
+
+  .show-move {
+    transition: all .5s;
+  }
+
   .recommend-trend {
     width: 100vw;
     .slide-trend {

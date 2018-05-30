@@ -3,7 +3,7 @@
     :enableLoadMore="true" ref="articleList">
     <transition-group name="show" class="articleList" tag="ul">
       <hot-recommend :subject="subject" @askLogin="$refs.articleList.showHint('请先登录')" key="hotRecommend" @showHint="$refs.articleList.showHint($event)"
-      />
+        class="hot-recommend" />
       <article-brief v-for="(article,index) in articleList" :key="'articleBrief'+article.articleID" :articleInfo="article" @updateCurrentArticle="updateSpecifiedArticle(index)"
         @askLogin="$refs.articleList.showHint('请先登录')" />
     </transition-group>
@@ -29,7 +29,8 @@
     data() {
       return {
         articleList: [],
-        hintText: ''
+        hintText: '',
+        ownSubject:this.subject
       }
     },
     methods: {
@@ -38,7 +39,7 @@
         return new Promise((resolve, reject) => {
           this.$axios.get('/api/getArticleList', {
             params: {
-              subject: this.subject,
+              subject: this.ownSubject,
               startIndex: 0,
               number: 5
             },
@@ -79,20 +80,22 @@
         return new Promise((resolve, reject) => {
           this.$axios.get('/api/getArticleList', {
             params: {
-              subject: this.subject,
+              subject: this.ownSubject,
               startIndex: this.articleList.length,
               number: 5
             },
             timeout: 20000
           }).then(result => {
-            if (result.data.length == 0) {
-              reject({
-                errno: 0,
-                text: 'No more data!'
-              });
-            }
-            this.articleList = this.articleList.concat(result.data);
-            resolve();
+            setTimeout(() => {
+              if (result.data.length == 0) {
+                reject({
+                  errno: 0,
+                  text: 'No more data!'
+                });
+              }
+              this.articleList = this.articleList.concat(result.data);
+              resolve();
+            }, 500);
           }).catch(err => {
             if (err.response) {
               console.log('error.response: ', err.response);
@@ -163,7 +166,10 @@
     li {
       background-color: #FFFFFF;
       margin: 3vw 0;
-      box-shadow: 0 1px 5px #CCCCCC;
+      box-shadow: 0 1px 5px #E1E1E1;
+      &.hot-recommend {
+        margin-top: 1vw;
+      }
     }
   }
 

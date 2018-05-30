@@ -141,7 +141,7 @@ function base64ToImage(base64, publicPath) {
       imgData = base64.replace(regExp, '');
     let dataBuffer = new Buffer(imgData, 'base64');
     let fs = require('fs');
-    fs.writeFile(filePath, dataBuffer, err => {
+    fs.writeFile('dist/'+filePath, dataBuffer, err => {
       if (err) {
         console.log('save image failed at function base64ToImage');
         reject();
@@ -604,7 +604,7 @@ function initApiRouter(app) {
     connection.query(getSpecifiedArticleSql, inserts, (err, result) => {
       if (err) throw err;
       res.json(result);
-    })
+    });
   });
 
   //router for getting users favorite articles

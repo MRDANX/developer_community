@@ -89,7 +89,7 @@
         line-height: 9vh;
         background-color: #FFFFFF;
         transition: color .3s;
-        width: 25vw;
+        width: 20vw;
         text-align: center;
         z-index: 99;
         &:nth-child(4) {
