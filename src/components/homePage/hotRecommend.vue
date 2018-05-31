@@ -82,8 +82,7 @@
               startIndex: 0,
               number: 3,
               orderBy: 'favors'
-            },
-            timeout: 20000
+            }
           }).then(result => {
             let filteredData = differenceBy(result.data, this.recommendArticles, 'articleID');
             if (filteredData.length == 0) {

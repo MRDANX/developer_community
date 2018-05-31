@@ -42,8 +42,7 @@
               subject: this.ownSubject,
               startIndex: 0,
               number: 5
-            },
-            timeout: 20000
+            }
           }).then(result => {
             let filteredData = differenceBy(result.data, this.articleList, 'articleID');
             // let filteredData = result.data.filter(newArticle => {
@@ -83,8 +82,7 @@
               subject: this.ownSubject,
               startIndex: this.articleList.length,
               number: 5
-            },
-            timeout: 20000
+            }
           }).then(result => {
             setTimeout(() => {
               if (result.data.length == 0) {

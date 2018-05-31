@@ -79,8 +79,7 @@
             params: {
               startIndex: 0,
               number: 5
-            },
-            timeout: 20000
+            }
           }).then(result => {
             let filteredData = differenceBy(result.data, this.trendList, 'trendID');
             setTimeout(() => {

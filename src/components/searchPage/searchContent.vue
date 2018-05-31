@@ -83,8 +83,7 @@
           startIndex: this.articleList.length,
           number: 5,
           orderBy: 'favors'
-        },
-        timeout: 4000
+        }
       }).then(result => {
         if (result.data.length == 0) {
           reject({
@@ -124,8 +123,7 @@
               startIndex: this.articleList.length,
               number: 5,
               orderBy: 'favors'
-            },
-            timeout: 4000
+            }
           }).then(result => {
             if (result.data.length == 0) {
               reject({

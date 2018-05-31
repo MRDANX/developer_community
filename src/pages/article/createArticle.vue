@@ -624,6 +624,7 @@
           margin: 1vw 0;
           display: flex;
           height: 35vw;
+          min-height: 40vw;
           justify-content: flex-start;
           align-items: center;
           flex-wrap: wrap;
@@ -631,6 +632,7 @@
           overflow: hidden;
           &.selected {
             height: 0;
+            min-height: 0;
           }
           &.reselect {
             height: 35vw;
