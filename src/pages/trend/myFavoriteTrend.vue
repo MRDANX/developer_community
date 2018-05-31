@@ -37,13 +37,18 @@
         showLoading: false,
         hintText: '',
         hasMore: true,
-        showSharePanel: false
+        showSharePanel: false,
+        userID: 0
       }
     },
     mounted() {
       window.addEventListener('scroll', throttle(this.checkScrollToBottom, 200));
     },
     activated() {
+      if (this.userInfo.userID != this.userID) {
+        this.trendList = [];
+        this.userID = this.userInfo.userID;
+      }
       this.getTrendList();
     },
     methods: {

@@ -86,13 +86,18 @@
       if (logout) {
         this.$activeFeedback(logout);
       }
-      let list1 = this.$refs.list1.children;
-      for (let i = 0; i < list1.length; i++) {
-        this.$activeFeedback(list1[i]);
+      let list1 = this.$refs.list1 && this.$refs.list1.children;
+      if (list1) {
+        for (let i = 0; i < list1.length; i++) {
+          this.$activeFeedback(list1[i]);
+        }
       }
-      let list2 = this.$refs.list2.children;
-      for (let i = 0; i < list2.length; i++) {
-        this.$activeFeedback(list2[i]);
+
+      let list2 = this.$refs.list2 && this.$refs.list2.children;
+      if (list2) {
+        for (let i = 0; i < list2.length; i++) {
+          this.$activeFeedback(list2[i]);
+        }
       }
       let cancel = this.$refs.cancel,
         confirm = this.$refs.confirm;

@@ -32,7 +32,8 @@
         articleList: [],
         showLoading: false,
         hasMore: true,
-        hintText: ''
+        hintText: '',
+        userID: 0
       }
     },
     computed: {
@@ -47,6 +48,10 @@
       // this.getOriginalArticle();
     },
     activated() {
+      if (this.userInfo.userID != this.userID) {
+        this.articleList = [];
+        this.userID = this.userInfo.userID;
+      }
       this.getOriginalArticle(0, true);
     },
     methods: {

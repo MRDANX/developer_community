@@ -530,6 +530,9 @@
             /deep/ img {
               max-width: 94vw;
             }
+            // /deep/ p{
+            //   word-break: break-all;
+            // }
           }
           .tags {
             border-top: 1px solid #E1E1E1;

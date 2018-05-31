@@ -31,7 +31,8 @@
         articleList: [],
         showLoading: false,
         hasMore: true,
-        hintText: ''
+        hintText: '',
+        userID:0
       }
     },
     computed: {
@@ -41,6 +42,10 @@
       window.addEventListener('scroll', throttle(this.checkScrollToBottom, 200));
     },
     activated() {
+       if (this.userInfo.userID != this.userID) {
+        this.articleList = [];
+        this.userID = this.userInfo.userID;
+      }
       this.getArticleList();
     },
     methods: {

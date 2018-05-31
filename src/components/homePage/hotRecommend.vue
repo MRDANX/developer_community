@@ -179,7 +179,7 @@
 <style lang="less" scoped>
   .hot-recommend {
     width: 100%;
-    min-height: 80vw;
+    min-height: 70vw;
     background-color: #FFFFFF;
     margin: 1vw 0 3vw;
     box-shadow: 0 1px 5px #CCCCCC;
