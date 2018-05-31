@@ -114,9 +114,7 @@
     data() {
       return {
         showLoading: false,
-        hots: ['单页面应用', 'Android', '前端', 'iOS', '反向代理', 'vue.js', '跨域', '小程序', 'nginx', 'Google', '面向对象', 'node',
-          'webpack', '用户体验', 'localStorage', 'mysql', 'bootstrap'
-        ],
+        hots: [],
         currentHotsIndex: 0,
         hotsRefreshing: false,
         searchHistory: [],
@@ -134,6 +132,15 @@
       if (searchHistory) {
         this.searchHistory = searchHistory;
       }
+      this.$axios({
+        method: 'get',
+        url: '/api/hotSearchList',
+      }).then(result => {
+        let data = result.data;
+        for (let i = 0; i < data.length; i++) {
+          this.hots.push(data[i].keyword);
+        }
+      })
     },
     mounted() {
       //add active effect
@@ -143,9 +150,6 @@
         });
         this.$activeFeedback(this.$refs.clearAll);
       }
-      this.$refs.hotList.forEach(el => {
-        this.$activeFeedback(el);
-      });
       //disable load more action as default
       this.$refs.searchingScroll.disableLoadMore();
     },
@@ -244,6 +248,13 @@
         this.showLoading = true;
         this.$axios({
           method: 'get',
+          url: '/api/arrangeSearchHistory',
+          params: {
+            keyword: this.searchText
+          }
+        });
+        this.$axios({
+          method: 'get',
           url: '/api/searchForDetailed',
           params: {
             searchText: this.searchText,
@@ -325,18 +336,24 @@
 </script>
 
 <style lang="less" scoped>
+  .fade-leave-active {
+    position: absolute;
+    transition: all .3s;
+  }
+
+  .fade-enter-active {
+    transition: all .5s;
+  }
+
   .fade-enter,
   .fade-leave-to {
     opacity: 0;
   }
 
-
-
   .searching-content {
     width: 100%;
     .searching-result {
       width: 100vw;
-      transition: all .5s;
       font-size: 4vw;
       .simple-result {
         background-color: #FFFFFF;

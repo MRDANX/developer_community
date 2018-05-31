@@ -31,10 +31,6 @@
         slideDirection: 'slide-down'
       }
     },
-    deactivated() {
-      // this.searchText='';
-      // this.isSearching = false;
-    },
     mounted() {
       this.$activeFeedback(this.$refs.goBack);
       this.$activeFeedback(this.$refs.searchButton);

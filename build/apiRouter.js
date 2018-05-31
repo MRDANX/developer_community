@@ -842,6 +842,57 @@ function initApiRouter(app) {
     });
   });
 
+  //router for getting hot search keyword
+  app.get('/api/hotSearchList', (req, res) => {
+    let sql = 'SELECT keyword FROM searchHistory ORDER BY count DESC LIMIT 0,18';
+    connection.query(sql, (err, result) => {
+      if (err) throw err;
+      res.json(result);
+    })
+  });
+
+  //router for getting hot search keyword
+  app.get('/api/arrangeSearchHistory', (req, res) => {
+    let sql = 'SELECT count(*) as exist FROM searchHistory WHERE keyword=?',
+      keyword = req.query.keyword;
+    connection.query(sql, [keyword], (err, result) => {
+      if (err) throw err;
+      if (result[0].exist) {
+        let updateSql = 'UPDATE searchHistory SET count=count+1 WHERE keyword=?';
+        connection.query(updateSql, [keyword], (err, result) => {
+          if (err) throw err;
+          if (result.affectedRows > 0) {
+            res.json({
+              success: true,
+              text: '更新搜索历史成功'
+            })
+          } else {
+            res.json({
+              success: false,
+              text: '更新搜索历史失败'
+            })
+          }
+        })
+      } else {
+        let storeSql = 'INSERT INTO searchHistory(keyword) VALUE(?)';
+        connection.query(storeSql, [keyword], (err, result) => {
+          if (err) throw err;
+          if (result.affectedRows > 0) {
+            res.json({
+              success: true,
+              text: '更新搜索历史成功'
+            })
+          } else {
+            res.json({
+              success: false,
+              text: '更新搜索历史失败'
+            })
+          }
+        })
+      }
+    })
+  });
+
   //router for searching for simple article and user
   app.get('/api/searchForSimple', (req, res) => {
     let searchText = req.query.searchText;

@@ -149,10 +149,8 @@
           }
           if (response.success) {
             this.$store.commit('user/updateToken', response.token);
-            // this.$store.dispatch('user/retrieveUserInfo');
           }
           this.hintText = response.text;
-
           this.resetModifyPanel();
         })
       },
@@ -222,9 +220,25 @@
             opacity: 1;
             height: 45vw;
           }
-          input {
-            margin-left: 3vw;
+          >div {
+            display: flex; // align-items: center;
+            // justify-content: center;
+            input {
+              margin-left: 3vw;
+              height: 6vw;
+              font-size: 4vw;
+              text-indent: 1vw;
+              border: 1px solid #AAAAAA;
+              outline: none;
+              border-radius: 3px;
+              &:focus {
+                outline: none;
+                box-shadow: 0 0 1px #0080EE;
+                border: 1px solid #0080EE;
+              }
+            }
           }
+
           .button-group {
             display: flex;
             justify-content: space-between;
@@ -234,7 +248,6 @@
               border: 1px solid #0080FF;
               color: #0080FF;
               border-radius: 5px;
-
               &.confirm.active,
               &.cancel.active {
                 background-color: #0080FF;
