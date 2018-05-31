@@ -228,7 +228,7 @@
               let loadMoreTips = this.$refs.loadMoreTips;
               loadMoreTips.setAttribute('class', '');
               loadMoreTips.style.fontSize = '6vw';
-              loadMoreTips.innerHTML = '没有更多了';
+              loadMoreTips.innerHTML = '没有更多了~';
               this._refresh();
               this._enable();
               //disable action of load more data

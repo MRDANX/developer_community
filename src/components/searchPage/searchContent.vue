@@ -32,14 +32,15 @@
             <i class="fa fa-free-code-camp"></i>
             <span>热门文章</span>
           </div>
-          <div class="title-right">
+          <!-- <div class="title-right">
             <i class="fa fa-cogs"></i>
             <span>定制热门</span>
-          </div>
+          </div> -->
         </li>
-        <li v-for="(article,index) in articleList" :key="index" class="article">
+        <router-link v-for="(article,index) in articleList" :key="index" :to="{path:'/articleDetail',query:{articleID:article.articleID}}"
+          class="article" tag="li">
           <div class="article-info">
-            <router-link :to="{name:'articleDetail',params:{articleID:article.articleID}}" tag="h4">{{article.title}}</router-link>
+            <h4>{{article.title}}</h4>
             <p>
               <span>{{article.favors}}人喜欢</span> •
               <router-link :to="{name:'userDetail',params:{userID:article.userID}}" tag="span">{{article.author}}</router-link> •
@@ -47,7 +48,7 @@
             </p>
           </div>
           <img :src="article.cover" class="article-img" v-if="article.cover">
-        </li>
+        </router-link>
         <li v-if="articleList.length==0" class="article-loading" v-for="i in 3" :key="i">
           <div class="article-info">
             <h4></h4>
@@ -197,7 +198,7 @@
         span {
           font-size: 4vw;
         }
-        .hot-icon{
+        .hot-icon {
           display: inline-block;
           width: 7vw;
           height: 7vw;

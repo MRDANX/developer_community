@@ -75,7 +75,7 @@
       <div class="article-action">
         <i class="fa fa-heart-o favor" :class="{isFavorite}" @click="toggleFavor"></i>
         <i class="fa fa-comment-o" @click="showCommentPanel=true"></i>
-        <i class="fa fa-plus-square-o"></i>
+        <i class="fa fa-plus-square-o1"></i>
       </div>
       <p class="meta">
         <span>喜欢 {{articleInfo.favors}}</span> •
@@ -167,7 +167,7 @@
     // }
     // },
     activated() {
-      if (this.articleID != this.articleInfo.articleID) {
+      // if (this.articleID != this.articleInfo.articleID) {
         this.articleInfo = {};
         this.comments = [];
         this.initialComments = false;
@@ -177,7 +177,7 @@
         }, 200);
         window.addEventListener('scroll', this.initializeComments);
         this.getArticleInfo();
-      }
+      // }
     },
     methods: {
       getArticleInfo() {
@@ -529,6 +529,9 @@
             padding: 0 2vw;
             /deep/ img {
               max-width: 94vw;
+            }
+            /deep/ ol,/deep/ ul{
+              padding-left: 0em !important;
             }
             // /deep/ p{
             //   word-break: break-all;

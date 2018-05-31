@@ -1,5 +1,5 @@
 <template>
-  <li class="hot-recommend" v-if="recommendArticles.length!=0" :class="{close:!isShow}">
+  <li class="hot-recommend" v-if="recommendArticles.length!=0" :class="{close:!isShow}" ref="hotWrapper">
     <div class="header">
       <div>
         <!-- fa-h-square -->
@@ -8,7 +8,7 @@
       </div>
       <div>
         <span class="fa fa-refresh" ref="refresh" @click="refresh"></span>
-        <span class="fa fa-close" @click="isShow=false"></span>
+        <span class="fa fa-close" @click="closePanel"></span>
       </div>
     </div>
     <ul class="content">
@@ -170,6 +170,15 @@
             this.recommendArticles.splice(index, 1, result.data[0]);
           }
         })
+      },
+      closePanel() {
+        this.isShow = false;
+        let hotWrapper = this.$refs.hotWrapper
+        if (hotWrapper) {
+          setTimeout(() => {
+            hotWrapper.style.display = 'none';
+          }, 400);
+        }
       }
     }
   }

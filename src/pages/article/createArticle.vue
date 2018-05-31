@@ -719,6 +719,10 @@
           min-height: 50vh;
           padding: 12px 5px;
         }
+        /deep/ ol,
+        /deep/ ul {
+          padding-left: 0;
+        }
       }
     }
   }
