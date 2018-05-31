@@ -717,6 +717,7 @@
         font-size: 4vw;
         /deep/ .ql-container .ql-editor {
           min-height: 50vh;
+          padding: 12px 5px;
         }
       }
     }

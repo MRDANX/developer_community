@@ -32,8 +32,8 @@
             <p class="article-info">{{articleInfo.date|dateFormat}} • 字数 {{wordCount}} • 阅读 {{articleInfo.pv}} •
               <i class="fa fa-file-text"></i> {{articleInfo.subject}}</p>
           </div>
-          <div class="content">
-            <div class="main-body" v-html="articleInfo.content"></div>
+          <div class="content ql-snow">
+            <div class="main-body ql-editor" v-html="articleInfo.content"></div>
             <div class="tags">
               <tag :tagText="tag" v-for="(tag,index) in tags" :key="index" />
             </div>
@@ -88,6 +88,8 @@
 </template>
 
 <script>
+  import 'quill/dist/quill.core.css';
+  import 'quill/dist/quill.snow.css';
   import tag from "@/components/common/tag";
   import slideOut from "@/components/common/slideOut";
   import articleComment from "@/components/articleDetail/articleComment";
@@ -455,10 +457,11 @@
           }
         }
         .title {
-          font-size: 6vw;
+          font-size: 5.5vw;
           padding: 0 3vw;
           margin: 3vw 0;
           font-weight: bold;
+          word-break: break-all;
         }
         .user-info {
           margin: 3vw 0;
@@ -521,9 +524,10 @@
         .content {
           overflow: hidden;
           .main-body {
+            font-size: 3.8vw;
             margin: 4vw 0;
-            padding: 0 3vw;
-            /deep/ img{
+            padding: 0 2vw;
+            /deep/ img {
               max-width: 94vw;
             }
           }
@@ -531,6 +535,9 @@
             border-top: 1px solid #E1E1E1;
             padding: 2vw 0;
             margin: 1vw 0;
+            >p {
+              box-sizing: content-box;
+            }
           }
         }
       }

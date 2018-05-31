@@ -5,7 +5,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const history = require('connect-history-api-fallback')
-const initApiRouter = require('./apiRouter');
+const initApiRouter = require('./build/apiRouter');
 
 const app = express();
 

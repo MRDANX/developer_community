@@ -178,6 +178,9 @@
           max-width: 60vw;
           min-width: 20vw;
           min-height: 5vw;
+          &:nth-of-type(2){
+            text-align: right;
+          }
         }
         span.deactive {
           color: #999999;

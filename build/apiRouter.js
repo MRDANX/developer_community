@@ -141,12 +141,12 @@ function base64ToImage(base64, publicPath) {
       imgData = base64.replace(regExp, '');
     let dataBuffer = new Buffer(imgData, 'base64');
     let fs = require('fs');
-    fs.writeFile('dist/' + filePath, dataBuffer, err => {
+    fs.writeFile(filePath, dataBuffer, err => {
       if (err) {
         console.log('save image failed at function base64ToImage');
         reject();
       } else {
-        console.log('用户动态图片保存成功');
+        console.log('图片保存成功');
         resolve('/' + filePath)
       }
     })

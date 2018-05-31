@@ -3,8 +3,7 @@
     <!-- nav-bar for customized subjects -->
     <div class="nav">
       <subject-bar class="scroll-bar" :subjectList="customizedSubjectList" @changeCurrentArticleList="changeCurrentArticleList"
-      ref="subjectBar"
-      />
+        ref="subjectBar" />
       <div class="custom-button" ref="customButton">
         <i class="fa fa-caret-down" @click="showCustomPanel=true"></i>
       </div>
@@ -89,6 +88,11 @@
       };
     },
     created() {
+      let enabledSubjectsIndex = JSON.parse(localStorage.getItem('enabledSubjectsIndex'));
+      if (enabledSubjectsIndex) {
+        this.enabledSubjectsIndex = enabledSubjectsIndex;
+      }
+
       //initialize currentArticleListIndex according to route's params
       let subjectName = this.$route.params.subject;
       this.currentSubjectName = subjectName;
@@ -99,6 +103,8 @@
           return;
         }
       }
+      
+      
       // this.currentArticleListIndex = this.customizedSubjectList.findIndex(subject => {
       //   return subject.to === subjectName;
       // });
@@ -172,12 +178,18 @@
         this.currentArticleListIndex = articleListIndex;
       }
     },
+    watch: {
+      enabledSubjectsIndex() {
+        localStorage.setItem('enabledSubjectsIndex', JSON.stringify(this.enabledSubjectsIndex))
+      }
+    },
     components: {
       subjectBar,
       switchBox,
       slideOut
     }
   };
+
 </script>
 
 <style lang="less" scoped>
@@ -314,4 +326,5 @@
       }
     }
   }
+
 </style>
