@@ -123,7 +123,6 @@
             topic: ''
           })
         }).then(result => {
-          console.log(result);
           this.showLoading = false;
           if (result.data.errno) {
             this.hintText = result.data.text;

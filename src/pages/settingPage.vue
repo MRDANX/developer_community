@@ -20,20 +20,20 @@
         </li>
         <li class="user-action">
           <ul ref="actions">
-            <li  @click="goto('/constructing')">
+            <!-- <li  @click="goto('/constructing')">
               <i class="fa fa-bell" style="color:#0076FE"></i>
               <span class="text">消息中心</span>
-            </li>
+            </li> -->
             <li @click="goto('/myFavoriteArticle')">
               <i class="fa fa-heart" style="color:#6CBD45"></i>
               <span class="text">我喜欢的文章</span>
               <span>{{userInfo.favoriteArticle&&userInfo.favoriteArticle.length||'0'}} 篇</span>
             </li>
-            <li @click="goto('/constructing')">
+            <!-- <li @click="goto('/constructing')">
               <i class="fa fa-eye" style="color:#CC3333"></i>
               <span class="text">阅读过的文章</span>
               <span>0 篇</span>
-            </li>
+            </li> -->
             <li @click="goto('/originalArticle')">
               <i class="fa fa-file-text" style="color:#0080FF"></i>
               <span class="text">原创文章管理</span>
@@ -44,11 +44,11 @@
               <span class="text">赞过的动态</span>
               <span>{{userInfo.favoriteTrend&&userInfo.favoriteTrend.length||0}} 个</span>
             </li>
-            <li @click="goto('/constructing')">
+            <!-- <li @click="goto('/constructing')">
               <i class="fa fa-list" style="color:#0099FF"></i>
               <span class="text">收藏集</span>
               <span>{{userInfo.collection&&userInfo.collection.length||'0'}} 个</span>
-            </li>
+            </li> -->
           </ul>
         </li>
         <li class="others">

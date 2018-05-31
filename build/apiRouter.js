@@ -141,7 +141,7 @@ function base64ToImage(base64, publicPath) {
       imgData = base64.replace(regExp, '');
     let dataBuffer = new Buffer(imgData, 'base64');
     let fs = require('fs');
-    fs.writeFile('dist/'+filePath, dataBuffer, err => {
+    fs.writeFile('dist/' + filePath, dataBuffer, err => {
       if (err) {
         console.log('save image failed at function base64ToImage');
         reject();
@@ -174,7 +174,7 @@ function verifyUser(req, res, next) {
         } else {
           res.json({
             errno: 500,
-            text: 'something wrong at function verifyUser!'
+            text: '用户信息有误或已过期，请重新登录!'
           });
         }
       })
@@ -461,9 +461,41 @@ function initApiRouter(app) {
 
   });
 
+  //router for modifying password
+  app.post('/api/modifyPassword', verifyUser, (req, res) => {
+    let userID = req.body.userID,
+      phone = req.body.phone,
+      encodedPassword = req.body.encodedPassword;
+    let decoded = jwt.decode(encodedPassword, secretKey),
+      password = decoded && decoded.password;
+    let sql = 'UPDATE user SET password=? WHERE userID=?',
+      inserts = [password, userID];
+    connection.query(sql, inserts, (err, result) => {
+      if (err) throw err;
+      if (result.affectedRows == 1) {
+        let token = jwt.sign({
+          userToken: phone,
+          password
+        }, secretKey, {
+          expiresIn: expireTime
+        });
+        res.json({
+          success: true,
+          text: '修改密码成功!',
+          token
+        })
+      } else {
+        res.json({
+          success: false,
+          text: '修改密码失败，请重新尝试!'
+        })
+      }
+    });
+
+  })
+
   //router for getting articleList
   app.get('/api/getArticleList', (req, res) => {
-
     let query = req.query,
       subject = query.subject,
       orderBy = query.orderBy || 'date',

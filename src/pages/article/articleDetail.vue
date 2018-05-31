@@ -3,7 +3,7 @@
     <div class="header" ref="header">
       <i class="fa fa-arrow-left" @click.self="$router.go(-1)"></i>
       <h4 class="head-title" ref="headTitle" @click="scrollToTop">{{articleInfo.title}}</h4>
-      <i class="fa fa-ellipsis-v"></i>
+      <i class="fa fa-ellipsis-v1"></i>
     </div>
     <transition name="fade-in">
       <div class="content-wrapper" v-if="articleInfo.articleID" key="article" ref="contentWrapper">
@@ -523,6 +523,9 @@
           .main-body {
             margin: 4vw 0;
             padding: 0 3vw;
+            /deep/ img{
+              max-width: 94vw;
+            }
           }
           .tags {
             border-top: 1px solid #E1E1E1;

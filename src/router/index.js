@@ -55,7 +55,8 @@ export default new Router({
   routes: [{
       path: '/',
       name: 'welcomePage',
-      component: welcomePage
+      component: welcomePage,
+      redirect:'/subject'
     },
     {
       path: '/subject',

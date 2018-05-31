@@ -24,6 +24,10 @@ const mutations = {
     state.userInfo = {};
     localStorage.removeItem('userInfo');
     localStorage.removeItem('userInfoExpire');
+  },
+  updateToken(state, token) {
+    state.userInfo.token = token;
+    localStorage.setItem('userInfo', JSON.stringify(state.userInfo));
   }
 };
 
@@ -71,8 +75,8 @@ const actions = {
       }).then(result => {
         let response = result.data;
         setTimeout(() => {
-        dispatch('retrieveUserInfo');
-        resolve(result);
+          dispatch('retrieveUserInfo');
+          resolve(result);
         }, 200);
       });
     });
@@ -84,13 +88,6 @@ const actions = {
   }) {
     let userInfo = JSON.parse(localStorage.getItem('userInfo'));
     if (userInfo) {
-      // let userToken = userInfo.phone,
-      //   password = userInfo.password;
-      // let jwt = require('jsonwebtoken');
-      // let encoded = jwt.sign({
-      //   userToken,
-      //   password
-      // }, 'danxiong');
       let token = userInfo.token;
       axios({
         method: 'post',

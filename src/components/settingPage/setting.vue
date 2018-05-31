@@ -9,12 +9,31 @@
         <span>手机号</span>
         <span>{{userInfo.phone||''}}</span>
       </li>
-      <li >
+      <li class="modify-password" @click.self="showModifyPanel=!showModifyPanel">
         <span>修改账号密码</span>
       </li>
+      <li class="modify-panel" :class="{activated:showModifyPanel}">
+        <div>
+          <span>　原密码:</span>
+          <input type="password" v-model="oldPassword">
+        </div>
+        <div>
+          <span>　新密码:</span>
+          <input type="password" v-model="newPassword">
+        </div>
+        <div>
+          <span>确认密码:</span>
+          <input type="password" v-model="confirmPassword">
+        </div>
+        <div class="button-group">
+          <div @click.self="resetModifyPanel" ref="cancel" class="cancel">取消</div>
+          <div ref="confirm" class="confirm" @click.self="confirmModify">确认</div>
+        </div>
+      </li>
     </ul>
+
     <ul class="setting-list" ref="list2">
-      <li>
+      <!-- <li>
         <span>清除缓存</span>
         <span>330 KB</span>
       </li>
@@ -29,7 +48,7 @@
       <li>
         <span>自动检查粘贴板快速分享</span>
         <span>开关</span>
-      </li>
+      </li> -->
       <li class="margin-top">
         <span>关于</span>
       </li>
@@ -37,9 +56,6 @@
     <div class="logout" ref="logout" v-if="userInfo.userID" @click="logout">
       <i class="fa fa-sign-out"></i>退出登录</div>
     <div class="product">开发者社区1.0 • 程丹雄</div>
-    <div class="modify-password">
-
-    </div>
     <hint v-model="hintText" />
     <loading v-if="showLoading" :verticalMove="-20" />
   </div>
@@ -54,7 +70,12 @@
     data() {
       return {
         hintText: '',
-        showLoading: false
+        showLoading: false,
+        showModifyPanel: false,
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+        consistent: false
       }
     },
     computed: {
@@ -73,6 +94,14 @@
       for (let i = 0; i < list2.length; i++) {
         this.$activeFeedback(list2[i]);
       }
+      let cancel = this.$refs.cancel,
+        confirm = this.$refs.confirm;
+      if (cancel) {
+        this.$activeFeedback(cancel);
+      }
+      if (confirm) {
+        this.$activeFeedback(confirm);
+      }
     },
     methods: {
       logout() {
@@ -82,6 +111,74 @@
           this.hintText = '已成功退出登录!';
           this.showLoading = false;
         }, 1000);
+      },
+      confirmModify() {
+        if (!this.consistent) {
+          this.hintText = '两次输入密码不一致，请重新修改!';
+          return;
+        }
+        let jwt = require('jsonwebtoken');
+        let token = this.userInfo.token;
+        let storePassword = jwt.decode(token, 'developer_community').password;
+        if (this.oldPassword != storePassword) {
+          this.hintText = '原密码错误，请重新输入!';
+          return;
+        }
+        this.showLoading = true;
+        let qs = require('qs');
+        let userID = this.userInfo.userID,
+          phone = this.userInfo.phone,
+          encodedPassword = jwt.sign({
+            password: this.newPassword
+          }, 'developer_community');
+        this.$axios({
+          method: 'post',
+          url: '/api/modifyPassword',
+          data: qs.stringify({
+            userID,
+            phone,
+            token,
+            encodedPassword
+          })
+        }).then(result => {
+          this.showLoading = false;
+          let response = result.data;
+          if (response.errno) {
+            this.hintText = response.text;
+            return;
+          }
+          if (response.success) {
+            this.$store.commit('user/updateToken', response.token);
+            // this.$store.dispatch('user/retrieveUserInfo');
+          }
+          this.hintText = response.text;
+
+          this.resetModifyPanel();
+        })
+      },
+
+      resetModifyPanel() {
+        this.oldPassword = '';
+        this.newPassword = '';
+        this.confirmPassword = '';
+        this.showModifyPanel = false;
+      }
+    },
+    watch: {
+      newPassword(newVal, oldVal) {
+
+        if (newVal == this.confirmPassword) {
+          this.consistent = true;
+        } else {
+          this.consistent = false;
+        }
+      },
+      confirmPassword(newVal, oldVal) {
+        if (newVal == this.newPassword) {
+          this.consistent = true;
+        } else {
+          this.consistent = false;
+        }
       }
     }
   }
@@ -112,8 +209,43 @@
         &.active {
           background-color: #DDDDDD;
         }
+        &.modify-panel {
+          width: 100%;
+          height: 0;
+          overflow: hidden;
+          background-color: #FFFFFF;
+          transition: all .5s;
+          flex-direction: column;
+          padding: 3vw 0;
+          opacity: 0;
+          &.activated {
+            opacity: 1;
+            height: 45vw;
+          }
+          input {
+            margin-left: 3vw;
+          }
+          .button-group {
+            display: flex;
+            justify-content: space-between;
+            width: 50vw;
+            >div {
+              padding: 1vw 3vw;
+              border: 1px solid #0080FF;
+              color: #0080FF;
+              border-radius: 5px;
+
+              &.confirm.active,
+              &.cancel.active {
+                background-color: #0080FF;
+                color: #FFFFFF
+              }
+            }
+          }
+        }
       }
     }
+
     .logout {
       width: 60vw;
       height: 12vw;
