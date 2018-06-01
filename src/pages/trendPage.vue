@@ -16,6 +16,7 @@
     <slide-out slideToDirection="toUp" v-model="showSharePanel" class="share-panel" :showModal="true">
       <share-panel/>
     </slide-out>
+    
     <hint v-model="hintText" />
   </div>
 </template>
@@ -176,7 +177,9 @@
         font-size: 6.5vw;
         text-align: center;
       }
-    } // .share-content {
+    }
+
+ // .share-content {
     //   width: 100vw;
     //   min-height: 25vw;
     //   box-sizing: border-box;

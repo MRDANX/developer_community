@@ -6,7 +6,7 @@
     </div>
     <div class="trend-content" v-if="trendInfo" ref="trendContent">
       <div class="mask" :class="{commentFocusing}" @click="commentFocusing=false" @touchstart="commentFocusing=false||$refs.commentBox.blur()"></div>
-      <trend :trend="trendInfo" :showFoot="false" />
+      <trend :trend="trendInfo" :showFoot="false" @magnifyImage="magnifyImage" />
       <div class="comments">
         <div class="comments-header">
           {{comments.length||0}} 条评论
@@ -26,7 +26,7 @@
       </div>
       <div class="publish-comment" ref="publishComment">
         <div class="input-box" :class="{commentFocusing}">
-          <input type="text" v-model="commentText" @focus="commentFocusing=true" placeholder="输入评论..." ref="commentBox">
+          <input type="text" v-model="commentText" @focus="commentFocusing=true" placeholder="输入评论..." ref="commentBox" @keyup.enter="publishComment">
         </div>
         <div class="send-comment" :class="{commentFocusing,active:commentText}" @click="publishComment"></div>
         <div class="trend-action" :class="{commentFocusing}">
@@ -43,6 +43,9 @@
     </div>
     <div class="not-found" v-else>
       <span>该动态不存在或已被删除!!</span>
+    </div>
+    <div class="magnify-image" :class="{show:showMagnifyImage}" @click="showMagnifyImage=false">
+      <img :src="magnifyImageSrc" alt="">
     </div>
     <hint v-model="hintText" />
     <loading v-if="showLoading" color="#FFFFFF" />
@@ -70,7 +73,9 @@
         commentText: '',
         commentFocusing: false,
         hintText: '',
-        showLoading: false
+        showLoading: false,
+        showMagnifyImage: false,
+        magnifyImageSrc: '/static/images/PWAIcons/favicon.ico'
       }
     },
     computed: {
@@ -205,6 +210,10 @@
             clearInterval(toBottomTimer);
           }
         }, 20)
+      },
+      magnifyImage(src) {
+        this.showMagnifyImage = true;
+        this.magnifyImageSrc = src;
       }
     },
     components: {
@@ -229,6 +238,7 @@
   .trend-detail {
     width: 100vw;
     height: 100vh;
+    font-size: 4vw;
     background-color: #F5F6FA;
     .trend-head {
       width: 100vw;
@@ -418,7 +428,33 @@
           }
         }
       }
-
+    }
+    .magnify-image {
+      position: fixed;
+      top: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      width: 100vw;
+      height: 0;
+      opacity: 0;
+      transition: opacity .3s;
+      img {
+        width: 0vw;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+      }
+      &.show {
+        z-index: 99;
+        height: 100vh;
+        opacity: 1;
+        img {
+          width: 98vw;
+          transition: all .2s linear;
+        }
+      }
     }
   }
 

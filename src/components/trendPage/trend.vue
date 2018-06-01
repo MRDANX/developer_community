@@ -24,7 +24,7 @@
         trendID:trend.trendID}}" tag="div">
         <p class="trend-text" v-html="trend.content"></p>
         <div class="trend-image-set" v-if="trend.images">
-          <img :src="image" v-for="(image,index) in trend.images.split(',')" :key="index">
+          <img :src="image" v-for="(image,index) in trend.images.split(',')" :key="index" @click.self="$emit('magnifyImage',image)">
         </div>
       </router-link>
     </div>
@@ -44,6 +44,7 @@
         <i class="fa fa-share-alt"></i>
       </div>
     </div>
+
   </li>
 </template>
 
@@ -160,6 +161,11 @@
             console.log(err);
           });
         }
+      },
+      magnifyImage(src) {
+        this.showMagnifyImage = true;
+        this.magnifyImageSrc = src;
+
       }
     }
   }
@@ -283,6 +289,7 @@
         }
       }
     }
+
   }
 
   @keyframes trendFavorite {

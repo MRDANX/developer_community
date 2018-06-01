@@ -85,7 +85,6 @@
                 <span @click="getResultDirectly(history)">{{history}}</span>
               </div>
               <span class="item-clear" @click="removeClickedHistory(index)" ref="clearItem"></span>
-
             </li>
             <li class="clear-all-history" @click="clearAllHistory" key="clearAllHistory" v-if="searchHistory.length!=0" ref="clearAll">清除全部搜索记录</li>
           </transition-group>

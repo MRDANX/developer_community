@@ -26,9 +26,9 @@
       <div class="mask"></div>
       <div class="bottom-content">
         <i class="fa fa-photo" @click="$refs.fileUpload.click()"></i>
-        <i class="fa">@</i>
-        <i class="fa fa-slack"></i>
-        <i class="fa fa-smile-o"></i>
+        <i class="fa"></i>
+        <i class="fa fa-slack1"></i>
+        <i class="fa fa-smile-o1"></i>
         <span class="length-left">剩余字数：{{contentLengthLeft}}</span>
       </div>
     </div>

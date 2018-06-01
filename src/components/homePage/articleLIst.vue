@@ -4,7 +4,7 @@
     <transition-group name="show" class="articleList" tag="ul">
       <hot-recommend :subject="subject" @askLogin="$refs.articleList.showHint('请先登录')" key="hotRecommend" @showHint="$refs.articleList.showHint($event)"
         class="hot-recommend" />
-      <article-brief v-for="(article,index) in articleList" :key="'articleBrief'+article.articleID" :articleInfo="article" @updateCurrentArticle="updateSpecifiedArticle(index)"
+      <article-brief v-if="articleList.length!=0" v-for="(article,index) in articleList" :key="'articleBrief'+article.articleID" :articleInfo="article" @updateCurrentArticle="updateSpecifiedArticle(index)"
         @askLogin="$refs.articleList.showHint('请先登录')" />
     </transition-group>
   </scroll>
