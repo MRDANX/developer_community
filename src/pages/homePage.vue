@@ -103,8 +103,7 @@
           return;
         }
       }
-      
-      
+
       // this.currentArticleListIndex = this.customizedSubjectList.findIndex(subject => {
       //   return subject.to === subjectName;
       // });
@@ -146,7 +145,6 @@
             if (this.subjectList[checkbox.index].to == this.currentSubjectName) {
               this.$refs.subjectBar.changeCurrentArticleList(0);
             }
-
           }
         }
       },

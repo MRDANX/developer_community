@@ -40,7 +40,6 @@
         hintText: ''
       }
     },
-
     mounted() {
       this.$activeFeedback(this.$refs.subject.$el);
       this.$activeFeedback(this.$refs.trend.$el);

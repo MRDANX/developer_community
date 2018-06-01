@@ -28,6 +28,9 @@
         },{
           from:'trendDetail',
           to:'userDetail'
+        },{
+          from:'articleDetail',
+          to:'userDetail'
         }]
       }
     },

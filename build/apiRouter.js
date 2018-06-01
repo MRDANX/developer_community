@@ -923,8 +923,8 @@ function initApiRouter(app) {
   app.get('/api/searchForDetailed', (req, res) => {
     let searchText = req.query.searchText,
       articleOrderBy = req.query.articleOrderBy;
-    let getUsersSql = `SELECT userID,avatar,userName FROM user WHERE userName like '%${searchText}%' LIMIT 10`,
-      getArticlesSql = `SELECT articleID, userName AS author, title, content, favors, date FROM article a JOIN USER u ON a.userID=u.userID WHERE title LIKE '%${searchText}%' OR content LIKE '%${searchText}%' ORDER BY ${articleOrderBy} DESC LIMIT 5`
+    let getUsersSql = `SELECT userID,avatar,userName FROM user WHERE userName like '%${searchText}%'   LIMIT 10`,
+      getArticlesSql = `SELECT articleID, userName AS author, title, content, favors, date FROM article a JOIN USER u ON a.userID=u.userID WHERE title LIKE '%${searchText}%' OR content LIKE '%${searchText}%' OR tags LIKE '%${searchText}' ORDER BY ${articleOrderBy} DESC LIMIT 5`
     let getUsers = new Promise((resolve, reject) => {
       connection.query(getUsersSql, (err, users) => {
         if (err) throw err;

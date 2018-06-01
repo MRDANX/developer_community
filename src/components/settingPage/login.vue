@@ -4,7 +4,7 @@
       <img :src="storedAvatar||'/static/images/avatar/default-avatar.png'" alt="">
     </div>
     <div class="input-area">
-      <text-input v-model="userToken" inputType="text" hint="手机/邮箱" @pressEnter="requestLogin" />
+      <text-input v-model="userToken" inputType="text" hint="手机号/邮箱" @pressEnter="requestLogin" />
       <text-input v-model="password" inputType="password" hint="密  码" @pressEnter="requestLogin" />
       <button class="login-button" @click="requestLogin" ref="loginButton">登录</button>
       <button class="register-button" ref="registerButton" @click="showRegister=true">注册</button>
@@ -48,6 +48,10 @@
     },
     methods: {
       requestLogin() {
+        if (!this.password || !this.userToken) {
+          this.hintText = '请输入完整的用户信息!';
+          return;
+        }
         let userToken = this.userToken,
           password = this.password,
           phoneReg = /\d{11}/,

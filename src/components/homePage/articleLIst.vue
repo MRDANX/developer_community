@@ -118,7 +118,7 @@
           if (result.data) {
             this.articleList.splice(index, 1, result.data[0]);
           }
-        })
+        });
       }
     },
     components: {

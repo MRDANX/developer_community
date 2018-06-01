@@ -129,7 +129,7 @@
     },
     filters: {
       abstractContent(content) {
-        return content.replace(/<\/?[^>]+>/g, '').slice(0, 100);;
+        return content.replace(/<\/?[^>]+>/g, '').slice(0, 100);
       }
     },
     mounted() {

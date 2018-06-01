@@ -24,15 +24,15 @@
                   <span :class="{active:currentOrderBy=='pv'}" @click="currentOrderBy='pv'">按浏览数排序</span>
                   <span :class="{active:currentOrderBy=='favors'}" @click="currentOrderBy='favors'">按点赞数排序</span>
                 </div>
-                <div class="header-right">
+                <!-- <div class="header-right">
                   <span>所有时间</span>
                   <i class="fa fa-angle-down"></i>
-                </div>
+                </div> -->
               </li>
               <router-link :to="{path:'/articleDetail',query:{articleID:article.articleID}}" tag="li" class="related-article-content" v-for="(article,index) in detailedSearchArticles"
                 :key="index">
                 <h4 class="title" v-html="highlightMatch(article.title)"></h4>
-                <p class="content" v-html="highlightMatch(tagFilter(article.content))"></p>
+                <p class="content" v-html="highlightMatch(correctContent(tagFilter(article.content)))"></p>
                 <p class="meta">
                   <span>{{article.favors}} 人喜欢 • {{article.author}} • {{article.date|timeFromNow}}</span>
                 </p>
@@ -132,6 +132,7 @@
       if (searchHistory) {
         this.searchHistory = searchHistory;
       }
+      //get hot search list from server
       this.$axios({
         method: 'get',
         url: '/api/hotSearchList',
@@ -268,24 +269,27 @@
       },
       loadMoreDetailedArticles() {
         return new Promise((resolve, reject) => {
-          this.$axios({
-            method: 'get',
-            url: '/api/searchForMoreDetailedArticle',
-            params: {
-              searchText: this.searchText,
-              articleOrderBy: this.currentOrderBy,
-              startIndex: this.detailedSearchArticles.length
-            }
-          }).then(result => {
-            if (result.data.length == 0) {
-              reject({
-                errno: 0,
-                text: 'no more data.'
-              })
-            }
-            this.detailedSearchArticles = this.detailedSearchArticles.concat(result.data);
-            resolve();
-          });
+          setTimeout(() => {
+            this.$axios({
+              method: 'get',
+              url: '/api/searchForMoreDetailedArticle',
+              params: {
+                searchText: this.searchText,
+                articleOrderBy: this.currentOrderBy,
+                startIndex: this.detailedSearchArticles.length
+              }
+            }).then(result => {
+              if (result.data.length == 0) {
+                reject({
+                  errno: 0,
+                  text: 'no more data.'
+                })
+              }
+              this.detailedSearchArticles = this.detailedSearchArticles.concat(result.data);
+              resolve();
+            });
+          }, 500);
+
         })
 
       },
@@ -293,6 +297,15 @@
         let regExp = new RegExp(this.searchText, 'ig');
         text = text.replace(/<script>(.*?)<\/script>/ig, '&lt;script&gt;$1&lt;/script&gt;');
         return text.replace(regExp, '<strong style="color:#0080FF">$&</strong>');
+      },
+      correctContent(text) {
+        let regExp = new RegExp(this.searchText, 'ig');
+        let result = regExp.exec(text);
+        if (!result) {
+          return text;
+        }
+        let index = result && result.index;
+        return text.slice(index > 10 ? index - 10 : index, index + 100);
       },
       tagFilter(text) {
         return text.replace(/<\/?[^>]+>/g, '');

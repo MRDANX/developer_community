@@ -168,15 +168,15 @@
     // },
     activated() {
       // if (this.articleID != this.articleInfo.articleID) {
-        this.articleInfo = {};
-        this.comments = [];
-        this.initialComments = false;
-        this.hasMoreComments = true;
-        setTimeout(() => {
-          this.initializeComments();
-        }, 200);
-        window.addEventListener('scroll', this.initializeComments);
-        this.getArticleInfo();
+      this.articleInfo = {};
+      this.comments = [];
+      this.initialComments = false;
+      this.hasMoreComments = true;
+      setTimeout(() => {
+        this.initializeComments();
+      }, 200);
+      window.addEventListener('scroll', this.initializeComments);
+      this.getArticleInfo();
       // }
     },
     methods: {
@@ -189,11 +189,11 @@
           }
         }).then(result => {
           if (!result.data[0]) {
-            this.$router.push('/notFound');
+            this.$router.replace('/notFound');
             return;
           }
           this.articleInfo = result.data[0];
-        })
+        });
       },
       getArticleComment() {
         this.loadingComment = true;
@@ -279,9 +279,9 @@
           })
         }).then(result => {
           if (!result.data.errno) {
+            this.getArticleInfo();
             this.getArticleComment();
             this.scrollToBottom();
-            // this.getArticleInfo();
           } else {
             console.log(result.data);
           }
@@ -530,10 +530,10 @@
             /deep/ img {
               max-width: 94vw;
             }
-            /deep/ ol,/deep/ ul{
+            /deep/ ol,
+            /deep/ ul {
               padding-left: 0em !important;
-            }
-            // /deep/ p{
+            } // /deep/ p{
             //   word-break: break-all;
             // }
           }

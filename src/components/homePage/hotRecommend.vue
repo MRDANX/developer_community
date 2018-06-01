@@ -118,7 +118,6 @@
             }
           })
         }
-
       },
       isFavorite(index) {
         const favoriteArticle = this.userInfo.favoriteArticle,

@@ -45,6 +45,9 @@
         this.$refs.usersTrendScroll._disable();
         return;
       }
+
+    },
+    activated() {
       this.showLoading = true;
       this.$axios({
         method: 'get',

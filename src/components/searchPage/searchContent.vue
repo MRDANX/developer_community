@@ -75,8 +75,8 @@
         articleList: []
       }
     },
-    beforeMount() {
-      // setTimeout(() => {
+    created() {
+      setTimeout(() => {
       this.$axios.get('/api/getArticleList', {
         params: {
           subject: 'index',
@@ -101,7 +101,7 @@
           console.error(err);
         }
       });
-      // }, 500);
+      }, 500);
     },
     mounted() {
       let searchContentScroll = this.$refs.searchContentScroll;

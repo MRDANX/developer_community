@@ -12,9 +12,9 @@
         <p class="add-comment" @click="$emit('replyAt',comment.userName)">
           <i class="fa fa-comments-o"></i>
         </p>
-        <p class="favor">
+        <!-- <p class="favor">
           <i class="fa fa-thumbs-o-up"></i>{{comment.favors}}
-        </p>
+        </p> -->
       </div>
     </div>
     <div class="comment-content">

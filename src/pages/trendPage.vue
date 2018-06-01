@@ -5,7 +5,7 @@
         <li :class="{active:currentIndex==index}" v-for="(tab,index) in navTabs" :key="index" @click="currentIndex=index">{{tab}}</li>
       </ul>
       <div class="nav-edit">
-        <router-link to="/createTrend" class="fa fa-edit" tag="i"></router-link>
+        <i @click="goCreateTrend" class="fa fa-edit"></i>
       </div>
     </div>
     <transition :name="slideDirection">
@@ -16,6 +16,7 @@
     <slide-out slideToDirection="toUp" v-model="showSharePanel" class="share-panel" :showModal="true">
       <share-panel/>
     </slide-out>
+    <hint v-model="hintText" />
   </div>
 </template>
 
@@ -25,6 +26,9 @@
   import usersTrend from "@/components/trendPage/usersTrend";
   import recommendTrend from "@/components/trendPage/recommendTrend";
   import sharePanel from "@/components/common/sharePanel";
+  import {
+    mapState
+  } from "vuex";
   export default {
     name: 'trendPage',
     data() {
@@ -33,10 +37,12 @@
         currentIndex: 1,
         slideDirection: 'slide-left',
         showSharePanel: false,
-        shareTrendID: undefined
+        shareTrendID: undefined,
+        hintText: ''
       }
     },
     computed: {
+      ...mapState('user', ['userInfo']),
       currentView() {
         switch (this.currentIndex) {
           case 0:
@@ -54,6 +60,15 @@
       _showSharePanel(trendID) {
         this.shareTrendID = trendID;
         this.showSharePanel = true;
+      },
+      goCreateTrend() {
+        if (!this.userInfo.userID) {
+          this.hintText = '请先登录!';
+          return;
+        }
+        this.$router.push({
+          name
+        });
       }
     },
     watch: {
