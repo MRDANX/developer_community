@@ -22,36 +22,34 @@
 </template>
 
 <script>
-  import scroll from "@/components/common/scroll";
-  import trend from "@/components/trendPage/trend";
-  import loading from "@/components/common/loading";
-  import {
-    mapState
-  } from "vuex";
-  export default {
-    name: 'usersTrend',
-    data() {
-      return {
-        trendList: [],
-        showLoading: false
-      }
-    },
-    mounted() {
-      let loginRegisterButton = this.$refs.loginRegisterButton;
-      if (loginRegisterButton) {
-        this.$activeFeedback(loginRegisterButton.$el);
-      }
-      if (!this.userInfo.userID) {
-        this.$refs.usersTrendScroll._disable();
-        return;
-      }
-
-    },
-    activated() {
+import scroll from "@/components/common/scroll";
+import trend from "@/components/trendPage/trend";
+import loading from "@/components/common/loading";
+import { mapState } from "vuex";
+export default {
+  name: "usersTrend",
+  data() {
+    return {
+      trendList: [],
+      showLoading: false
+    };
+  },
+  mounted() {
+    let loginRegisterButton = this.$refs.loginRegisterButton;
+    if (loginRegisterButton) {
+      this.$activeFeedback(loginRegisterButton.$el);
+    }
+    if (!this.userInfo.userID) {
+      this.$refs.usersTrendScroll._disable();
+      return;
+    }
+  },
+  activated() {
+    if (this.userInfo.userID) {
       this.showLoading = true;
       this.$axios({
-        method: 'get',
-        url: '/api/getUsersTrend',
+        method: "get",
+        url: "/api/getUsersTrend",
         params: {
           followerUserID: this.userInfo.userID
         }
@@ -59,96 +57,95 @@
         // console.log(result);
         this.trendList = result.data;
         this.showLoading = false;
-      })
-    },
-    computed: {
-      ...mapState('user', ['userInfo'])
-    },
-    methods: {
-      updateSpecifiedTrend(index) {
-        const trendID = this.trendList[index].trendID;
-        this.$axios({
-          method: 'get',
-          url: '/api/getSpecifiedTrend',
-          params: {
-            trendID
-          }
-        }).then(result => {
-          if (result.data) {
-            this.trendList.splice(index, 1, result.data[0]);
-          }
-        })
-      }
-    },
-    components: {
-      trend,
-      scroll,
-      loading
+      });
     }
+  },
+  computed: {
+    ...mapState("user", ["userInfo"])
+  },
+  methods: {
+    updateSpecifiedTrend(index) {
+      const trendID = this.trendList[index].trendID;
+      this.$axios({
+        method: "get",
+        url: "/api/getSpecifiedTrend",
+        params: {
+          trendID
+        }
+      }).then(result => {
+        if (result.data) {
+          this.trendList.splice(index, 1, result.data[0]);
+        }
+      });
+    }
+  },
+  components: {
+    trend,
+    scroll,
+    loading
   }
-
+};
 </script>
 
 <style lang="less" scoped>
-  .users-trend {
-    width: 100vw;
-    .users-trend-list {
-      .none-followee,
-      .none-trend {
-        text-align: center;
-        margin-top: 10vh;
-        color: #999999;
-        width: 100vw;
-        height: 50vw;
-        font-size: 6vw;
-        background-image: url("/static/images/common/none-follow.svg");
-        background-size: 100% 100%;
-        position: relative;
-        span {
-          position: absolute;
-          bottom: 3vw;
-          left: 50%;
-          transform: translateX(-50%);
-          white-space: nowrap;
-        }
-      }
-      .none-trend {
-        background-image: url("/static/images/common/none-data.svg");
+.users-trend {
+  width: 100vw;
+  .users-trend-list {
+    .none-followee,
+    .none-trend {
+      text-align: center;
+      margin-top: 10vh;
+      color: #999999;
+      width: 100vw;
+      height: 50vw;
+      font-size: 6vw;
+      background-image: url("/static/images/common/none-follow.svg");
+      background-size: 100% 100%;
+      position: relative;
+      span {
+        position: absolute;
+        bottom: 3vw;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
       }
     }
-    .ask-for-login {
-      width: 100vw;
-      height: 84vh;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      padding-top: 20vh;
-      box-sizing: border-box;
-      justify-content: flex-start;
-      align-items: center;
-      font-size: 4vw;
-      i.fa {
-        font-size: 20vw;
-        color: #CCCCCC;
-      }
-      p {
-        margin: 3vw 0;
-      }
-      .login-register-button {
-        padding: 0 3vw;
-        width: 20vw;
-        height: 10vw;
-        line-height: 10vw;
-        border-radius: 5px;
-        text-align: center;
-        background-color: #0080FF;
-        color: #FFFFFF;
-        &.active {
-          transition: all .1s;
-          transform: scale(0.8);
-        }
+    .none-trend {
+      background-image: url("/static/images/common/none-data.svg");
+    }
+  }
+  .ask-for-login {
+    width: 100vw;
+    height: 84vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding-top: 20vh;
+    box-sizing: border-box;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: 4vw;
+    i.fa {
+      font-size: 20vw;
+      color: #cccccc;
+    }
+    p {
+      margin: 3vw 0;
+    }
+    .login-register-button {
+      padding: 0 3vw;
+      width: 20vw;
+      height: 10vw;
+      line-height: 10vw;
+      border-radius: 5px;
+      text-align: center;
+      background-color: #0080ff;
+      color: #ffffff;
+      &.active {
+        transition: all 0.1s;
+        transform: scale(0.8);
       }
     }
   }
-
+}
 </style>
